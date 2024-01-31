@@ -9,10 +9,11 @@ function ViewCardScreen() {
     location: 'Perth',
     description: 'Back lawn PGR',
     name: 'Buffalo',
-    start_date: '1/1/22',
+    start_date: new Date('1/1/22'),
     target_gdd: 255,
     temp_cur_gdd: 240,
     base_temp: 0,
+    id: 0,
   };
   const daily_gdds = [10, 20, 25, 10, 15, 5];
   const accum_gdds = daily_gdds.map(
