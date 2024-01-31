@@ -2,14 +2,15 @@
  * @format
  */
 
-import { AppRegistry } from 'react-native';
+import { AppRegistry, useColorScheme } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
-import { PaperProvider } from 'react-native-paper';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 
 export default function Main() {
+  const isDarkMode = useColorScheme() === 'dark';
   return (
-    <PaperProvider>
+    <PaperProvider theme={isDarkMode ? MD3DarkTheme : MD3LightTheme}>
       <App />
     </PaperProvider>);
 }
