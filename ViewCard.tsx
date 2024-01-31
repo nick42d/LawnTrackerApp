@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text} from 'react-native-paper';
-import type {GddTracker} from './Home';
+import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
 
