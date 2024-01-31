@@ -2,7 +2,7 @@ import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, StyleSheet, View} from 'react-native';
 
 // TODO: Move to structures.ts
-type GddTracker = {
+export type GddTracker = {
   name: string;
   description: string;
   target_gdd: number;

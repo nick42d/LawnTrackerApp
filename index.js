@@ -6,6 +6,9 @@ import { AppRegistry, useColorScheme } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+
+registerTranslation('en-GB', enGB)
 
 export default function Main() {
   const isDarkMode = useColorScheme() === 'dark';
