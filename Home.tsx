@@ -83,7 +83,7 @@ function GddCard({item, settings, navigation}) {
       style={GetGddCardStyle(settings, item.temp_cur_gdd, item.target_gdd)}
       onPress={() => {
         console.log('Pressed card');
-        navigation.navigate('ViewCard');
+        navigation.navigate('ViewCard', {item});
       }}>
       <Card.Title
         title={item.name}

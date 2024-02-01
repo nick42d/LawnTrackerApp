@@ -4,17 +4,8 @@ import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
 
-function ViewCardScreen() {
-  const example_gdd: GddTracker = {
-    location: 'Perth',
-    description: 'Back lawn PGR',
-    name: 'Buffalo',
-    start_date: new Date('1/1/22'),
-    target_gdd: 255,
-    temp_cur_gdd: 240,
-    base_temp: 0,
-    id: 0,
-  };
+function ViewCardScreen({route, navigation}) {
+  const {item} = route.params;
   const daily_gdds = [10, 20, 25, 10, 15, 5];
   const accum_gdds = daily_gdds.map(
     (
@@ -30,6 +21,7 @@ function ViewCardScreen() {
   }));
   return (
     <View>
+      <Text>{item.name}</Text>
       <LineChart
         data={accum_gdds_data}
         isAnimated
