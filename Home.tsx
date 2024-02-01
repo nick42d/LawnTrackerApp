@@ -2,8 +2,12 @@ import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {GddTracker, GddSettings} from './Types';
 import {useState} from 'react';
+import {AppStackParamList} from './App';
+import {StackScreenProps} from '@react-navigation/stack';
 
-function HomeScreen({navigation}): React.JSX.Element {
+type Props = StackScreenProps<AppStackParamList>;
+
+function HomeScreen({navigation}: Props): React.JSX.Element {
   const example_gdds: Array<GddTracker> = [
     {
       location: 'Perth',

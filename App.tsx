@@ -7,22 +7,32 @@
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import type {StackScreenProps} from '@react-navigation/stack';
+import type {StackHeaderProps} from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import HomeScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
+import {GddTracker} from './Types';
 
-const Stack = createStackNavigator();
+export type AppStackParamList = {
+  Home: undefined;
+  Add: undefined;
+  ViewCard: undefined;
+  Bar: undefined;
+};
+
+const Stack = createStackNavigator<AppStackParamList>();
 
 function PaperStackNavigationBar({
   navigation,
   back,
   route,
   options,
-}): React.JSX.Element {
+}: StackHeaderProps): React.JSX.Element {
   const title = getHeaderTitle(options, route.name);
   return (
     <Appbar.Header>

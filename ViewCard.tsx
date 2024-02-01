@@ -3,8 +3,12 @@ import {Text} from 'react-native-paper';
 import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {AppStackParamList} from './App';
 
-function ViewCardScreen({route, navigation}) {
+type Props = StackScreenProps<AppStackParamList>;
+
+function ViewCardScreen({route, navigation}: Props) {
   const {item} = route.params;
   const daily_gdds = [10, 20, 25, 10, 15, 5];
   const accum_gdds = daily_gdds.map(
