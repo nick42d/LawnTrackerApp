@@ -21,7 +21,7 @@ import {GddTracker} from './Types';
 export type AppStackParamList = {
   Home: undefined;
   Add: undefined;
-  ViewCard: undefined;
+  ViewCard: {gddCard: GddTracker};
   Bar: undefined;
 };
 

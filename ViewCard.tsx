@@ -6,10 +6,10 @@ import {View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {AppStackParamList} from './App';
 
-type Props = StackScreenProps<AppStackParamList>;
+type Props = StackScreenProps<AppStackParamList, 'ViewCard'>;
 
-function ViewCardScreen({route, navigation}: Props) {
-  const {item} = route.params;
+function ViewCardScreen({route}: Props) {
+  const item = route.params.gddCard;
   const daily_gdds = [10, 20, 25, 10, 15, 5];
   const accum_gdds = daily_gdds.map(
     (
