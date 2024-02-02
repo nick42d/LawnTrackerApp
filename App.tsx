@@ -10,7 +10,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import type {StackScreenProps} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
-import React from 'react';
+import React, {createContext, useContext} from 'react';
 import {StyleSheet} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import HomeScreen from './Home';
@@ -41,6 +41,8 @@ function PaperStackNavigationBar({
     </Appbar.Header>
   );
 }
+
+export const daily_gdds_context = createContext([10, 20, 25, 10, 15, 5]);
 
 function App(): React.JSX.Element {
   return (

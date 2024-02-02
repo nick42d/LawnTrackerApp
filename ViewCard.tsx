@@ -1,16 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {AppStackParamList} from './App';
+import {AppStackParamList, daily_gdds_context} from './App';
 
 type Props = StackScreenProps<AppStackParamList, 'ViewCard'>;
 
 function ViewCardScreen({route}: Props) {
   const item = route.params.gddCard;
-  const daily_gdds = [10, 20, 25, 10, 15, 5];
+  const daily_gdds = useContext(daily_gdds_context);
   const accum_gdds = daily_gdds.map(
     (
       sum => value =>

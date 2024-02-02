@@ -3,11 +3,12 @@ import {FlatList, StyleSheet, View} from 'react-native';
 import {GddTracker, GddSettings} from './Types';
 import {useState} from 'react';
 import {AppStackParamList} from './App';
-import {StackScreenProps} from '@react-navigation/stack';
+import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
 
 type Props = StackScreenProps<AppStackParamList>;
+type NavProp = StackNavigationProp<AppStackParamList>;
 
-function HomeScreen({navigation}: Props): React.JSX.Element {
+function HomeScreen({route, navigation}: Props): React.JSX.Element {
   const example_gdds: Array<GddTracker> = [
     {
       location: 'Perth',
@@ -55,7 +56,6 @@ function HomeScreen({navigation}: Props): React.JSX.Element {
   let example_settings: GddSettings = {
     low_alert_threshold_perc: 0.8,
   };
-
   return (
     <View>
       <FlatList
@@ -80,19 +80,27 @@ function HomeScreen({navigation}: Props): React.JSX.Element {
   );
 }
 
-function GddCard({item, settings, navigation}) {
+type CardPropsParamList = {
+  item: GddTracker;
+  settings: GddSettings;
+  navigation: NavProp;
+};
+
+function GddCard({item, settings, navigation}: CardPropsParamList) {
   return (
     <Card
       mode="elevated"
       style={GetGddCardStyle(settings, item.temp_cur_gdd, item.target_gdd)}
       onPress={() => {
         console.log('Pressed card');
-        navigation.navigate('ViewCard', {item});
+        navigation.navigate('ViewCard', {
+          gddCard: item,
+        });
       }}>
       <Card.Title
         title={item.name}
         subtitle={item.description}
-        left={props => <Text variant="bodyLarge">{item.temp_cur_gdd}</Text>}
+        left={() => <Text variant="bodyLarge">{item.temp_cur_gdd}</Text>}
       />
       <Card.Content>
         <Text>
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
     padding: 5,
     marginVertical: 8,
     marginHorizontal: 16,
-    backgroundColor: 'yellow',
+    backgroundColor: 'orange',
   },
   listItemRed: {
     padding: 5,
