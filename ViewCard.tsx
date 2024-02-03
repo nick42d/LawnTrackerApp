@@ -11,13 +11,17 @@ type Props = StackScreenProps<AppStackParamList, 'ViewCard'>;
 function ViewCardScreen({route}: Props) {
   const item = route.params.gddCard;
   const daily_gdds = useContext(daily_gdds_context);
-  const accum_gdds = daily_gdds.map(
+  const daily_gdds_filter = daily_gdds.filter(
+    this_item => this_item.date >= item.start_date,
+  );
+  const daily_gdds_arr = daily_gdds_filter.map(item_2 => item_2.gdd);
+  const accum_gdds = daily_gdds_arr.map(
     (
       sum => value =>
         (sum += value)
     )(0),
   );
-  const daily_gdds_data = daily_gdds.map(element => ({
+  const daily_gdds_data = daily_gdds_arr.map(element => ({
     value: element,
   }));
   const accum_gdds_data = accum_gdds.map(element => ({

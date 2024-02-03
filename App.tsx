@@ -42,7 +42,39 @@ function PaperStackNavigationBar({
   );
 }
 
-export const daily_gdds_context = createContext([10, 20, 25, 10, 15, 5]);
+export type dayGddStat = {
+  gdd: number;
+  date: Date;
+};
+
+export const daily_gdds_context: React.Context<dayGddStat[]> = createContext([
+  {gdd: 10, date: new Date('2022-1-1')},
+  {gdd: 20, date: new Date('2022-1-2')},
+  {gdd: 10, date: new Date('2022-1-3')},
+  {gdd: 5, date: new Date('2022-1-4')},
+  {gdd: 10, date: new Date('2022-1-5')},
+  {gdd: 10, date: new Date('2022-1-6')},
+  {gdd: 10, date: new Date('2022-1-7')},
+  {gdd: 10, date: new Date('2022-1-8')},
+  {gdd: 10, date: new Date('2022-1-9')},
+  {gdd: 10, date: new Date('2022-1-10')},
+  {gdd: 10, date: new Date('2022-1-11')},
+  {gdd: 10, date: new Date('2022-1-12')},
+  {gdd: 10, date: new Date('2022-1-13')},
+  {gdd: 10, date: new Date('2022-1-14')},
+  {gdd: 10, date: new Date('2022-1-15')},
+  {gdd: 10, date: new Date('2022-1-16')},
+  {gdd: 10, date: new Date('2022-1-17')},
+  {gdd: 10, date: new Date('2022-1-18')},
+  {gdd: 10, date: new Date('2022-1-19')},
+  {gdd: 10, date: new Date('2022-1-19')},
+  {gdd: 10, date: new Date('2022-1-20')},
+  {gdd: 10, date: new Date('2022-1-21')},
+  {gdd: 10, date: new Date('2022-1-22')},
+  {gdd: 10, date: new Date('2022-1-22')},
+  {gdd: 10, date: new Date('2022-1-23')},
+  {gdd: 10, date: new Date('2022-1-24')},
+]);
 
 function App(): React.JSX.Element {
   return (
