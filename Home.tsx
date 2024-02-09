@@ -122,7 +122,16 @@ function GddCard({item, settings, navigation}: CardPropsParamList) {
             item.temp_cur_gdd = 0;
             console.log('Pressed Reset button');
           }}>
+          <Icon source="rotate-left" size={20} />
           Reset
+        </Button>
+        <Button
+          onPress={() => {
+            item.temp_cur_gdd = 0;
+            console.log('Pressed Delete button');
+          }}>
+          <Icon source="delete" size={20} />
+          Delete
         </Button>
       </Card.Actions>
     </Card>

@@ -12,7 +12,7 @@ import type {StackHeaderProps} from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
 import React, {createContext, useContext} from 'react';
 import {StyleSheet} from 'react-native';
-import {Appbar} from 'react-native-paper';
+import {Appbar, Text} from 'react-native-paper';
 import HomeScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
@@ -38,6 +38,9 @@ function PaperStackNavigationBar({
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
       <Appbar.Content title={title} />
+      {route.name === 'ViewCard' || route.name === 'Add' ? (
+        <Appbar.Action onPress={navigation.goBack} icon="content-save" />
+      ) : null}
     </Appbar.Header>
   );
 }

@@ -11,7 +11,6 @@ function AddNewScreen() {
   return (
     <ScrollView>
       <View>
-        <Text>Add new tracked GDD</Text>
         <Divider />
         <TextInput
           label="Name"
@@ -33,9 +32,28 @@ function AddNewScreen() {
           onChange={d => setStartDate(d)}
           inputMode="start"
         />
+        <TextInput
+          label="Location"
+          value={desc}
+          // onChangeText={desc => setDesc(desc)}
+          // TODO: Better icon
+          left={<TextInput.Icon icon="bell-plus" />}
+        />
         <Divider />
-        <Text>Target GDD</Text>
-        <Text>Base temp</Text>
+        <TextInput
+          label="Target"
+          value={desc}
+          // onChangeText={desc => setDesc(desc)}
+          // TODO: Better icon
+          left={<TextInput.Icon icon="bell-plus" />}
+        />
+        <TextInput
+          label="Base Temp"
+          value={desc}
+          // onChangeText={desc => setDesc(desc)}
+          // TODO: Better icon
+          left={<TextInput.Icon icon="bell-plus" />}
+        />
       </View>
     </ScrollView>
   );
