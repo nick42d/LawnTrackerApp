@@ -20,6 +20,9 @@ import ViewCardScreen from './ViewCard';
 import {GddTracker} from './Types';
 import ViewWeatherScreen from './ViewWeather';
 
+// Local API key
+import {API_KEY} from './apikey';
+
 export type AppStackParamList = {
   Home: undefined;
   Add: undefined;
@@ -48,41 +51,67 @@ function PaperStackNavigationBar({
   );
 }
 
+const PERTH_LAT = -31.9514;
+const PERTH_LONG = 115.8617;
+
+function fetchWeatherHistorical(
+  lat: number,
+  long: number,
+  start: Date,
+  end: Date,
+) {
+  const start_unix = Math.floor(start.getTime() / 1000);
+  const end_unix = Math.floor(end.getTime() / 1000);
+  console.log(`Attempting to fetch from API ${start_unix} ${end_unix}`);
+  fetch(
+    `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
+  )
+    .then(res => res.json())
+    .then(json => {
+      console.log(JSON.stringify(json));
+    });
+}
 export type dayGddStat = {
   gdd: number;
   date: Date;
 };
 
 export const daily_gdds_context: React.Context<dayGddStat[]> = createContext([
-  {gdd: 10, date: new Date('2022-1-1')},
-  {gdd: 20, date: new Date('2022-1-2')},
-  {gdd: 10, date: new Date('2022-1-3')},
-  {gdd: 5, date: new Date('2022-1-4')},
-  {gdd: 10, date: new Date('2022-1-5')},
-  {gdd: 10, date: new Date('2022-1-6')},
-  {gdd: 10, date: new Date('2022-1-7')},
-  {gdd: 10, date: new Date('2022-1-8')},
-  {gdd: 10, date: new Date('2022-1-9')},
-  {gdd: 10, date: new Date('2022-1-10')},
-  {gdd: 10, date: new Date('2022-1-11')},
-  {gdd: 10, date: new Date('2022-1-12')},
-  {gdd: 10, date: new Date('2022-1-13')},
-  {gdd: 10, date: new Date('2022-1-14')},
-  {gdd: 10, date: new Date('2022-1-15')},
-  {gdd: 10, date: new Date('2022-1-16')},
-  {gdd: 10, date: new Date('2022-1-17')},
-  {gdd: 10, date: new Date('2022-1-18')},
-  {gdd: 10, date: new Date('2022-1-19')},
-  {gdd: 10, date: new Date('2022-1-19')},
-  {gdd: 10, date: new Date('2022-1-20')},
-  {gdd: 10, date: new Date('2022-1-21')},
-  {gdd: 10, date: new Date('2022-1-22')},
-  {gdd: 10, date: new Date('2022-1-22')},
-  {gdd: 10, date: new Date('2022-1-23')},
-  {gdd: 10, date: new Date('2022-1-24')},
+  {gdd: 10, date: new Date('2024-1-1')},
+  {gdd: 20, date: new Date('2024-1-2')},
+  {gdd: 10, date: new Date('2024-1-3')},
+  {gdd: 5, date: new Date('2024-1-4')},
+  {gdd: 10, date: new Date('2024-1-5')},
+  {gdd: 10, date: new Date('2024-1-6')},
+  {gdd: 10, date: new Date('2024-1-7')},
+  {gdd: 10, date: new Date('2024-1-8')},
+  {gdd: 10, date: new Date('2024-1-9')},
+  {gdd: 10, date: new Date('2024-1-10')},
+  {gdd: 10, date: new Date('2024-1-11')},
+  {gdd: 10, date: new Date('2024-1-12')},
+  {gdd: 10, date: new Date('2024-1-13')},
+  {gdd: 10, date: new Date('2024-1-14')},
+  {gdd: 10, date: new Date('2024-1-15')},
+  {gdd: 10, date: new Date('2024-1-16')},
+  {gdd: 10, date: new Date('2024-1-17')},
+  {gdd: 10, date: new Date('2024-1-18')},
+  {gdd: 10, date: new Date('2024-1-19')},
+  {gdd: 10, date: new Date('2024-1-19')},
+  {gdd: 10, date: new Date('2024-1-20')},
+  {gdd: 10, date: new Date('2024-1-21')},
+  {gdd: 10, date: new Date('2024-1-22')},
+  {gdd: 10, date: new Date('2024-1-22')},
+  {gdd: 10, date: new Date('2024-1-23')},
+  {gdd: 10, date: new Date('2024-1-24')},
 ]);
 
 function StackNavigator() {
+  fetchWeatherHistorical(
+    PERTH_LAT,
+    PERTH_LONG,
+    new Date('2024-1-1'),
+    new Date('2024-1-24'),
+  );
   return (
     <Stack.Navigator
       initialRouteName="Home"
