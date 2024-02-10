@@ -9,14 +9,16 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import type {StackScreenProps} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
+import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 import {getHeaderTitle} from '@react-navigation/elements';
 import React, {createContext, useContext} from 'react';
 import {StyleSheet} from 'react-native';
-import {Appbar, Text} from 'react-native-paper';
+import {Appbar, Icon, Text} from 'react-native-paper';
 import HomeScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
 import {GddTracker} from './Types';
+import ViewWeatherScreen from './ViewWeather';
 
 export type AppStackParamList = {
   Home: undefined;
@@ -26,6 +28,7 @@ export type AppStackParamList = {
 };
 
 const Stack = createStackNavigator<AppStackParamList>();
+const Tab = createMaterialBottomTabNavigator();
 
 function PaperStackNavigationBar({
   navigation,
@@ -79,19 +82,44 @@ export const daily_gdds_context: React.Context<dayGddStat[]> = createContext([
   {gdd: 10, date: new Date('2022-1-24')},
 ]);
 
+function StackNavigator() {
+  return (
+    <Stack.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        header: props => <PaperStackNavigationBar {...props} />,
+      }}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Add" component={AddNewScreen} />
+      <Stack.Screen name="ViewCard" component={ViewCardScreen} />
+    </Stack.Navigator>
+  );
+}
+
 function App(): React.JSX.Element {
   return (
     // TODO: Where to put safe area?
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          header: props => <PaperStackNavigationBar {...props} />,
-        }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Add" component={AddNewScreen} />
-        <Stack.Screen name="ViewCard" component={ViewCardScreen} />
-      </Stack.Navigator>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={StackNavigator}
+          options={{
+            tabBarIcon: ({color}) => (
+              <Icon source="home" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Weather"
+          component={ViewWeatherScreen}
+          options={{
+            tabBarIcon: ({color}) => (
+              <Icon source="weather-partly-rainy" color={color} size={26} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }
