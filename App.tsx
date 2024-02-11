@@ -17,7 +17,7 @@ import {Appbar, Icon, Text} from 'react-native-paper';
 import HomeScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
-import {GddTracker} from './Types';
+import {GddTracker, WeatherApiHistory, apiHistoryToAppHistory} from './Types';
 import ViewWeatherScreen from './ViewWeather';
 
 // Local API key
@@ -51,26 +51,21 @@ function PaperStackNavigationBar({
   );
 }
 
-const PERTH_LAT = -31.9514;
-const PERTH_LONG = 115.8617;
-
-function fetchWeatherHistorical(
-  lat: number,
-  long: number,
-  start: Date,
-  end: Date,
-) {
-  const start_unix = Math.floor(start.getTime() / 1000);
-  const end_unix = Math.floor(end.getTime() / 1000);
-  console.log(`Attempting to fetch from API ${start_unix} ${end_unix}`);
-  fetch(
-    `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
-  )
-    .then(res => res.json())
-    .then(json => {
-      console.log(JSON.stringify(json));
-    });
+function calcGdd(
+  t_min: number,
+  t_max: number,
+  t_base: number,
+  // Variant b from wikipedia https://en.wikipedia.org/wiki/Growing_degree-day
+  is_variant_b = false,
+): number {
+  if (!is_variant_b) {
+    return Math.max((t_max + t_min) / 2 - t_base, 0);
+  } else {
+    t_min = Math.max(t_min, t_base);
+    return (t_max + t_min) / 2 - t_base;
+  }
 }
+
 export type dayGddStat = {
   gdd: number;
   date: Date;
@@ -106,12 +101,6 @@ export const daily_gdds_context: React.Context<dayGddStat[]> = createContext([
 ]);
 
 function StackNavigator() {
-  fetchWeatherHistorical(
-    PERTH_LAT,
-    PERTH_LONG,
-    new Date('2024-1-1'),
-    new Date('2024-1-24'),
-  );
   return (
     <Stack.Navigator
       initialRouteName="Home"

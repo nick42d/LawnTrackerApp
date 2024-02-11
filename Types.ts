@@ -18,6 +18,30 @@ export type GddSettings = {
   low_alert_threshold_perc: number;
 };
 
+export type WeatherAppHistory = {
+  location: string;
+  forecasts: WeatherAppForecast[];
+};
+
+export type WeatherAppForecast = {
+  date: Date;
+  maxtemp_c: number;
+  mintemp_c: number;
+};
+
+export function apiHistoryToAppHistory(
+  api: WeatherApiHistory,
+): WeatherAppHistory {
+  return {
+    location: api.location.name,
+    forecasts: api.forecast.forecastday.map(day => ({
+      date: new Date(day.date),
+      maxtemp_c: day.day.maxtemp_c,
+      mintemp_c: day.day.mintemp_c,
+    })),
+  };
+}
+
 export type WeatherApiHistory = {
   location: WeatherApiLocation;
   forecast: WeatherApiForecast;
