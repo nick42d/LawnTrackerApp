@@ -37,7 +37,9 @@ function ViewWeatherScreen() {
     return () => {
       ignore: true;
     };
-  });
+    // Don't call useEffect if location hasn't changed.
+    // Note, here this is called twice as location starts as 'loading' and then changes.
+  }, [this_state.location]);
   function fetchWeatherHistorical(
     lat: number,
     long: number,
