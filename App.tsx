@@ -5,7 +5,10 @@
  * @format
  */
 
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import type {StackScreenProps} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
@@ -30,8 +33,12 @@ export type AppStackParamList = {
   Bar: undefined;
 };
 
+export type AppTabParamList = {
+  Home: NavigatorScreenParams<AppStackParamList>;
+  Weather: undefined;
+};
+
 const Stack = createStackNavigator<AppStackParamList>();
-const Tab = createMaterialBottomTabNavigator();
 
 function PaperStackNavigationBar({
   navigation,
@@ -51,7 +58,7 @@ function PaperStackNavigationBar({
   );
 }
 
-function calcGdd(
+export function calcGdd(
   t_min: number,
   t_max: number,
   t_base: number,
@@ -100,44 +107,19 @@ export const daily_gdds_context: React.Context<dayGddStat[]> = createContext([
   {gdd: 10, date: new Date('2024-1-24')},
 ]);
 
-function StackNavigator() {
-  return (
-    <Stack.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        header: props => <PaperStackNavigationBar {...props} />,
-      }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Add" component={AddNewScreen} />
-      <Stack.Screen name="ViewCard" component={ViewCardScreen} />
-    </Stack.Navigator>
-  );
-}
-
 function App(): React.JSX.Element {
   return (
     // TODO: Where to put safe area?
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Home"
-          component={StackNavigator}
-          options={{
-            tabBarIcon: ({color}) => (
-              <Icon source="home" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Weather"
-          component={ViewWeatherScreen}
-          options={{
-            tabBarIcon: ({color}) => (
-              <Icon source="weather-partly-rainy" color={color} size={26} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          header: props => <PaperStackNavigationBar {...props} />,
+        }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Add" component={AddNewScreen} />
+        <Stack.Screen name="ViewCard" component={ViewCardScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

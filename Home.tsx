@@ -2,13 +2,53 @@ import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {GddTracker, GddSettings} from './Types';
 import {useState} from 'react';
-import {AppStackParamList} from './App';
+import {AppStackParamList, AppTabParamList} from './App';
 import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
+import {
+  createMaterialBottomTabNavigator,
+  MaterialBottomTabScreenProps,
+} from 'react-native-paper/react-navigation';
+import ViewWeatherScreen from './ViewWeather';
+import {CompositeScreenProps} from '@react-navigation/native';
 
-type Props = StackScreenProps<AppStackParamList>;
-type NavProp = StackNavigationProp<AppStackParamList>;
+type Props = CompositeScreenProps<
+  StackScreenProps<AppStackParamList>,
+  MaterialBottomTabScreenProps<AppTabParamList>
+>;
+const Tab = createMaterialBottomTabNavigator();
 
 function HomeScreen({route, navigation}: Props): React.JSX.Element {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
+        component={HomeScreenCardList}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon source="home" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Weather"
+        component={ViewWeatherScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon source="weather-partly-rainy" color={color} size={26} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+type CardPropsParamList = {
+  item: GddTracker;
+  settings: GddSettings;
+  navigation: Props;
+};
+
+function HomeScreenCardList({route, navigation}: Props) {
   const example_gdds: Array<GddTracker> = [
     {
       location: 'Perth',
@@ -79,12 +119,6 @@ function HomeScreen({route, navigation}: Props): React.JSX.Element {
     </View>
   );
 }
-
-type CardPropsParamList = {
-  item: GddTracker;
-  settings: GddSettings;
-  navigation: NavProp;
-};
 
 function GddCard({item, settings, navigation}: CardPropsParamList) {
   return (

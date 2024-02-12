@@ -10,11 +10,12 @@ import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {ScrollView, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {AppStackParamList, daily_gdds_context} from './App';
+import {AppStackParamList, calcGdd, daily_gdds_context} from './App';
 import {API_KEY} from './apikey';
 
 const PERTH_LAT = -31.9514;
 const PERTH_LONG = 115.8617;
+const T_BASE = 10;
 
 function ViewWeatherScreen() {
   const [this_state, set_this_state] = useState({
@@ -57,6 +58,11 @@ function ViewWeatherScreen() {
       .then(res => res.json() as Promise<WeatherApiHistory>)
       .then(json => set_this_state(apiHistoryToAppHistory(json)));
   }
+  function gdds_data() {
+    return this_state.forecasts.map(day => ({
+      value: calcGdd(day.mintemp_c, day.maxtemp_c, T_BASE),
+    }));
+  }
   return (
     <ScrollView>
       <Text>{this_state.location}</Text>
@@ -65,6 +71,13 @@ function ViewWeatherScreen() {
         {this_state.forecasts.map(gdd => (
           <List.Item title={gdd.date.toString()} description={gdd.mintemp_c} />
         ))}
+        <LineChart
+          data={gdds_data()}
+          isAnimated
+          curved
+          showScrollIndicator
+          adjustToWidth
+        />
       </List.Section>
     </ScrollView>
   );
