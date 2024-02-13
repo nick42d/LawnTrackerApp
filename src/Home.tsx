@@ -47,6 +47,7 @@ type CardPropsParamList = {
   settings: GddSettings;
   navigation: Props;
   onDelete: () => void;
+  onReset: () => void;
 };
 
 function HomeScreenCardList({route, navigation}: Props) {
@@ -98,6 +99,12 @@ function HomeScreenCardList({route, navigation}: Props) {
       example_gdds_state.filter(element => element.id != id),
     );
   }
+  function resetId(id: number) {
+    const new_state = example_gdds_state.map(element =>
+      element.id === id ? {...element, temp_cur_gdd: 0} : element,
+    );
+    set_example_gdds_state(new_state);
+  }
 
   let example_settings: GddSettings = {
     low_alert_threshold_perc: 0.8,
@@ -112,6 +119,7 @@ function HomeScreenCardList({route, navigation}: Props) {
             settings={example_settings}
             navigation={navigation}
             onDelete={() => deleteId(item.id)}
+            onReset={() => resetId(item.id)}
           />
         )}
       />
@@ -127,7 +135,13 @@ function HomeScreenCardList({route, navigation}: Props) {
   );
 }
 
-function GddCard({item, onDelete, settings, navigation}: CardPropsParamList) {
+function GddCard({
+  item,
+  onReset,
+  onDelete,
+  settings,
+  navigation,
+}: CardPropsParamList) {
   return (
     <Card
       mode="elevated"
@@ -158,11 +172,7 @@ function GddCard({item, onDelete, settings, navigation}: CardPropsParamList) {
         </Text>
       </Card.Content>
       <Card.Actions>
-        <Button
-          onPress={() => {
-            item.temp_cur_gdd = 0;
-            console.log('Pressed Reset button');
-          }}>
+        <Button onPress={onReset}>
           <Icon source="rotate-left" size={20} />
           Reset
         </Button>
