@@ -46,6 +46,7 @@ type CardPropsParamList = {
   item: GddTracker;
   settings: GddSettings;
   navigation: Props;
+  onDelete: () => void;
 };
 
 function HomeScreenCardList({route, navigation}: Props) {
@@ -92,6 +93,11 @@ function HomeScreenCardList({route, navigation}: Props) {
     },
   ];
   const [example_gdds_state, set_example_gdds_state] = useState(example_gdds);
+  function deleteId(id: number) {
+    set_example_gdds_state(
+      example_gdds_state.filter(element => element.id != id),
+    );
+  }
 
   let example_settings: GddSettings = {
     low_alert_threshold_perc: 0.8,
@@ -105,6 +111,7 @@ function HomeScreenCardList({route, navigation}: Props) {
             item={item}
             settings={example_settings}
             navigation={navigation}
+            onDelete={() => deleteId(item.id)}
           />
         )}
       />
@@ -120,7 +127,7 @@ function HomeScreenCardList({route, navigation}: Props) {
   );
 }
 
-function GddCard({item, settings, navigation}: CardPropsParamList) {
+function GddCard({item, onDelete, settings, navigation}: CardPropsParamList) {
   return (
     <Card
       mode="elevated"
@@ -159,11 +166,7 @@ function GddCard({item, settings, navigation}: CardPropsParamList) {
           <Icon source="rotate-left" size={20} />
           Reset
         </Button>
-        <Button
-          onPress={() => {
-            item.temp_cur_gdd = 0;
-            console.log('Pressed Delete button');
-          }}>
+        <Button onPress={onDelete}>
           <Icon source="delete" size={20} />
           Delete
         </Button>

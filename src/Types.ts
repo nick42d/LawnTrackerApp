@@ -3,7 +3,6 @@ export type GddTracker = {
   description: string;
   target_gdd: number;
   base_temp: number;
-  // TODO: Date library
   start_date: Date;
   // TODO: Location library
   location: string;
