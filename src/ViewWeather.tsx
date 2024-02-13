@@ -11,7 +11,7 @@ import {LineChart} from 'react-native-gifted-charts';
 import {ScrollView, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {AppStackParamList, calcGdd, daily_gdds_context} from './App';
-import {API_KEY} from './apikey';
+import {API_KEY} from '../apikey';
 
 const PERTH_LAT = -31.9514;
 const PERTH_LONG = 115.8617;
