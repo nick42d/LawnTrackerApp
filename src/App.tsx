@@ -25,6 +25,7 @@ import ViewWeatherScreen from './ViewWeather';
 
 // Local API key
 import {API_KEY} from './apikey';
+import {onDisplayNotification} from './Notification';
 
 export type AppStackParamList = {
   Home: undefined;
@@ -52,7 +53,10 @@ function PaperStackNavigationBar({
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
       <Appbar.Content title={title} />
       {route.name === 'ViewCard' || route.name === 'Add' ? (
-        <Appbar.Action onPress={navigation.goBack} icon="content-save" />
+        <Appbar.Action
+          onPress={() => onDisplayNotification()}
+          icon="content-save"
+        />
       ) : null}
     </Appbar.Header>
   );
