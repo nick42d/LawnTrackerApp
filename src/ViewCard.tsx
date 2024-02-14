@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {AppStackParamList, daily_gdds_context} from './App';
 

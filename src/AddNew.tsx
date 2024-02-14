@@ -1,12 +1,15 @@
 import React from 'react';
-import {Divider, Text, TextInput} from 'react-native-paper';
+import {Divider, SegmentedButtons, Text, TextInput} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 
 function AddNewScreen() {
   const [name, setName] = React.useState('');
   const [desc, setDesc] = React.useState('');
-  const [startDate, setStartDate] = React.useState(undefined);
+  const [location, setLocation] = React.useState('');
+  const [target, setTarget] = React.useState('');
+  const [toggle, setToggle] = React.useState('0');
+  const [startDate, setStartDate] = React.useState(new Date());
 
   return (
     <ScrollView>
@@ -22,37 +25,39 @@ function AddNewScreen() {
           value={desc}
           onChangeText={desc => setDesc(desc)}
           // TODO: Better icon
-          left={<TextInput.Icon icon="bell-plus" />}
+          left={<TextInput.Icon icon="menu" />}
         />
         <Divider />
         <DatePickerInput
           locale="en-GB"
           label="Start date"
           value={startDate}
-          onChange={d => setStartDate(d)}
+          onChange={d => setStartDate(d as Date)}
           inputMode="start"
         />
         <TextInput
           label="Location"
           value={desc}
-          // onChangeText={desc => setDesc(desc)}
+          onChangeText={location => setLocation(location)}
           // TODO: Better icon
-          left={<TextInput.Icon icon="bell-plus" />}
+          left={<TextInput.Icon icon="map-marker" />}
         />
         <Divider />
         <TextInput
           label="Target"
           value={desc}
-          // onChangeText={desc => setDesc(desc)}
+          onChangeText={target => setTarget(target)}
           // TODO: Better icon
-          left={<TextInput.Icon icon="bell-plus" />}
+          left={<TextInput.Icon icon="target" />}
         />
-        <TextInput
-          label="Base Temp"
-          value={desc}
-          // onChangeText={desc => setDesc(desc)}
-          // TODO: Better icon
-          left={<TextInput.Icon icon="bell-plus" />}
+        <Text>Base Temp</Text>
+        <SegmentedButtons
+          value={toggle}
+          onValueChange={setToggle}
+          buttons={[
+            {value: '0', label: '0°'},
+            {value: '10', label: '10°'},
+          ]}
         />
       </View>
     </ScrollView>

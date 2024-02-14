@@ -22,9 +22,6 @@ import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
 import {GddTracker, WeatherApiHistory, apiHistoryToAppHistory} from './Types';
 import ViewWeatherScreen from './ViewWeather';
-
-// Local API key
-import {API_KEY} from './apikey';
 import {onDisplayNotification} from './Notification';
 
 export type AppStackParamList = {

@@ -101,7 +101,9 @@ function HomeScreenCardList({route, navigation}: Props) {
   }
   function resetId(id: number) {
     const new_state = example_gdds_state.map(element =>
-      element.id === id ? {...element, temp_cur_gdd: 0} : element,
+      element.id === id
+        ? {...element, temp_cur_gdd: 0, start_date: new Date(Date.now())}
+        : element,
     );
     set_example_gdds_state(new_state);
   }
@@ -110,7 +112,7 @@ function HomeScreenCardList({route, navigation}: Props) {
     low_alert_threshold_perc: 0.8,
   };
   return (
-    <View>
+    <View style={{flex: 1}}>
       <FlatList
         data={example_gdds_state}
         renderItem={({item}) => (
