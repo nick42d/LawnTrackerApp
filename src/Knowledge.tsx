@@ -1,3 +1,5 @@
+/// Module intended to contain app business logic
+
 export const BASE_TEMPS_C = [0, 10];
 
 export function calcGdd(
