@@ -1,6 +1,7 @@
 import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {GddTracker, GddSettings} from './Types';
+import {GddTracker} from './Types';
+import {GddSettings} from './Configuration';
 import {useState} from 'react';
 import {AppStackParamList, AppTabParamList} from './App';
 import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
@@ -110,7 +111,10 @@ function HomeScreenCardList({route, navigation}: Props) {
 
   let example_settings: GddSettings = {
     low_alert_threshold_perc: 0.8,
+    algorithm: 1,
+    unit_of_measure: 1,
   };
+
   return (
     <View style={{flex: 1}}>
       <FlatList

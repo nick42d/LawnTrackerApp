@@ -4,7 +4,7 @@ import {WeatherApiHistory, apiHistoryToAppHistory} from './Types';
 import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {ScrollView} from 'react-native';
-import {calcGdd} from './App';
+import {calcGdd} from './Knowledge';
 import {API_KEY} from '../apikey';
 
 const PERTH_LAT = -31.9514;

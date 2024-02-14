@@ -2,6 +2,7 @@ import React from 'react';
 import {Divider, SegmentedButtons, Text, TextInput} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
+import {BASE_TEMPS_C} from './Knowledge';
 
 function AddNewScreen() {
   const [name, setName] = React.useState('');
@@ -54,10 +55,10 @@ function AddNewScreen() {
         <SegmentedButtons
           value={toggle}
           onValueChange={setToggle}
-          buttons={[
-            {value: '0', label: '0°'},
-            {value: '10', label: '10°'},
-          ]}
+          buttons={BASE_TEMPS_C.map(el => ({
+            value: el.toString(),
+            label: el.toString(),
+          }))}
         />
       </View>
     </ScrollView>

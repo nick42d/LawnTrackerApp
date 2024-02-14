@@ -13,10 +13,6 @@ export type GddTracker = {
   id: number;
 };
 
-export type GddSettings = {
-  low_alert_threshold_perc: number;
-};
-
 export type WeatherAppHistory = {
   location: string;
   forecasts: WeatherAppForecast[];
