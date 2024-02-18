@@ -1,3 +1,24 @@
+// Dummying up Ids currently...
+export function newGddTracker(
+  name: string,
+  description: string,
+  location: string,
+  target_gdd: number,
+  base_temp: number,
+  start_date: Date,
+): GddTracker {
+  const ret: GddTracker = {
+    location,
+    description,
+    name,
+    target_gdd,
+    base_temp,
+    start_date,
+    id: 0,
+    temp_cur_gdd: 0,
+  };
+  return ret;
+}
 export type GddTracker = {
   name: string;
   description: string;

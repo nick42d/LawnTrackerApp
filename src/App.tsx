@@ -10,22 +10,19 @@ import {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import type {StackScreenProps} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
-import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 import {getHeaderTitle} from '@react-navigation/elements';
-import React, {createContext, useContext} from 'react';
+import React, {createContext} from 'react';
 import {StyleSheet} from 'react-native';
-import {Appbar, Icon, Text} from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 import HomeScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
-import {GddTracker, WeatherApiHistory, apiHistoryToAppHistory} from './Types';
-import ViewWeatherScreen from './ViewWeather';
+import {GddTracker} from './Types';
 import {onDisplayNotification} from './Notification';
 
 export type AppStackParamList = {
-  Home: undefined;
+  Home: undefined | {add_gdd: GddTracker};
   Add: undefined;
   ViewCard: {gddCard: GddTracker};
   Bar: undefined;

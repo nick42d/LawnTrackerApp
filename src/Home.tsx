@@ -11,6 +11,7 @@ import {
 } from 'react-native-paper/react-navigation';
 import ViewWeatherScreen from './ViewWeather';
 import {CompositeScreenProps} from '@react-navigation/native';
+import React from 'react';
 
 type Props = CompositeScreenProps<
   StackScreenProps<AppStackParamList>,
@@ -95,6 +96,15 @@ function HomeScreenCardList({route, navigation}: Props) {
     },
   ];
   const [example_gdds_state, set_example_gdds_state] = useState(example_gdds);
+  React.useEffect(() => {
+    // Does not handle IDs correctly.
+    if (route.params?.add_gdd) {
+      const example_gdds_state_temp = example_gdds_state;
+      example_gdds_state_temp.push(route.params.add_gdd);
+      set_example_gdds_state(example_gdds_state_temp);
+    }
+  }, [route.params?.add_gdd]);
+
   function deleteId(id: number) {
     set_example_gdds_state(
       example_gdds_state.filter(element => element.id != id),
