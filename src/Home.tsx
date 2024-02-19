@@ -14,12 +14,23 @@ import {CompositeScreenProps} from '@react-navigation/native';
 import React from 'react';
 
 type Props = CompositeScreenProps<
-  StackScreenProps<AppStackParamList>,
-  MaterialBottomTabScreenProps<AppTabParamList>
+  MaterialBottomTabScreenProps<AppTabParamList, 'Home'>,
+  StackScreenProps<AppStackParamList>
 >;
+type PropsNavigation = Props['navigation'];
 const Tab = createMaterialBottomTabNavigator();
 
-function HomeScreen({route, navigation}: Props): React.JSX.Element {
+type CardPropsParamList = {
+  item: GddTracker;
+  settings: GddSettings;
+  navigation: PropsNavigation;
+  onDelete: () => void;
+  onReset: () => void;
+};
+
+function HomeWeatherScreen({
+  route: navigation,
+}: StackScreenProps<AppStackParamList, 'HomeWeather'>): React.JSX.Element {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -43,14 +54,6 @@ function HomeScreen({route, navigation}: Props): React.JSX.Element {
     </Tab.Navigator>
   );
 }
-
-type CardPropsParamList = {
-  item: GddTracker;
-  settings: GddSettings;
-  navigation: Props;
-  onDelete: () => void;
-  onReset: () => void;
-};
 
 function HomeScreenCardList({route, navigation}: Props) {
   const example_gdds: Array<GddTracker> = [
@@ -236,4 +239,4 @@ function GetGddCardStyle(settings: GddSettings, cur: number, target: number) {
     return styles.listItem;
   }
 }
-export default HomeScreen;
+export default HomeWeatherScreen;

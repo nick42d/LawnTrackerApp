@@ -12,24 +12,24 @@ import {
 import {createStackNavigator} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
-import React, {createContext} from 'react';
+import React, {ParamHTMLAttributes, createContext} from 'react';
 import {StyleSheet} from 'react-native';
 import {Appbar} from 'react-native-paper';
-import HomeScreen from './Home';
+import HomeWeatherScreen from './Home';
 import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
 import {GddTracker} from './Types';
 import {onDisplayNotification} from './Notification';
 
 export type AppStackParamList = {
-  Home: undefined | {add_gdd: GddTracker};
+  HomeWeather: NavigatorScreenParams<AppTabParamList>;
   Add: undefined;
   ViewCard: {gddCard: GddTracker};
   Bar: undefined;
 };
 
 export type AppTabParamList = {
-  Home: NavigatorScreenParams<AppStackParamList>;
+  Home: undefined | {add_gdd: GddTracker};
   Weather: undefined;
 };
 
@@ -95,11 +95,15 @@ function App(): React.JSX.Element {
     // TODO: Where to put safe area?
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="HomeWeather"
         screenOptions={{
           header: props => <PaperStackNavigationBar {...props} />,
         }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="HomeWeather"
+          component={HomeWeatherScreen}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Add" component={AddNewScreen} />
         <Stack.Screen name="ViewCard" component={ViewCardScreen} />
       </Stack.Navigator>
