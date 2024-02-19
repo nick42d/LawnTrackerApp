@@ -45,6 +45,11 @@ export type WeatherAppForecast = {
   mintemp_c: number;
 };
 
+export type dayGddStat = {
+  gdd: number;
+  date: Date;
+};
+
 export function apiHistoryToAppHistory(
   api: WeatherApiHistory,
 ): WeatherAppHistory {

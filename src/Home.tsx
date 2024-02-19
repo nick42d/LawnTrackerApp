@@ -2,11 +2,14 @@ import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {GddTracker} from './Types';
 import {GddSettings} from './Configuration';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {HomeWeatherTabParamList, HomeWeatherTabScreenProps} from './Navigation';
 import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 import ViewWeatherScreen from './ViewWeather';
 import React from 'react';
+import {WeatherContext} from './WeatherContext';
+import {calcGdd} from './Knowledge';
+import {T_BASE} from './Consts';
 
 const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
 
@@ -50,10 +53,10 @@ function HomeScreenCardList({
   const example_gdds: Array<GddTracker> = [
     {
       location: 'Perth',
-      description: 'Back lawn PGR',
+      description: 'Both Lawns',
       name: 'Buffalo',
-      start_date: new Date('2024-1-1'),
-      target_gdd: 255,
+      start_date: new Date('2024-2-18'),
+      target_gdd: 250,
       temp_cur_gdd: 240,
       base_temp: 0,
       id: 0,
@@ -152,10 +155,21 @@ function GddCard({
   settings,
   navigation,
 }: CardPropsParamList) {
+  function calc_gdd_total() {
+    const daily_gdds = useContext(WeatherContext);
+    const daily_gdds_filter = daily_gdds.forecasts.filter(
+      this_item => this_item.date >= item.start_date,
+    );
+    const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
+      calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
+    );
+    return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
+  }
+  const actual_gdd = calc_gdd_total();
   return (
     <Card
       mode="elevated"
-      style={GetGddCardStyle(settings, item.temp_cur_gdd, item.target_gdd)}
+      style={GetGddCardStyle(settings, actual_gdd, item.target_gdd)}
       onPress={() => {
         console.log('Pressed card');
         navigation.navigate('ViewCard', {
@@ -165,7 +179,7 @@ function GddCard({
       <Card.Title
         title={item.name}
         subtitle={item.description}
-        left={() => <Text variant="bodyLarge">{item.temp_cur_gdd}</Text>}
+        left={() => <Text variant="bodyLarge">{actual_gdd}</Text>}
       />
       <Card.Content>
         <Text>

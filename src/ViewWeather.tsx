@@ -1,77 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
-import {WeatherApiHistory, apiHistoryToAppHistory} from './Types';
 import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {ScrollView} from 'react-native';
 import {calcGdd} from './Knowledge';
-import {API_KEY} from '../apikey';
+import {WeatherContext} from './WeatherContext';
+import {T_BASE} from './Consts';
 
-const PERTH_LAT = -31.9514;
-const PERTH_LONG = 115.8617;
-const T_BASE = 10;
-
-function ViewWeatherScreen() {
-  const [this_state, set_this_state] = useState({
-    location: 'loading',
-    forecasts: [
-      {
-        date: new Date('01-01-2001'),
-        maxtemp_c: 10,
-        mintemp_c: 20,
-      },
-    ],
-  });
-  useEffect(() => {
-    fetchWeatherHistorical(
-      PERTH_LAT,
-      PERTH_LONG,
-      new Date('2024-1-1'),
-      new Date('2024-1-24'),
-    );
-    return () => {
-      ignore: true;
-    };
-    // Don't call useEffect if location hasn't changed.
-    // Note, here this is called twice as location starts as 'loading' and then changes.
-  }, [this_state.location]);
-  function fetchWeatherHistorical(
-    lat: number,
-    long: number,
-    start: Date,
-    end: Date,
-  ) {
-    const start_unix = Math.floor(start.getTime() / 1000);
-    const end_unix = Math.floor(end.getTime() / 1000);
-    console.log(
-      `Attempting to fetch from API ${start_unix} ${end_unix} ${Date.now()}`,
-    );
-    fetch(
-      `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
-    )
-      .then(res => res.json() as Promise<WeatherApiHistory>)
-      .then(json => set_this_state(apiHistoryToAppHistory(json)));
-  }
+function ViewWeatherScreen(): React.JSX.Element {
+  const weather = useContext(WeatherContext);
   function gdds_data() {
-    return this_state.forecasts.map(day => ({
+    return weather.forecasts.map(day => ({
       value: calcGdd(day.mintemp_c, day.maxtemp_c, T_BASE),
     }));
   }
   return (
     <ScrollView>
-      <Text>{this_state.location}</Text>
+      <Text>{weather.location}</Text>
       <List.Section>
         <List.Subheader>Weather</List.Subheader>
-        {this_state.forecasts.map(gdd => (
+        {weather.forecasts.map(gdd => (
           <List.Item title={gdd.date.toString()} description={gdd.mintemp_c} />
         ))}
-        <LineChart
-          data={gdds_data()}
-          isAnimated
-          curved
-          showScrollIndicator
-          adjustToWidth
-        />
+        <LineChart data={gdds_data()} isAnimated curved adjustToWidth />
       </List.Section>
     </ScrollView>
   );

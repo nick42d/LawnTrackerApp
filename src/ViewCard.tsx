@@ -2,17 +2,20 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
-import {StackScreenProps} from '@react-navigation/stack';
-import {daily_gdds_context} from './App';
-import {AppScreenProps, RootStackParamList} from './Navigation';
+import {WeatherContext} from './WeatherContext';
+import {AppScreenProps} from './Navigation';
+import {calcGdd} from './Knowledge';
+import {T_BASE} from './Consts';
 
 function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   const item = route.params.gddCard;
-  const daily_gdds = useContext(daily_gdds_context);
-  const daily_gdds_filter = daily_gdds.filter(
+  const daily_gdds = useContext(WeatherContext);
+  const daily_gdds_filter = daily_gdds.forecasts.filter(
     this_item => this_item.date >= item.start_date,
   );
-  const daily_gdds_arr = daily_gdds_filter.map(item_2 => item_2.gdd);
+  const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
+    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
+  );
   const accum_gdds = daily_gdds_arr.map(
     (
       sum => value =>
@@ -32,6 +35,7 @@ function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
         data={accum_gdds_data}
         isAnimated
         curved
+        showScrollIndicator
         secondaryData={daily_gdds_data}
         secondaryLineConfig={{color: 'blue'}}
         secondaryYAxis={{yAxisColor: 'blue'}}
