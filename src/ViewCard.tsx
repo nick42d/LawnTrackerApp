@@ -1,14 +1,12 @@
 import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
-import type {GddTracker} from './Types';
 import {LineChart} from 'react-native-gifted-charts';
-import {StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {AppStackParamList, daily_gdds_context} from './App';
+import {daily_gdds_context} from './App';
+import {AppScreenProps, RootStackParamList} from './Navigation';
 
-type Props = StackScreenProps<AppStackParamList, 'ViewCard'>;
-
-function ViewCardScreen({route}: Props) {
+function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   const item = route.params.gddCard;
   const daily_gdds = useContext(daily_gdds_context);
   const daily_gdds_filter = daily_gdds.filter(

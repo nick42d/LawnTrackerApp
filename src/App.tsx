@@ -20,20 +20,9 @@ import AddNewScreen from './AddNew';
 import ViewCardScreen from './ViewCard';
 import {GddTracker} from './Types';
 import {onDisplayNotification} from './Notification';
+import {RootStackParamList} from './Navigation';
 
-export type AppStackParamList = {
-  HomeWeather: NavigatorScreenParams<AppTabParamList>;
-  Add: undefined;
-  ViewCard: {gddCard: GddTracker};
-  Bar: undefined;
-};
-
-export type AppTabParamList = {
-  Home: undefined | {add_gdd: GddTracker};
-  Weather: undefined;
-};
-
-const Stack = createStackNavigator<AppStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 
 function PaperStackNavigationBar({
   navigation,

@@ -3,34 +3,22 @@ import {FlatList, StyleSheet, View} from 'react-native';
 import {GddTracker} from './Types';
 import {GddSettings} from './Configuration';
 import {useState} from 'react';
-import {AppStackParamList, AppTabParamList} from './App';
-import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
-import {
-  createMaterialBottomTabNavigator,
-  MaterialBottomTabScreenProps,
-} from 'react-native-paper/react-navigation';
+import {HomeWeatherTabParamList, HomeWeatherTabScreenProps} from './Navigation';
+import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 import ViewWeatherScreen from './ViewWeather';
-import {CompositeScreenProps} from '@react-navigation/native';
 import React from 'react';
 
-type Props = CompositeScreenProps<
-  MaterialBottomTabScreenProps<AppTabParamList, 'Home'>,
-  StackScreenProps<AppStackParamList>
->;
-type PropsNavigation = Props['navigation'];
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
 
 type CardPropsParamList = {
   item: GddTracker;
   settings: GddSettings;
-  navigation: PropsNavigation;
+  navigation: HomeWeatherTabScreenProps<'Home'>['navigation'];
   onDelete: () => void;
   onReset: () => void;
 };
 
-function HomeWeatherScreen({
-  route: navigation,
-}: StackScreenProps<AppStackParamList, 'HomeWeather'>): React.JSX.Element {
+function HomeWeatherScreen(): React.JSX.Element {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -55,7 +43,10 @@ function HomeWeatherScreen({
   );
 }
 
-function HomeScreenCardList({route, navigation}: Props) {
+function HomeScreenCardList({
+  route,
+  navigation,
+}: HomeWeatherTabScreenProps<'Home'>) {
   const example_gdds: Array<GddTracker> = [
     {
       location: 'Perth',

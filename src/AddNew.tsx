@@ -10,17 +10,10 @@ import {
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from './Knowledge';
-import {StackScreenProps} from '@react-navigation/stack';
-import {CompositeScreenProps} from '@react-navigation/native';
-import {AppStackParamList, AppTabParamList} from './App';
 import {newGddTracker} from './Types';
+import {AppScreenProps} from './Navigation';
 
-type Props = CompositeScreenProps<
-  StackScreenProps<AppStackParamList>,
-  MaterialBottomTabScreenProps<AppTabParamList>
->;
-
-function AddNewScreen({navigation}: Props) {
+function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   const [name, setName] = React.useState('');
   const [desc, setDesc] = React.useState('');
   const [location, setLocation] = React.useState('');
@@ -103,7 +96,7 @@ function AddNewScreen({navigation}: Props) {
           mode="contained"
           // Button only shows if inputs are valid, so we know the Gdd object is safe to create.
           onPress={() => {
-            navigation.navigate('Home', {
+            navigation.navigate('HomeWeather', {
               screen: 'Home',
               params: {
                 add_gdd: newGddTracker(
