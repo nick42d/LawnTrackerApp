@@ -1,5 +1,5 @@
 import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
-import {FlatList, StyleSheet, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {GddTracker} from './Types';
 import {GddSettings} from './Configuration';
 import {useContext, useState} from 'react';
@@ -126,6 +126,12 @@ function HomeScreenCardList({
     <View style={{flex: 1}}>
       <FlatList
         data={example_gdds_state}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => console.log('onRefresh')}
+          />
+        }
         renderItem={({item}) => (
           <GddCard
             item={item}

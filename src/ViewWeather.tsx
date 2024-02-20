@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
-import {ScrollView} from 'react-native';
+import {RefreshControl, ScrollView} from 'react-native';
 import {calcGdd} from './Knowledge';
 import {WeatherContext} from './WeatherContext';
 import {T_BASE} from './Consts';
@@ -15,7 +15,13 @@ function ViewWeatherScreen(): React.JSX.Element {
     }));
   }
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={() => console.log('onRefresh')}
+        />
+      }>
       <Text>{weather.location}</Text>
       <List.Section>
         <List.Subheader>Weather</List.Subheader>

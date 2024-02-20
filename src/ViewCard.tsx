@@ -27,19 +27,23 @@ function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   }));
   const accum_gdds_data = accum_gdds.map(element => ({
     value: element,
+    dataPointText: Math.round(element).toString(),
   }));
   return (
     <View>
       <Text>{item.name}</Text>
-      <LineChart
-        data={accum_gdds_data}
-        isAnimated
-        curved
-        showScrollIndicator
-        secondaryData={daily_gdds_data}
-        secondaryLineConfig={{color: 'blue'}}
-        secondaryYAxis={{yAxisColor: 'blue'}}
-      />
+      <View style={{margin: 20, padding: 20}}>
+        <LineChart
+          data={accum_gdds_data}
+          isAnimated
+          curved
+          endSpacing={20}
+          showScrollIndicator
+          secondaryData={daily_gdds_data}
+          secondaryLineConfig={{color: 'blue'}}
+          secondaryYAxis={{yAxisColor: 'blue'}}
+        />
+      </View>
     </View>
   );
 }
