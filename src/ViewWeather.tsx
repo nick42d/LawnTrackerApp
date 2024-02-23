@@ -14,6 +14,16 @@ function ViewWeatherScreen(): React.JSX.Element {
       value: calcGdd(day.mintemp_c, day.maxtemp_c, T_BASE),
     }));
   }
+  function gdds_data_low() {
+    return weather.forecasts.map(day => ({
+      value: day.mintemp_c,
+    }));
+  }
+  function gdds_data_high() {
+    return weather.forecasts.map(day => ({
+      value: day.maxtemp_c,
+    }));
+  }
   return (
     <ScrollView
       refreshControl={
@@ -28,7 +38,19 @@ function ViewWeatherScreen(): React.JSX.Element {
         {weather.forecasts.map(gdd => (
           <List.Item title={gdd.date.toString()} description={gdd.mintemp_c} />
         ))}
-        <LineChart data={gdds_data()} isAnimated curved adjustToWidth />
+        <LineChart
+          // TODO: Don't hardcode the width, get it from the device...
+          width={320}
+          data={gdds_data()}
+          data2={gdds_data_low()}
+          data3={gdds_data_high()}
+          color1="green"
+          color2="blue"
+          color3="red"
+          isAnimated
+          curved
+          adjustToWidth
+        />
       </List.Section>
     </ScrollView>
   );

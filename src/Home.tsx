@@ -93,6 +93,13 @@ function HomeScreenCardList({
     },
   ];
   const [example_gdds_state, set_example_gdds_state] = useState(example_gdds);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    console.log('Refreshing Home screen');
+    setRefreshing(true);
+    setRefreshing(false);
+  }, []);
   React.useEffect(() => {
     // Does not handle IDs correctly.
     if (route.params?.add_gdd) {
@@ -127,10 +134,7 @@ function HomeScreenCardList({
       <FlatList
         data={example_gdds_state}
         refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={() => console.log('onRefresh')}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({item}) => (
           <GddCard
