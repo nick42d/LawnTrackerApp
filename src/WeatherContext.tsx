@@ -4,14 +4,17 @@ import {PERTH_LAT, PERTH_LONG} from './Consts';
 import {API_KEY} from '../apikey';
 
 export const WeatherContext = React.createContext({
-  location: 'loading',
-  forecasts: [
-    {
-      date: new Date('01-01-2001'),
-      maxtemp_c: 10,
-      mintemp_c: 20,
-    },
-  ],
+  data: {
+    location: 'loading',
+    forecasts: [
+      {
+        date: new Date('01-01-2001'),
+        maxtemp_c: 10,
+        mintemp_c: 20,
+      },
+    ],
+  },
+  refresh: () => {},
 });
 
 export const WeatherContextProvider = ({
@@ -28,15 +31,19 @@ export const WeatherContextProvider = ({
     ],
   });
   useEffect(() => {
-    fetchWeatherHistorical(
-      PERTH_LAT,
-      PERTH_LONG,
-      new Date('2024-2-1'),
-      new Date('2024-2-19'),
-    );
+    refresh_func();
     // Don't call useEffect if location hasn't changed.
     // Note, here this is called twice as location starts as 'loading' and then changes.
   }, []);
+  // Duplication...
+  const refresh_func = () => {
+    fetchWeatherHistorical(
+      PERTH_LAT,
+      PERTH_LONG,
+      new Date('2024-2-18'),
+      new Date('2024-2-30'),
+    );
+  };
   function fetchWeatherHistorical(
     lat: number,
     long: number,
@@ -55,7 +62,7 @@ export const WeatherContextProvider = ({
       .then(json => setWeather(apiHistoryToAppHistory(json)));
   }
   return (
-    <WeatherContext.Provider value={weather}>
+    <WeatherContext.Provider value={{data: weather, refresh: refresh_func}}>
       {children}
     </WeatherContext.Provider>
   );

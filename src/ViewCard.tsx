@@ -5,11 +5,11 @@ import {View} from 'react-native';
 import {WeatherContext} from './WeatherContext';
 import {AppScreenProps} from './Navigation';
 import {calcGdd} from './Knowledge';
-import {T_BASE} from './Consts';
+import {GRAPH_WIDTH, T_BASE} from './Consts';
 
 function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   const item = route.params.gddCard;
-  const daily_gdds = useContext(WeatherContext);
+  const {data: daily_gdds} = useContext(WeatherContext);
   const daily_gdds_filter = daily_gdds.forecasts.filter(
     this_item => this_item.date >= item.start_date,
   );
@@ -32,12 +32,12 @@ function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   return (
     <View>
       <Text>{item.name}</Text>
-      <View style={{margin: 20, padding: 20}}>
+      <View>
         <LineChart
           data={accum_gdds_data}
+          width={GRAPH_WIDTH}
           isAnimated
           curved
-          endSpacing={20}
           showScrollIndicator
           secondaryData={daily_gdds_data}
           secondaryLineConfig={{color: 'blue'}}

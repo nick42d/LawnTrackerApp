@@ -94,10 +94,12 @@ function HomeScreenCardList({
   ];
   const [example_gdds_state, set_example_gdds_state] = useState(example_gdds);
   const [refreshing, setRefreshing] = useState(false);
+  const {refresh} = React.useContext(WeatherContext);
 
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing Home screen');
     setRefreshing(true);
+    refresh();
     setRefreshing(false);
   }, []);
   React.useEffect(() => {
@@ -167,7 +169,7 @@ function GddCard({
 }: CardPropsParamList) {
   function calc_gdd_total() {
     const daily_gdds = useContext(WeatherContext);
-    const daily_gdds_filter = daily_gdds.forecasts.filter(
+    const daily_gdds_filter = daily_gdds.data.forecasts.filter(
       this_item => this_item.date >= item.start_date,
     );
     const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
