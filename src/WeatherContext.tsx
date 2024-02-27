@@ -3,7 +3,6 @@ import {
   WeatherApiHistory,
   WeatherAppHistory,
   apiHistoryToAppHistory,
-  dayGddStat,
 } from './Types';
 import {PERTH_LAT, PERTH_LONG} from './Consts';
 import {API_KEY} from '../apikey';
@@ -69,7 +68,7 @@ export const WeatherContextProvider = ({
       new Date(new Date().setDate(new Date().getDate() - 6)),
       new Date(),
     );
-    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 3);
+    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 2);
   };
   function addWeather(new_weather: WeatherAppHistory) {
     const new_min_day: Date = new_weather.forecasts.reduce<Date>(
@@ -92,13 +91,13 @@ export const WeatherContextProvider = ({
   function fetchWeatherForecast(lat: number, long: number, days: number) {
     console.log(`Attempting to fetch from API days:${days}`);
     fetch(
-      `http://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&days=${days}&hour=17&aqi=no`,
+      `https://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&days=${days}&hour=17&aqi=no`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
       .then(json => {
-        JSON.stringify(json);
         setForecast(apiHistoryToAppHistory(json));
-      });
+      })
+      .catch(err => console.log(err));
   }
   function fetchWeatherHistorical(
     lat: number,
@@ -112,17 +111,17 @@ export const WeatherContextProvider = ({
       `Attempting to fetch from API ${start_unix} ${end_unix} ${Date.now()}`,
     );
     fetch(
-      `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
+      `https://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
       .then(json => {
-        JSON.stringify(json);
         addWeather(apiHistoryToAppHistory(json));
-      });
+      })
+      .catch(err => console.log(err));
   }
   return (
     <WeatherContext.Provider
-      value={{historical: weather, forecast, refresh: refresh_func}}>
+      value={{historical: weather, forecast: forecast, refresh: refresh_func}}>
       {children}
     </WeatherContext.Provider>
   );
