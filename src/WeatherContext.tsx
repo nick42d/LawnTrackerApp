@@ -10,7 +10,17 @@ import {API_KEY} from '../apikey';
 import {WeatherAppForecast} from './Types';
 
 export const WeatherContext = React.createContext({
-  data: {
+  historical: {
+    location: 'loading',
+    forecasts: [
+      {
+        date: new Date('01-01-2001'),
+        maxtemp_c: 10,
+        mintemp_c: 20,
+      },
+    ],
+  },
+  forecast: {
     location: 'loading',
     forecasts: [
       {
@@ -36,6 +46,16 @@ export const WeatherContextProvider = ({
       },
     ],
   });
+  const [forecast, setForecast] = React.useState({
+    location: 'loading',
+    forecasts: [
+      {
+        date: new Date('01-01-2001'),
+        maxtemp_c: 10,
+        mintemp_c: 20,
+      },
+    ],
+  });
   useEffect(() => {
     refresh_func();
     // Don't call useEffect if location hasn't changed.
@@ -46,7 +66,7 @@ export const WeatherContextProvider = ({
     fetchWeatherHistorical(
       PERTH_LAT,
       PERTH_LONG,
-      new Date(new Date().setDate(new Date().getDate() - 7)),
+      new Date(new Date().setDate(new Date().getDate() - 6)),
       new Date(),
     );
     fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 3);
@@ -75,7 +95,10 @@ export const WeatherContextProvider = ({
       `http://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&days=${days}&hour=17&aqi=no`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
-      .then(json => console.log(JSON.stringify(json)));
+      .then(json => {
+        JSON.stringify(json);
+        setForecast(apiHistoryToAppHistory(json));
+      });
   }
   function fetchWeatherHistorical(
     lat: number,
@@ -92,10 +115,14 @@ export const WeatherContextProvider = ({
       `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
-      .then(json => addWeather(apiHistoryToAppHistory(json)));
+      .then(json => {
+        JSON.stringify(json);
+        addWeather(apiHistoryToAppHistory(json));
+      });
   }
   return (
-    <WeatherContext.Provider value={{data: weather, refresh: refresh_func}}>
+    <WeatherContext.Provider
+      value={{historical: weather, forecast, refresh: refresh_func}}>
       {children}
     </WeatherContext.Provider>
   );

@@ -103,10 +103,15 @@ function HomeScreenCardList({
     setRefreshing(false);
   }, []);
   React.useEffect(() => {
-    // Does not handle IDs correctly.
     if (route.params?.add_gdd) {
       const example_gdds_state_temp = example_gdds_state;
-      example_gdds_state_temp.push(route.params.add_gdd);
+      // Loose method to handle ids
+      const max_cur_id = example_gdds_state.reduce((acc, cur) => {
+        return Math.max(acc, cur.id);
+      }, 0);
+      const gdd_to_add = route.params.add_gdd;
+      gdd_to_add.id = max_cur_id + 1;
+      example_gdds_state_temp.push(gdd_to_add);
       set_example_gdds_state(example_gdds_state_temp);
     }
   }, [route.params?.add_gdd]);
@@ -169,7 +174,7 @@ function GddCard({
 }: CardPropsParamList) {
   function calc_gdd_total() {
     const daily_gdds = useContext(WeatherContext);
-    const daily_gdds_filter = daily_gdds.data.forecasts.filter(
+    const daily_gdds_filter = daily_gdds.historical.forecasts.filter(
       this_item => this_item.date >= item.start_date,
     );
     const daily_gdds_arr = daily_gdds_filter.map(item_2 =>

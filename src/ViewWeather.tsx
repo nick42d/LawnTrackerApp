@@ -8,7 +8,7 @@ import {WeatherContext} from './WeatherContext';
 import {GRAPH_WIDTH, T_BASE} from './Consts';
 
 function ViewWeatherScreen(): React.JSX.Element {
-  const {data: weather} = useContext(WeatherContext);
+  const {historical: weather} = useContext(WeatherContext);
   const [refreshing, setRefreshing] = useState(false);
   const {refresh} = React.useContext(WeatherContext);
   const onRefresh = React.useCallback(() => {
