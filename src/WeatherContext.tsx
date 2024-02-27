@@ -66,6 +66,7 @@ export const WeatherContextProvider = ({
     );
     const weather_setter = weather;
     weather_setter.forecasts = combined_weather;
+    weather_setter.location = new_weather.location;
     setWeather(weather_setter);
   }
   function fetchWeatherForecast(
