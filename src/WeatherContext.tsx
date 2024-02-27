@@ -1,7 +1,13 @@
 import React, {useEffect} from 'react';
-import {WeatherApiHistory, apiHistoryToAppHistory, dayGddStat} from './Types';
+import {
+  WeatherApiHistory,
+  WeatherAppHistory,
+  apiHistoryToAppHistory,
+  dayGddStat,
+} from './Types';
 import {PERTH_LAT, PERTH_LONG} from './Consts';
 import {API_KEY} from '../apikey';
+import {WeatherAppForecast} from './Types';
 
 export const WeatherContext = React.createContext({
   data: {
@@ -40,10 +46,27 @@ export const WeatherContextProvider = ({
     fetchWeatherHistorical(
       PERTH_LAT,
       PERTH_LONG,
-      new Date('2024-2-18'),
-      new Date('2024-2-30'),
+      new Date(new Date().setDate(new Date().getDate() - 7)),
+      new Date(),
     );
   };
+  function addWeather(new_weather: WeatherAppHistory) {
+    const new_min_day: Date = new_weather.forecasts.reduce<Date>(
+      (acc: Date, cur: WeatherAppForecast) => {
+        return acc < cur.date ? acc : cur.date;
+      },
+      new Date(Date.now()),
+    );
+    const filtered_weather_days = weather.forecasts.filter(
+      cur => cur.date < new_min_day,
+    );
+    const combined_weather = filtered_weather_days.concat(
+      new_weather.forecasts,
+    );
+    const weather_setter = weather;
+    weather_setter.forecasts = combined_weather;
+    setWeather(weather_setter);
+  }
   function fetchWeatherHistorical(
     lat: number,
     long: number,
@@ -59,7 +82,7 @@ export const WeatherContextProvider = ({
       `http://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
-      .then(json => setWeather(apiHistoryToAppHistory(json)));
+      .then(json => addWeather(apiHistoryToAppHistory(json)));
   }
   return (
     <WeatherContext.Provider value={{data: weather, refresh: refresh_func}}>
