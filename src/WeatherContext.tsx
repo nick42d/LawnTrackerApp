@@ -49,7 +49,7 @@ export const WeatherContextProvider = ({
       new Date(new Date().setDate(new Date().getDate() - 7)),
       new Date(),
     );
-    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, new Date(), 3);
+    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 3);
   };
   function addWeather(new_weather: WeatherAppHistory) {
     const new_min_day: Date = new_weather.forecasts.reduce<Date>(
@@ -69,21 +69,13 @@ export const WeatherContextProvider = ({
     weather_setter.location = new_weather.location;
     setWeather(weather_setter);
   }
-  function fetchWeatherForecast(
-    lat: number,
-    long: number,
-    start: Date,
-    days: number,
-  ) {
-    const start_unix = Math.floor(start.getTime() / 1000);
-    console.log(
-      `Attempting to fetch from API start:${start_unix} days:${days}`,
-    );
+  function fetchWeatherForecast(lat: number, long: number, days: number) {
+    console.log(`Attempting to fetch from API days:${days}`);
     fetch(
-      `http://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&days=${days}&hour=17&aqi=no`,
+      `http://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&days=${days}&hour=17&aqi=no`,
     )
       .then(res => res.json() as Promise<WeatherApiHistory>)
-      .then(json => console.log(json.forecast.forecastday));
+      .then(json => console.log(JSON.stringify(json)));
   }
   function fetchWeatherHistorical(
     lat: number,
