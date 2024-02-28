@@ -68,7 +68,7 @@ export const WeatherContextProvider = ({
       new Date(new Date().setDate(new Date().getDate() - 6)),
       new Date(),
     );
-    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 2);
+    fetchWeatherForecast(PERTH_LAT, PERTH_LONG, 3);
   };
   function addWeather(new_weather: WeatherAppHistory) {
     const new_min_day: Date = new_weather.forecasts.reduce<Date>(

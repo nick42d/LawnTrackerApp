@@ -41,7 +41,9 @@ function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
       <View>
         <LineChart
           data={daily_concat}
-          lineSegments={[{startIndex: 7, endIndex: 9, strokeDashArray: [3, 3]}]}
+          lineSegments={[
+            {startIndex: 7, endIndex: 99, strokeDashArray: [3, 3]},
+          ]}
           width={GRAPH_WIDTH}
           showReferenceLine1
           referenceLine1Position={15}

@@ -46,12 +46,12 @@ function ViewWeatherScreen(): React.JSX.Element {
         <LineChart
           // TODO: Don't hardcode the width, get it from the device...
           width={GRAPH_WIDTH}
-          data={gdds_data()}
+          data={gdds_data_high()}
           data2={gdds_data_low()}
-          data3={gdds_data_high()}
-          color1="green"
+          data3={gdds_data()}
+          color1="red"
           color2="blue"
-          color3="red"
+          color3="green"
           isAnimated
           curved
           adjustToWidth

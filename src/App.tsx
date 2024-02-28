@@ -7,7 +7,7 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
-import {getHeaderTitle} from '@react-navigation/elements';
+import {HeaderButtonProps, getHeaderTitle} from '@react-navigation/elements';
 import {Appbar} from 'react-native-paper';
 import HomeWeatherScreen from './Home';
 import AddNewScreen from './AddNew';
@@ -52,13 +52,17 @@ function PaperStackNavigationBar({
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
       <Appbar.Content title={title} />
-      {route.name === 'ViewCard' || route.name === 'Add' ? (
-        <Appbar.Action
-          onPress={() => onDisplayNotification()}
-          icon="content-save"
-        />
-      ) : null}
+      {route.name === 'Add' ? SaveButton() : null}
     </Appbar.Header>
+  );
+}
+
+function SaveButton() {
+  return (
+    <Appbar.Action
+      onPress={() => onDisplayNotification()}
+      icon="content-save"
+    />
   );
 }
 
