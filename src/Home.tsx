@@ -186,7 +186,7 @@ function GddCard({
   return (
     <Card
       mode="elevated"
-      style={GetGddCardStyle(settings, actual_gdd, item.target_gdd)}
+      style={styles.listItem}
       onPress={() => {
         console.log('Pressed card');
         navigation.navigate('ViewCard', {
@@ -196,7 +196,13 @@ function GddCard({
       <Card.Title
         title={item.name}
         subtitle={item.description}
-        left={() => <Text variant="bodyLarge">{actual_gdd}</Text>}
+        left={() => (
+          <Text
+            variant="bodyLarge"
+            style={GetGddTitleStyle(settings, actual_gdd, item.target_gdd)}>
+            {actual_gdd}
+          </Text>
+        )}
       />
       <Card.Content>
         <Text>
@@ -232,18 +238,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
   },
-  listItemAmber: {
-    padding: 5,
-    marginVertical: 8,
-    marginHorizontal: 16,
+  cardTitleAmber: {
     backgroundColor: 'orange',
   },
-  listItemRed: {
-    padding: 5,
-    marginVertical: 8,
-    marginHorizontal: 16,
+  cardTitleRed: {
     backgroundColor: 'red',
   },
+  cardTitle: {},
   fabStyle: {
     bottom: 16,
     right: 16,
@@ -251,14 +252,14 @@ const styles = StyleSheet.create({
   },
 });
 
-function GetGddCardStyle(settings: GddSettings, cur: number, target: number) {
+function GetGddTitleStyle(settings: GddSettings, cur: number, target: number) {
   const progress = cur / target;
   if (progress >= 1) {
-    return styles.listItemRed;
+    return styles.cardTitleRed;
   } else if (progress >= settings.low_alert_threshold_perc) {
-    return styles.listItemAmber;
+    return styles.cardTitleAmber;
   } else {
-    return styles.listItem;
+    return styles.cardTitle;
   }
 }
 export default HomeWeatherScreen;
