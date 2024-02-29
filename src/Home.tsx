@@ -1,4 +1,4 @@
-import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
+import {Button, Card, Drawer, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {GddTracker} from './Types';
 import {GddSettings} from './Configuration';
@@ -10,8 +10,10 @@ import React from 'react';
 import {WeatherContext} from './WeatherContext';
 import {calcGdd} from './Knowledge';
 import {T_BASE} from './Consts';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
+const DrawerNavigator = createDrawerNavigator();
 
 type CardPropsParamList = {
   item: GddTracker;
@@ -20,6 +22,39 @@ type CardPropsParamList = {
   onDelete: () => void;
   onReset: () => void;
 };
+
+function DrawerContent(props: any): React.JSX.Element {
+  return (
+    <View>
+      <Drawer.Section>
+        <Drawer.Item icon="home" label="Home" />
+      </Drawer.Section>
+      <Drawer.Item icon="cog" label="Settings" />
+      <Drawer.Item icon="help-circle-outline" label="Help" />
+    </View>
+  );
+}
+
+function HomeWeatherDrawerWrapper() {
+  return (
+    <DrawerNavigator.Navigator
+      initialRouteName="HomeWeather"
+      drawerContent={props => <DrawerContent {...props} />}>
+      <DrawerNavigator.Screen
+        name="HomeWeather"
+        component={HomeWeatherScreen}
+      />
+    </DrawerNavigator.Navigator>
+  );
+}
+
+function OptsScreen() {
+  return (
+    <View>
+      <Text>Opts</Text>
+    </View>
+  );
+}
 
 function HomeWeatherScreen(): React.JSX.Element {
   return (
@@ -262,4 +297,4 @@ function GetGddTitleStyle(settings: GddSettings, cur: number, target: number) {
     return styles.cardTitle;
   }
 }
-export default HomeWeatherScreen;
+export default HomeWeatherDrawerWrapper;
