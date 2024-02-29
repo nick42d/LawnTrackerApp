@@ -23,14 +23,26 @@ type CardPropsParamList = {
   onReset: () => void;
 };
 
-function DrawerContent(props: any): React.JSX.Element {
+function DrawerContent({navigation}: any): React.JSX.Element {
   return (
     <View>
       <Drawer.Section>
-        <Drawer.Item icon="home" label="Home" />
+        <Drawer.Item
+          icon="home"
+          label="Home"
+          onPress={() => navigation.navigate('Home')}
+        />
       </Drawer.Section>
-      <Drawer.Item icon="cog" label="Settings" />
-      <Drawer.Item icon="help-circle-outline" label="Help" />
+      <Drawer.Item
+        icon="cog"
+        label="Settings"
+        onPress={() => navigation.navigate('Settings')}
+      />
+      <Drawer.Item
+        icon="help-circle-outline"
+        label="Help"
+        onPress={() => console.log('Pressed Help')}
+      />
     </View>
   );
 }
@@ -44,14 +56,15 @@ function HomeWeatherDrawerWrapper() {
         name="HomeWeather"
         component={HomeWeatherScreen}
       />
+      <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
     </DrawerNavigator.Navigator>
   );
 }
 
-function OptsScreen() {
+function SettingsScreen() {
   return (
     <View>
-      <Text>Opts</Text>
+      <Text>Settings</Text>
     </View>
   );
 }
