@@ -1,4 +1,13 @@
-import {Button, Card, Drawer, FAB, Icon, Text} from 'react-native-paper';
+import {
+  Button,
+  Card,
+  Drawer,
+  FAB,
+  Icon,
+  List,
+  Switch,
+  Text,
+} from 'react-native-paper';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {GddTracker} from './Types';
 import {GddSettings} from './Configuration';
@@ -24,8 +33,15 @@ type CardPropsParamList = {
 };
 
 function DrawerContent({navigation}: any): React.JSX.Element {
+  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+  function onToggleSwitch() {
+    setIsSwitchOn(!isSwitchOn);
+  }
+
   return (
     <View>
+      <Text>Dark Mode</Text>
+      <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
       <Drawer.Section>
         <Drawer.Item
           icon="home"
@@ -64,7 +80,16 @@ function HomeWeatherDrawerWrapper() {
 function SettingsScreen() {
   return (
     <View>
-      <Text>Settings</Text>
+      <List.Section>
+        <List.Subheader>Settings</List.Subheader>
+        <List.Item title="Locations" />
+        <List.Item title="Algorithm" />
+        <List.Item title="Unit of measure" />
+        <List.Item
+          title="API Key"
+          description="Enter your weatherapi.com API"
+        />
+      </List.Section>
     </View>
   );
 }
