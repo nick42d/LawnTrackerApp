@@ -3,10 +3,10 @@ import {
   WeatherApiHistory,
   WeatherAppHistory,
   apiHistoryToAppHistory,
-} from './Types';
-import {PERTH_LAT, PERTH_LONG} from './Consts';
-import {API_KEY} from '../apikey';
-import {WeatherAppForecast} from './Types';
+} from '../Types';
+import {PERTH_LAT, PERTH_LONG} from '../Consts';
+import {API_KEY} from '../../apikey';
+import {WeatherAppForecast} from '../Types';
 
 export const WeatherContext = React.createContext({
   historical: {

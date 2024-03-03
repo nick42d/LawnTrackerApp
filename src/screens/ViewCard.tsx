@@ -2,10 +2,10 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
-import {WeatherContext} from './WeatherContext';
+import {WeatherContext} from '../providers/WeatherContext';
 import {AppScreenProps} from './Navigation';
-import {calcGdd} from './Knowledge';
-import {GRAPH_WIDTH, T_BASE} from './Consts';
+import {calcGdd} from '../Knowledge';
+import {GRAPH_WIDTH, T_BASE} from '../Consts';
 
 function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
   const item = route.params.gddCard;

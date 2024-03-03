@@ -9,8 +9,8 @@ import {
 } from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from './Knowledge';
-import {newGddTracker} from './Types';
+import {BASE_TEMPS_C} from '../Knowledge';
+import {newGddTracker} from '../Types';
 import {AppScreenProps} from './Navigation';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {

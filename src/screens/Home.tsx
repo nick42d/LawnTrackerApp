@@ -1,69 +1,30 @@
-import {
-  Button,
-  Card,
-  Drawer,
-  FAB,
-  Icon,
-  List,
-  Switch,
-  Text,
-} from 'react-native-paper';
+import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import {GddTracker} from './Types';
-import {GddSettings} from './Configuration';
+import {GddTracker} from '../Types';
 import {useContext, useState} from 'react';
 import {HomeWeatherTabParamList, HomeWeatherTabScreenProps} from './Navigation';
 import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 import ViewWeatherScreen from './ViewWeather';
 import React from 'react';
-import {WeatherContext} from './WeatherContext';
-import {calcGdd} from './Knowledge';
-import {T_BASE} from './Consts';
+import {WeatherContext} from '../providers/WeatherContext';
+import {calcGdd} from '../Knowledge';
+import {T_BASE} from '../Consts';
+import {SettingsContext} from '../providers/SettingsContext';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {DrawerContent} from '../navigation/Drawer';
+import SettingsScreen from './Settings';
 
 const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
 const DrawerNavigator = createDrawerNavigator();
 
 type CardPropsParamList = {
   item: GddTracker;
-  settings: GddSettings;
   navigation: HomeWeatherTabScreenProps<'Home'>['navigation'];
   onDelete: () => void;
   onReset: () => void;
 };
 
-function DrawerContent({navigation}: any): React.JSX.Element {
-  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
-  function onToggleSwitch() {
-    setIsSwitchOn(!isSwitchOn);
-  }
-
-  return (
-    <View>
-      <Text>Dark Mode</Text>
-      <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
-      <Drawer.Section>
-        <Drawer.Item
-          icon="home"
-          label="Home"
-          onPress={() => navigation.navigate('Home')}
-        />
-      </Drawer.Section>
-      <Drawer.Item
-        icon="cog"
-        label="Settings"
-        onPress={() => navigation.navigate('Settings')}
-      />
-      <Drawer.Item
-        icon="help-circle-outline"
-        label="Help"
-        onPress={() => console.log('Pressed Help')}
-      />
-    </View>
-  );
-}
-
-function HomeWeatherDrawerWrapper() {
+export function HomeWeatherDrawerWrapper() {
   return (
     <DrawerNavigator.Navigator
       initialRouteName="HomeWeather"
@@ -77,24 +38,7 @@ function HomeWeatherDrawerWrapper() {
   );
 }
 
-function SettingsScreen() {
-  return (
-    <View>
-      <List.Section>
-        <List.Subheader>Settings</List.Subheader>
-        <List.Item title="Locations" />
-        <List.Item title="Algorithm" />
-        <List.Item title="Unit of measure" />
-        <List.Item
-          title="API Key"
-          description="Enter your weatherapi.com API"
-        />
-      </List.Section>
-    </View>
-  );
-}
-
-function HomeWeatherScreen(): React.JSX.Element {
+export function HomeWeatherScreen(): React.JSX.Element {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -203,12 +147,6 @@ function HomeScreenCardList({
     set_example_gdds_state(new_state);
   }
 
-  let example_settings: GddSettings = {
-    low_alert_threshold_perc: 0.8,
-    algorithm: 1,
-    unit_of_measure: 1,
-  };
-
   return (
     <View style={{flex: 1}}>
       <FlatList
@@ -219,7 +157,6 @@ function HomeScreenCardList({
         renderItem={({item}) => (
           <GddCard
             item={item}
-            settings={example_settings}
             navigation={navigation}
             onDelete={() => deleteId(item.id)}
             onReset={() => resetId(item.id)}
@@ -238,13 +175,7 @@ function HomeScreenCardList({
   );
 }
 
-function GddCard({
-  item,
-  onReset,
-  onDelete,
-  settings,
-  navigation,
-}: CardPropsParamList) {
+function GddCard({item, onReset, onDelete, navigation}: CardPropsParamList) {
   function calc_gdd_total() {
     const daily_gdds = useContext(WeatherContext);
     const daily_gdds_filter = daily_gdds.historical.forecasts.filter(
@@ -256,6 +187,7 @@ function GddCard({
     return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
   }
   const actual_gdd = calc_gdd_total();
+  const settings = useContext(SettingsContext);
   return (
     <Card
       mode="elevated"
@@ -272,7 +204,11 @@ function GddCard({
         left={() => (
           <Text
             variant="bodyLarge"
-            style={GetGddTitleStyle(settings, actual_gdd, item.target_gdd)}>
+            style={GetGddTitleStyle(
+              settings.warning_threshold_perc,
+              actual_gdd,
+              item.target_gdd,
+            )}>
             {actual_gdd}
           </Text>
         )}
@@ -325,14 +261,17 @@ const styles = StyleSheet.create({
   },
 });
 
-function GetGddTitleStyle(settings: GddSettings, cur: number, target: number) {
+function GetGddTitleStyle(
+  warning_threshold_perc: number,
+  cur: number,
+  target: number,
+) {
   const progress = cur / target;
   if (progress >= 1) {
     return styles.cardTitleRed;
-  } else if (progress >= settings.low_alert_threshold_perc) {
+  } else if (progress >= warning_threshold_perc) {
     return styles.cardTitleAmber;
   } else {
     return styles.cardTitle;
   }
 }
-export default HomeWeatherDrawerWrapper;

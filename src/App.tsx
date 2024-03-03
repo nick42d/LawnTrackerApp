@@ -7,40 +7,50 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import type {StackHeaderProps} from '@react-navigation/stack';
-import {HeaderButtonProps, getHeaderTitle} from '@react-navigation/elements';
-import {Appbar} from 'react-native-paper';
-import AddNewScreen from './AddNew';
-import ViewCardScreen from './ViewCard';
+import {getHeaderTitle} from '@react-navigation/elements';
+import {Appbar, MD3DarkTheme, withTheme} from 'react-native-paper';
+import AddNewScreen from './screens/AddNew';
+import ViewCardScreen from './screens/ViewCard';
 import {onDisplayNotification} from './Notification';
-import {RootStackParamList} from './Navigation';
-import {WeatherContextProvider} from './WeatherContext';
-import HomeWeatherDrawerWrapper from './Home';
+import {RootStackParamList} from './screens/Navigation';
+import {WeatherContextProvider} from './providers/WeatherContext';
+import {HomeWeatherDrawerWrapper} from './screens/Home';
+import {SettingsContextProvider} from './providers/SettingsContext';
 
 const Stack = createStackNavigator<RootStackParamList>();
+
 function App(): React.JSX.Element {
   return (
     // TODO: Where to put safe area? May be implicit in PaperProvider already?
-    <WeatherContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="HomeWeather"
-          screenOptions={{
-            header: props => <PaperStackNavigationBar {...props} />,
-          }}>
-          <Stack.Screen
-            name="HomeWeather"
-            component={HomeWeatherDrawerWrapper}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen name="Add" component={AddNewScreen} />
-          <Stack.Screen name="ViewCard" component={ViewCardScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </WeatherContextProvider>
+    <SettingsContextProvider>
+      <WeatherContextProvider>
+        <AppRootStackNavigator />
+      </WeatherContextProvider>
+    </SettingsContextProvider>
   );
 }
 
-function PaperStackNavigationBar({
+function AppRootStackNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="HomeWeather"
+        screenOptions={{
+          header: props => <AppStackNavigationBar {...props} />,
+        }}>
+        <Stack.Screen
+          name="HomeWeather"
+          component={HomeWeatherDrawerWrapper}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen name="Add" component={AddNewScreen} />
+        <Stack.Screen name="ViewCard" component={ViewCardScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function AppStackNavigationBar({
   navigation,
   back,
   route,

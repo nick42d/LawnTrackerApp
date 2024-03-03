@@ -3,9 +3,9 @@ import {Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {RefreshControl, ScrollView} from 'react-native';
-import {calcGdd} from './Knowledge';
-import {WeatherContext} from './WeatherContext';
-import {GRAPH_WIDTH, T_BASE} from './Consts';
+import {calcGdd} from '../Knowledge';
+import {WeatherContext} from '../providers//WeatherContext';
+import {GRAPH_WIDTH, T_BASE} from '../Consts';
 
 function ViewWeatherScreen(): React.JSX.Element {
   const {historical: weather} = useContext(WeatherContext);
