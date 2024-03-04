@@ -1,18 +1,54 @@
 import React, {useContext, useState} from 'react';
-import {Text} from 'react-native-paper';
+import {FAB, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
-import {RefreshControl, ScrollView} from 'react-native';
+import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import {calcGdd} from '../Knowledge';
 import {WeatherContext} from '../providers//WeatherContext';
 import {GRAPH_WIDTH, T_BASE} from '../Consts';
+import styles from '../Styles';
+import {mockLocations} from '../Mock';
+import {LocationsCard} from '../Components';
+import {HomeWeatherTabScreenProps} from '../navigation/Root';
 
-function ViewWeatherScreen(): React.JSX.Element {
+export default function LocationsScreen({
+  navigation,
+}: HomeWeatherTabScreenProps<'Locations'>): React.JSX.Element {
+  const [locations, setLocations] = useState(mockLocations());
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    console.log('Refreshing on Locations screen');
+    setRefreshing(true);
+    setRefreshing(false);
+  }, []);
+  return (
+    <View style={{flex: 1}}>
+      <FlatList
+        data={locations}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        renderItem={({item}) => (
+          <LocationsCard location={item} navigation={navigation} />
+        )}
+      />
+      <FAB
+        icon={'plus'}
+        onPress={() => {
+          console.log('Pressed plus button on locations screen');
+        }}
+        style={[styles.fabStyle]}
+      />
+    </View>
+  );
+}
+
+function ViewWeather() {
   const {historical: weather} = useContext(WeatherContext);
   const [refreshing, setRefreshing] = useState(false);
   const {refresh} = React.useContext(WeatherContext);
   const onRefresh = React.useCallback(() => {
-    console.log('Refreshing Home screen');
+    console.log('Refreshing on Locations screen');
     setRefreshing(true);
     refresh();
     setRefreshing(false);
@@ -60,5 +96,3 @@ function ViewWeatherScreen(): React.JSX.Element {
     </ScrollView>
   );
 }
-
-export default ViewWeatherScreen;

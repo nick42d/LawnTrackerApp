@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import {List, MD3DarkTheme} from 'react-native-paper';
+import {List, MD3DarkTheme, Switch} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {gddAlgorithmToText, unitOfMeasureToText} from '../state/State';
 
@@ -24,8 +24,17 @@ export default function SettingsScreen() {
       />
       <List.Item
         onPress={() => {}}
+        title="Dark mode"
+        description={'Will not turn off automatically'}
+        right={() => <Switch value={settings.dark_mode_enabled} />}
+      />
+      <List.Item
+        onPress={() => {}}
         title="Auto dark mode"
-        description={JSON.stringify(settings.auto_dark_mode)}
+        description={
+          'Whether system settings will automatically put app into dark mode'
+        }
+        right={() => <Switch value={settings.auto_dark_mode} />}
       />
       <List.Item
         onPress={() => {}}

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Button,
   Divider,
+  HelperText,
   MaterialBottomTabScreenProps,
   SegmentedButtons,
   Text,
@@ -11,7 +12,8 @@ import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
-import {AppScreenProps} from './Navigation';
+import {AppScreenProps} from '../navigation/Root';
+import {MAX_HISTORY_DAYS} from '../Consts';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   const [name, setName] = React.useState('');
@@ -26,6 +28,9 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
     setAddButtonDisabled(!validateInput());
   }, [name, location, startDate, target, desc, toggle]);
 
+  function dateInRange(): boolean {
+    return false;
+  }
   function validateInput(): boolean {
     if (name.length === 0) {
       return false;
@@ -66,6 +71,9 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           onChange={d => setStartDate(d as Date)}
           inputMode="start"
         />
+        <HelperText type="error" visible={!dateInRange()}>
+          Date too far in the past - minimum range {MAX_HISTORY_DAYS}
+        </HelperText>
         <TextInput
           label="Location"
           value={location}

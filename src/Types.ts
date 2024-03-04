@@ -1,66 +1,62 @@
+import {UnitOfMeasure, WeatherAppForecast} from './state/State';
+
 // Dummying up Ids currently...
 export function newGddTracker(
   name: string,
   description: string,
-  location: string,
+  location_name: string,
   target_gdd: number,
   base_temp: number,
   start_date: Date,
 ): GddTracker {
   const ret: GddTracker = {
-    location,
+    location_name,
     description,
     name,
     target_gdd,
     base_temp,
     start_date,
-    id: 0,
-    temp_cur_gdd: 0,
   };
   return ret;
 }
+
+// TODO: Change to unix date
 export type GddTracker = {
   name: string;
   description: string;
   target_gdd: number;
   base_temp: number;
   start_date: Date;
-  // TODO: Location library
-  location: string;
-  // Temporary value to mock current GDD
-  // Replace with: Calculation of GDD given weather stats from API
-  // Or cache of the same
-  temp_cur_gdd: number;
-  id: number;
+  location_name: string;
 };
 
-export type WeatherAppHistory = {
-  location: string;
-  forecasts: WeatherAppForecast[];
+export type DailyWeatherStat = {
+  result: number | undefined;
+  // Date class as number
+  date_unix: number;
+  stat_type: WeatherStatType | undefined;
+  unit_of_measure: UnitOfMeasure;
 };
 
-export type WeatherAppForecast = {
-  date: Date;
-  maxtemp_c: number;
-  mintemp_c: number;
-};
+export enum WeatherStatType {
+  Historical,
+  Forecast,
+  Projection,
+}
 
 export type dayGddStat = {
   gdd: number;
   date: Date;
 };
 
-export function apiHistoryToAppHistory(
+export function apiHistoryToAppForecast(
   api: WeatherApiHistory,
-): WeatherAppHistory {
-  return {
-    location: api.location.name,
-    forecasts: api.forecast.forecastday.map(day => ({
-      date: new Date(day.date),
-      maxtemp_c: day.day.maxtemp_c,
-      mintemp_c: day.day.mintemp_c,
-    })),
-  };
+): WeatherAppForecast[] {
+  return api.forecast.forecastday.map(day => ({
+    date_unix: day.date_epoch,
+    maxtemp_c: day.day.maxtemp_c,
+    mintemp_c: day.day.mintemp_c,
+  }));
 }
 
 export type WeatherApiHistory = {

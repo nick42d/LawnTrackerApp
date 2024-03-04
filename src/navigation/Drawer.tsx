@@ -10,8 +10,6 @@ export function DrawerContent({navigation}: any): React.JSX.Element {
 
   return (
     <View>
-      <Text>Dark Mode</Text>
-      <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
       <Drawer.Section>
         <Drawer.Item
           icon="home"

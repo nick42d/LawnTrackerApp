@@ -46,3 +46,29 @@ export enum BaseTemp {
   Zero = 0,
   Ten = 10,
 }
+
+export type Location = {
+  name: string;
+  latitude: number;
+  longitude: number;
+  weather: Weather;
+};
+
+export type Weather = {
+  historical: WeatherAppForecast[] | undefined;
+  today: WeatherCondition | undefined;
+  forecast: WeatherAppForecast[] | undefined;
+};
+
+export type WeatherAppForecast = {
+  date_unix: number;
+  maxtemp_c: number;
+  mintemp_c: number;
+};
+
+export type WeatherCondition = {
+  // TODO: Add enum for condition
+  icon_url: string;
+  code: number;
+  description: string;
+};
