@@ -10,16 +10,13 @@ import {
   StackScreenProps,
   createStackNavigator,
 } from '@react-navigation/stack';
-import {DrawerContent, createDrawerNavigator} from '@react-navigation/drawer';
 import {getHeaderTitle} from '@react-navigation/elements';
 import {onDisplayNotification} from '../Notification';
 import AddNewScreen from '../screens/AddNew';
 import ViewCardScreen from '../screens/ViewCard';
-import {HomeWeatherScreen} from './Tab';
-import SettingsScreen from '../screens/Settings';
+import {AppDrawerNavigator} from './Drawer';
 
 const Stack = createStackNavigator<RootStackParamList>();
-const DrawerNavigator = createDrawerNavigator();
 
 export type RootStackParamList = {
   HomeWeather: NavigatorScreenParams<HomeWeatherTabParamList>;
@@ -58,20 +55,6 @@ export function AppRootStackNavigator() {
         <Stack.Screen name="ViewCard" component={ViewCardScreen} />
       </Stack.Navigator>
     </NavigationContainer>
-  );
-}
-
-export function AppDrawerNavigator() {
-  return (
-    <DrawerNavigator.Navigator
-      initialRouteName="HomeWeather"
-      drawerContent={props => <DrawerContent {...props} />}>
-      <DrawerNavigator.Screen
-        name="HomeWeather"
-        component={HomeWeatherScreen}
-      />
-      <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
-    </DrawerNavigator.Navigator>
   );
 }
 

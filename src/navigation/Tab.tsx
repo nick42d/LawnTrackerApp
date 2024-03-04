@@ -6,7 +6,7 @@ import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigat
 
 const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
 
-export function HomeWeatherScreen(): React.JSX.Element {
+export function AppTabNavigator(): React.JSX.Element {
   return (
     <Tab.Navigator>
       <Tab.Screen

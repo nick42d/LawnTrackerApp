@@ -33,6 +33,7 @@ export const LocationsContextProvider = ({
       locations.map(async location =>
         addWeatherToLocation(
           location,
+          // NOTE: Currently doesn't happen concurrently as we don't join the promises.
           await fetchWeatherHistorical(
             location.latitude,
             location.longitude,
