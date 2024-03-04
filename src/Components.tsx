@@ -114,7 +114,7 @@ export function GddCard({
           Projected end date: tbc
         </Text>
         <Text>
-          <Icon source="calculator" size={20} />
+          <Icon source="chart-timeline-variant-shimmer" size={20} />
           Projection type: tbc
         </Text>
       </Card.Content>
