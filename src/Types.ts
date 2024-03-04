@@ -1,4 +1,9 @@
-import {UnitOfMeasure, WeatherAppForecast} from './state/State';
+import {
+  UnitOfMeasure,
+  WeatherAppForecast,
+  WeatherAppHistory,
+  WeatherCondition,
+} from './state/State';
 
 // Dummying up Ids currently...
 export function newGddTracker(
@@ -48,6 +53,32 @@ export type dayGddStat = {
   gdd: number;
   date: Date;
 };
+
+function apiForecastDayToAppCondition(
+  day: WeatherApiForecastDay,
+): WeatherCondition {
+  return {
+    code: day.day.condition.code,
+    description: day.day.condition.text,
+    icon_url: day.day.condition.icon,
+  };
+}
+
+export function apiHistoryToAppHistory(
+  api: WeatherApiHistory,
+): WeatherAppHistory | void {
+  const len = api.forecast.forecastday.length;
+  if (len === 0) return;
+  return {
+    historical: api.forecast.forecastday.map(day => ({
+      date_unix: day.date_epoch,
+      maxtemp_c: day.day.maxtemp_c,
+      mintemp_c: day.day.mintemp_c,
+    })),
+    // Safe index - guarded above
+    current: apiForecastDayToAppCondition(api.forecast.forecastday[len - 1]),
+  };
+}
 
 export function apiHistoryToAppForecast(
   api: WeatherApiHistory,

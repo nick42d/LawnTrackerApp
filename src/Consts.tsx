@@ -6,5 +6,5 @@ export const T_BASE = 10;
 // Hardcoded - TODO: Device specific
 export const GRAPH_WIDTH = 300;
 // Specific to weatherapi.com
-export const MAX_HISTORY_DAYS = 7;
+export const MAX_HISTORY_DAYS = 6;
 export const MAX_FORECAST_DAYS = 3;

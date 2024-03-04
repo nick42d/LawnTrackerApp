@@ -1,7 +1,7 @@
 import {Button, Card, FAB, Icon, Text} from 'react-native-paper';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import React, {useState} from 'react';
-import {WeatherContext} from '../providers/WeatherContext';
+import {LocationsContext} from '../providers/LocationsContext';
 import {mockGddTrackers} from '../Mock';
 import {GddCard} from '../Components';
 import {HomeWeatherTabScreenProps} from '../navigation/Root';
@@ -13,7 +13,7 @@ export default function HomeScreen({
 }: HomeWeatherTabScreenProps<'Home'>) {
   const [gddTrackers, setGddTrackers] = useState(mockGddTrackers());
   const [refreshing, setRefreshing] = useState(false);
-  const {refresh} = React.useContext(WeatherContext);
+  const {refresh} = React.useContext(LocationsContext);
 
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing Home screen');

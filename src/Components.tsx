@@ -1,11 +1,11 @@
 import {useContext} from 'react';
 import {GddTracker} from './Types';
-import {WeatherContext} from './providers/WeatherContext';
+import {LocationsContext} from './providers/LocationsContext';
 import {calcGdd} from './Knowledge';
 import {T_BASE} from './Consts';
 import {SettingsContext} from './providers/SettingsContext';
 import {Button, Card, Icon, Text} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import {Location} from './state/State';
 import {HomeWeatherTabScreenProps} from './navigation/Root';
 import * as central_styles from './Styles';
@@ -33,7 +33,14 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
       <Card.Title
         title={location.name}
         subtitle={location.weather.today?.description}
-        left={() => <Text>20</Text>}
+        left={() => (
+          <Text>{location.weather.historical?.pop()?.maxtemp_c}°</Text>
+        )}
+        right={() => (
+          <Image
+            source={require('../assets/weather_icons/64x64/day/353.png')}
+          />
+        )}
       />
       <Card.Content>
         <Text>
@@ -60,9 +67,10 @@ export function GddCard({
   navigation,
 }: CardPropsParamList) {
   function calc_gdd_total() {
-    const daily_gdds = useContext(WeatherContext);
-    const daily_gdds_filter = daily_gdds.historical.forecasts.filter(
-      this_item => this_item.date >= item.start_date,
+    const locations = useContext(LocationsContext);
+    if (locations.locations[0].weather.historical === undefined) return 0;
+    const daily_gdds_filter = locations.locations[0].weather.historical.filter(
+      this_item => this_item.date_unix >= item.start_date.getTime(),
     );
     const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
       calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),

@@ -47,6 +47,12 @@ export enum BaseTemp {
   Ten = 10,
 }
 
+export type LocationsState = {
+  locations: Location[];
+  refresh: (() => void) | undefined;
+  addLocation: ((loc: Location) => void) | undefined;
+};
+
 export type Location = {
   name: string;
   latitude: number;
@@ -58,6 +64,11 @@ export type Weather = {
   historical: WeatherAppForecast[] | undefined;
   today: WeatherCondition | undefined;
   forecast: WeatherAppForecast[] | undefined;
+};
+
+export type WeatherAppHistory = {
+  historical: WeatherAppForecast[];
+  current: WeatherCondition;
 };
 
 export type WeatherAppForecast = {
