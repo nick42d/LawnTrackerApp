@@ -30,11 +30,9 @@ export const LocationsContextProvider = ({
   }, []);
   function refresh() {
     Promise.all(
-      locations.map(async location =>
-        addWeatherToLocation(
-          location,
-          // NOTE: Currently doesn't happen concurrently as we don't join the promises.
-          await fetchWeatherHistorical(
+      locations.map(async location => {
+        const weatherFuture = await Promise.all([
+          fetchWeatherHistorical(
             location.latitude,
             location.longitude,
             new Date(
@@ -42,13 +40,18 @@ export const LocationsContextProvider = ({
             ),
             new Date(),
           ),
-          await fetchWeatherForecast(
+          fetchWeatherForecast(
             location.latitude,
             location.longitude,
             MAX_FORECAST_DAYS,
           ),
-        ),
-      ),
+        ]);
+        return addWeatherToLocation(
+          location,
+          weatherFuture[0],
+          weatherFuture[1],
+        );
+      }),
     ).then(locations_tmp => {
       console.log('Received response, setting locations');
       setLocations(locations_tmp);
