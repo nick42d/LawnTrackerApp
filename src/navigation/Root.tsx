@@ -2,9 +2,14 @@ import {
   CompositeScreenProps,
   NavigationContainer,
   NavigatorScreenParams,
+  Theme,
 } from '@react-navigation/native';
 import {GddTracker} from '../Types';
-import {Appbar, MaterialBottomTabScreenProps} from 'react-native-paper';
+import {
+  Appbar,
+  MaterialBottomTabScreenProps,
+  useTheme,
+} from 'react-native-paper';
 import {
   StackHeaderProps,
   StackScreenProps,
@@ -39,8 +44,9 @@ export type HomeWeatherTabScreenProps<T extends keyof HomeWeatherTabParamList> =
   >;
 
 export function AppRootStackNavigator() {
+  const paperTheme = useTheme<Theme>();
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={paperTheme}>
       <Stack.Navigator
         initialRouteName="HomeWeather"
         screenOptions={{
