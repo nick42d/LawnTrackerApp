@@ -70,7 +70,7 @@ export function GddCard({
     const locations = useContext(LocationsContext);
     if (locations.locations[0].weather.historical === undefined) return 0;
     const daily_gdds_filter = locations.locations[0].weather.historical.filter(
-      this_item => this_item.date_unix >= item.start_date.getTime(),
+      this_item => this_item.date_unix >= item.start_date_unix,
     );
     const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
       calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
@@ -115,7 +115,7 @@ export function GddCard({
         </Text>
         <Text>
           <Icon source="calendar-start" size={20} />
-          Start date: {item.start_date.toDateString()}
+          Start date: {new Date(item.start_date_unix).toDateString()}
         </Text>
         <Text>
           <Icon source="calendar-end" size={20} />

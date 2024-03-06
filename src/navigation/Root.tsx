@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import {
   StackHeaderProps,
+  StackNavigationProp,
   StackScreenProps,
   createStackNavigator,
 } from '@react-navigation/stack';
@@ -33,6 +34,9 @@ export type HomeWeatherTabParamList = {
   Home: {add_gdd: GddTracker} | undefined;
   Locations: undefined;
 };
+
+export type AppScreenNavigationProp<T extends keyof RootStackParamList> =
+  StackNavigationProp<RootStackParamList, T>;
 
 export type AppScreenProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;

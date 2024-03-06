@@ -20,7 +20,7 @@ export function newGddTracker(
     name,
     target_gdd,
     base_temp,
-    start_date,
+    start_date_unix: start_date.valueOf(),
   };
   return ret;
 }
@@ -31,7 +31,7 @@ export type GddTracker = {
   description: string;
   target_gdd: number;
   base_temp: number;
-  start_date: Date;
+  start_date_unix: number;
   location_name: string;
 };
 

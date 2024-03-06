@@ -18,11 +18,17 @@ export default function HomeScreen({
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing Home screen');
     setRefreshing(true);
-    refresh();
+    if (refresh !== undefined) {
+      refresh();
+    } else {
+      console.log('Refresh callback not set, doing nothing');
+    }
     setRefreshing(false);
   }, []);
   React.useEffect(() => {
+    console.log('Reloading Home');
     if (route.params?.add_gdd) {
+      console.log(`Adding ${route.params.add_gdd}`);
       const gddTrackersTemp = gddTrackers;
       const gdd_to_add = route.params.add_gdd;
       gddTrackersTemp.push(gdd_to_add);

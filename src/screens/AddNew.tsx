@@ -1,10 +1,8 @@
 import React from 'react';
 import {
   Appbar,
-  Button,
   Divider,
   HelperText,
-  MaterialBottomTabScreenProps,
   SegmentedButtons,
   Text,
   TextInput,
@@ -13,11 +11,10 @@ import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
-import {AppScreenProps, RootStackParamList} from '../navigation/Root';
+import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
 import {MAX_HISTORY_DAYS} from '../Consts';
 import {onDisplayNotification} from '../Notification';
 import {GddTracker} from '../Types';
-import {StackNavigationProp} from '@react-navigation/stack';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   const [name, setName] = React.useState('');
@@ -26,10 +23,8 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   const [target, setTarget] = React.useState('');
   const [toggle, setToggle] = React.useState('0');
   const [startDate, setStartDate] = React.useState(new Date());
-  const [addButtonDisabled, setAddButtonDisabled] = React.useState(true);
 
   React.useEffect(() => {
-    setAddButtonDisabled(!validateInput());
     navigation.setOptions({
       headerRight: () =>
         SaveButton(
@@ -122,7 +117,7 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
 
 function SaveButton(
   disabled: boolean,
-  {navigation}: AppScreenProps<'Add'>,
+  navigation: AppScreenNavigationProp<'Add'>,
   new_props: GddTracker,
 ) {
   return (
