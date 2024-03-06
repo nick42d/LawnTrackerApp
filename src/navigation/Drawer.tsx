@@ -7,7 +7,6 @@ import {View} from 'react-native';
 import {Appbar, Drawer, Switch, Text} from 'react-native-paper';
 import {AppTabNavigator} from './Tab';
 import SettingsScreen from '../screens/Settings';
-import {AppStackNavigationBar} from './Root';
 import {getHeaderTitle} from '@react-navigation/elements';
 
 const DrawerNavigator = createDrawerNavigator();

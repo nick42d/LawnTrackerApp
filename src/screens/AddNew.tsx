@@ -12,7 +12,7 @@ import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
-import {AppScreenProps} from '../navigation/Root';
+import {AppScreenProps, SaveButton} from '../navigation/Root';
 import {MAX_HISTORY_DAYS} from '../Consts';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
@@ -26,6 +26,7 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
 
   React.useEffect(() => {
     setAddButtonDisabled(!validateInput());
+    navigation.setOptions({headerRight: () => SaveButton(!validateInput())});
   }, [name, location, startDate, target, desc, toggle]);
 
   function dateInRange(): boolean {
@@ -104,7 +105,7 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           mode="contained"
           // Button only shows if inputs are valid, so we know the Gdd object is safe to create.
           onPress={() => {
-            navigation.navigate('HomeWeather', {
+            navigation.navigate('Drawer', {
               screen: 'Home',
               params: {
                 add_gdd: newGddTracker(

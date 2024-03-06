@@ -24,7 +24,7 @@ import {AppDrawerNavigator} from './Drawer';
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
-  HomeWeather: NavigatorScreenParams<HomeWeatherTabParamList>;
+  Drawer: NavigatorScreenParams<HomeWeatherTabParamList>;
   Add: undefined;
   ViewCard: {gddCard: GddTracker};
 };
@@ -48,12 +48,12 @@ export function AppRootStackNavigator() {
   return (
     <NavigationContainer theme={paperTheme}>
       <Stack.Navigator
-        initialRouteName="HomeWeather"
+        initialRouteName="Drawer"
         screenOptions={{
           header: props => <AppStackNavigationBar {...props} />,
         }}>
         <Stack.Screen
-          name="HomeWeather"
+          name="Drawer"
           component={AppDrawerNavigator}
           options={{headerShown: false}}
         />
@@ -75,15 +75,16 @@ function AppStackNavigationBar({
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
       <Appbar.Content title={title} />
-      {route.name === 'Add' ? SaveButton() : null}
+      {options.headerRight ? options.headerRight({}) : null}
     </Appbar.Header>
   );
 }
 
-function SaveButton() {
+export function SaveButton(disabled: boolean) {
   return (
     <Appbar.Action
       onPress={() => onDisplayNotification()}
+      disabled={disabled}
       icon="content-save"
     />
   );
