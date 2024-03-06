@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Appbar,
   Button,
   Divider,
   HelperText,
@@ -12,8 +13,11 @@ import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
-import {AppScreenProps, SaveButton} from '../navigation/Root';
+import {AppScreenProps, RootStackParamList} from '../navigation/Root';
 import {MAX_HISTORY_DAYS} from '../Consts';
+import {onDisplayNotification} from '../Notification';
+import {GddTracker} from '../Types';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   const [name, setName] = React.useState('');
@@ -26,7 +30,21 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
 
   React.useEffect(() => {
     setAddButtonDisabled(!validateInput());
-    navigation.setOptions({headerRight: () => SaveButton(!validateInput())});
+    navigation.setOptions({
+      headerRight: () =>
+        SaveButton(
+          !validateInput(),
+          navigation,
+          newGddTracker(
+            name,
+            desc,
+            location,
+            Number(target),
+            Number(toggle),
+            startDate,
+          ),
+        ),
+    });
   }, [name, location, startDate, target, desc, toggle]);
 
   function dateInRange(): boolean {
@@ -79,7 +97,6 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           label="Location"
           value={location}
           onChangeText={location => setLocation(location)}
-          // TODO: Better icon
           left={<TextInput.Icon icon="map-marker" />}
         />
         <Divider />
@@ -87,7 +104,6 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           label="Target"
           value={target}
           onChangeText={target => setTarget(target)}
-          // TODO: Better icon
           left={<TextInput.Icon icon="target" />}
         />
         <Text>Base Temp</Text>
@@ -99,30 +115,31 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
             label: el.toString(),
           }))}
         />
-        <Button
-          disabled={addButtonDisabled}
-          icon="plus-box"
-          mode="contained"
-          // Button only shows if inputs are valid, so we know the Gdd object is safe to create.
-          onPress={() => {
-            navigation.navigate('Drawer', {
-              screen: 'Home',
-              params: {
-                add_gdd: newGddTracker(
-                  name,
-                  desc,
-                  location,
-                  Number(target),
-                  Number(toggle),
-                  startDate,
-                ),
-              },
-            });
-          }}>
-          Add
-        </Button>
       </View>
     </ScrollView>
+  );
+}
+
+function SaveButton(
+  disabled: boolean,
+  {navigation}: AppScreenProps<'Add'>,
+  new_props: GddTracker,
+) {
+  return (
+    <Appbar.Action
+      onPress={() => {
+        console.log('Save button on Add screen pressed');
+        onDisplayNotification();
+        navigation.navigate('Drawer', {
+          screen: 'Home',
+          params: {
+            add_gdd: new_props,
+          },
+        });
+      }}
+      disabled={disabled}
+      icon="content-save"
+    />
   );
 }
 

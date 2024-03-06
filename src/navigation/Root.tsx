@@ -79,13 +79,3 @@ function AppStackNavigationBar({
     </Appbar.Header>
   );
 }
-
-export function SaveButton(disabled: boolean) {
-  return (
-    <Appbar.Action
-      onPress={() => onDisplayNotification()}
-      disabled={disabled}
-      icon="content-save"
-    />
-  );
-}
