@@ -1,10 +1,10 @@
-import {HomeWeatherTabParamList} from './Root';
+import {HomeLocationsTabParamList} from './Root';
 import {Icon} from 'react-native-paper';
 import LocationsScreen from '../screens/Locations';
 import HomeScreen from '../screens/Home';
 import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigation';
 
-const Tab = createMaterialBottomTabNavigator<HomeWeatherTabParamList>();
+const Tab = createMaterialBottomTabNavigator<HomeLocationsTabParamList>();
 
 export function AppTabNavigator(): React.JSX.Element {
   return (

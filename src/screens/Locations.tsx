@@ -9,11 +9,11 @@ import {GRAPH_WIDTH, T_BASE} from '../Consts';
 import styles from '../Styles';
 import {mockLocations} from '../Mock';
 import {LocationsCard} from '../Components';
-import {HomeWeatherTabScreenProps} from '../navigation/Root';
+import {HomeLocationsTabScreenProps} from '../navigation/Root';
 
 export default function LocationsScreen({
   navigation,
-}: HomeWeatherTabScreenProps<'Locations'>): React.JSX.Element {
+}: HomeLocationsTabScreenProps<'Locations'>): React.JSX.Element {
   const locations = useContext(LocationsContext);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = React.useCallback(() => {

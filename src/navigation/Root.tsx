@@ -21,16 +21,22 @@ import {onDisplayNotification} from '../Notification';
 import AddNewScreen from '../screens/AddNew';
 import ViewCardScreen from '../screens/ViewCard';
 import {AppDrawerNavigator} from './Drawer';
+import {DrawerScreenProps} from '@react-navigation/drawer';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
-  Drawer: NavigatorScreenParams<HomeWeatherTabParamList>;
+  Drawer: NavigatorScreenParams<AppDrawerParamList>;
   Add: undefined;
   ViewCard: {gddCard: GddTracker};
 };
 
-export type HomeWeatherTabParamList = {
+export type AppDrawerParamList = {
+  HomeLocationsTabs: NavigatorScreenParams<HomeLocationsTabParamList>;
+  Settings: undefined;
+};
+
+export type HomeLocationsTabParamList = {
   Home: {add_gdd: GddTracker} | undefined;
   Locations: undefined;
 };
@@ -41,11 +47,18 @@ export type AppScreenNavigationProp<T extends keyof RootStackParamList> =
 export type AppScreenProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;
 
-export type HomeWeatherTabScreenProps<T extends keyof HomeWeatherTabParamList> =
+export type AppDrawerScreenProps<T extends keyof AppDrawerParamList> =
   CompositeScreenProps<
-    MaterialBottomTabScreenProps<HomeWeatherTabParamList, T>,
+    DrawerScreenProps<AppDrawerParamList, T>,
     StackScreenProps<RootStackParamList>
   >;
+
+export type HomeLocationsTabScreenProps<
+  T extends keyof HomeLocationsTabParamList,
+> = CompositeScreenProps<
+  MaterialBottomTabScreenProps<HomeLocationsTabParamList, T>,
+  StackScreenProps<RootStackParamList>
+>;
 
 export function AppRootStackNavigator() {
   const paperTheme = useTheme<Theme>();

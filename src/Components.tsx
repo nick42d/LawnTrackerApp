@@ -7,19 +7,19 @@ import {SettingsContext} from './providers/SettingsContext';
 import {Button, Card, Icon, Text} from 'react-native-paper';
 import {Image, StyleSheet} from 'react-native';
 import {Location} from './state/State';
-import {HomeWeatherTabScreenProps} from './navigation/Root';
+import {HomeLocationsTabScreenProps} from './navigation/Root';
 import * as central_styles from './Styles';
 
 type CardPropsParamList = {
   item: GddTracker;
-  navigation: HomeWeatherTabScreenProps<'Home'>['navigation'];
+  navigation: HomeLocationsTabScreenProps<'Home'>['navigation'];
   onDelete: () => void;
   onReset: () => void;
 };
 
 type LocationsCardProps = {
   location: Location;
-  navigation: HomeWeatherTabScreenProps<'Locations'>['navigation'];
+  navigation: HomeLocationsTabScreenProps<'Locations'>['navigation'];
 };
 
 export function LocationsCard({location, navigation}: LocationsCardProps) {

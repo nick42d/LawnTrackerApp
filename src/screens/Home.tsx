@@ -4,13 +4,13 @@ import React, {useState} from 'react';
 import {LocationsContext} from '../providers/LocationsContext';
 import {mockGddTrackers} from '../Mock';
 import {GddCard} from '../Components';
-import {HomeWeatherTabScreenProps} from '../navigation/Root';
+import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import styles from '../Styles';
 
 export default function HomeScreen({
   route,
   navigation,
-}: HomeWeatherTabScreenProps<'Home'>) {
+}: HomeLocationsTabScreenProps<'Home'>) {
   const [gddTrackers, setGddTrackers] = useState(mockGddTrackers());
   const [refreshing, setRefreshing] = useState(false);
   const {refresh} = React.useContext(LocationsContext);
