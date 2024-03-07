@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Appbar,
   Divider,
   HelperText,
+  MD3DarkTheme,
+  MD3LightTheme,
   SegmentedButtons,
   Text,
   TextInput,
+  useTheme,
 } from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
@@ -15,14 +18,22 @@ import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
 import {MAX_HISTORY_DAYS} from '../Consts';
 import {onDisplayNotification} from '../Notification';
 import {GddTracker} from '../Types';
+import {LocationsContext} from '../providers/LocationsContext';
+import {PaperSelect} from 'react-native-paper-select';
 
 function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
-  const [name, setName] = React.useState('');
-  const [desc, setDesc] = React.useState('');
-  const [location, setLocation] = React.useState('');
-  const [target, setTarget] = React.useState('');
-  const [toggle, setToggle] = React.useState('0');
-  const [startDate, setStartDate] = React.useState(new Date());
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [target, setTarget] = useState('');
+  const [toggle, setToggle] = useState('0');
+  const [startDate, setStartDate] = useState(new Date());
+  const {locations} = useContext(LocationsContext);
+  const [pickableLocations, setPickableLocations] = useState({
+    value: '',
+    list: locations.map((loc, idx) => ({_id: idx.toString(), value: loc.name})),
+    selectedList: new Array(),
+    error: '',
+  });
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -33,29 +44,39 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           newGddTracker(
             name,
             desc,
-            location,
+            pickableLocations.value,
             Number(target),
             Number(toggle),
             startDate,
           ),
         ),
     });
-  }, [name, location, startDate, target, desc, toggle]);
+  }, [name, pickableLocations.value, startDate, target, desc, toggle]);
 
   function dateInRange(): boolean {
     return false;
   }
+  function locationSelected(): boolean {
+    return pickableLocations.value.length !== 0;
+  }
+  function nameEntered(): boolean {
+    return name.length !== 0;
+  }
+  function targetEntered(): boolean {
+    return !(isNaN(Number(target)) || target.length === 0);
+  }
+
   function validateInput(): boolean {
-    if (name.length === 0) {
+    if (!nameEntered()) {
       return false;
     }
-    if (location.length === 0) {
+    if (!locationSelected()) {
       return false;
     }
     if (startDate === new Date()) {
       return false;
     }
-    if (isNaN(Number(target)) || target.length === 0) {
+    if (!targetEntered()) {
       return false;
     }
     return true;
@@ -70,6 +91,9 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           value={name}
           onChangeText={name => setName(name)}
         />
+        <HelperText type="error" visible={!nameEntered()}>
+          Name must be entered
+        </HelperText>
         <TextInput
           label="Description"
           value={desc}
@@ -88,12 +112,24 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
         <HelperText type="error" visible={!dateInRange()}>
           Date too far in the past - minimum range {MAX_HISTORY_DAYS}
         </HelperText>
-        <TextInput
-          label="Location"
-          value={location}
-          onChangeText={location => setLocation(location)}
-          left={<TextInput.Icon icon="map-marker" />}
+        <PaperSelect
+          label="Select location"
+          value={pickableLocations.value}
+          onSelection={value => {
+            setPickableLocations({
+              ...pickableLocations,
+              value: value.text,
+              selectedList: value.selectedList,
+              error: '',
+            });
+          }}
+          arrayList={[...pickableLocations.list]}
+          selectedArrayList={pickableLocations.selectedList}
+          multiEnable={false}
         />
+        <HelperText type="error" visible={!locationSelected()}>
+          Location must be selected
+        </HelperText>
         <Divider />
         <TextInput
           label="Target"
@@ -101,6 +137,9 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
           onChangeText={target => setTarget(target)}
           left={<TextInput.Icon icon="target" />}
         />
+        <HelperText type="error" visible={!nameEntered()}>
+          Number must be entered as a Target
+        </HelperText>
         <Text>Base Temp</Text>
         <SegmentedButtons
           value={toggle}
