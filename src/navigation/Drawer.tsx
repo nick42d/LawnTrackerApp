@@ -14,10 +14,13 @@ const DrawerNavigator = createDrawerNavigator();
 export function AppDrawerNavigator() {
   return (
     <DrawerNavigator.Navigator
-      initialRouteName="HomeWeather"
+      initialRouteName="HomeLocationsTabs"
       screenOptions={{header: props => <AppDrawerNavigationBar {...props} />}}
       drawerContent={props => <AppDrawerContent {...props} />}>
-      <DrawerNavigator.Screen name="HomeWeather" component={AppTabNavigator} />
+      <DrawerNavigator.Screen
+        name="HomeLocationsTabs"
+        component={AppTabNavigator}
+      />
       <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
     </DrawerNavigator.Navigator>
   );

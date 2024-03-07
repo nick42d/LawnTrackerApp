@@ -17,7 +17,6 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
-import {onDisplayNotification} from '../Notification';
 import AddNewScreen from '../screens/AddNew';
 import ViewCardScreen from '../screens/ViewCard';
 import {AppDrawerNavigator} from './Drawer';
@@ -50,14 +49,14 @@ export type AppScreenProps<T extends keyof RootStackParamList> =
 export type AppDrawerScreenProps<T extends keyof AppDrawerParamList> =
   CompositeScreenProps<
     DrawerScreenProps<AppDrawerParamList, T>,
-    StackScreenProps<RootStackParamList>
+    AppScreenProps<keyof RootStackParamList>
   >;
 
 export type HomeLocationsTabScreenProps<
   T extends keyof HomeLocationsTabParamList,
 > = CompositeScreenProps<
   MaterialBottomTabScreenProps<HomeLocationsTabParamList, T>,
-  StackScreenProps<RootStackParamList>
+  AppDrawerScreenProps<keyof AppDrawerParamList>
 >;
 
 export function AppRootStackNavigator() {

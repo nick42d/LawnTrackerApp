@@ -126,9 +126,12 @@ function SaveButton(
         console.log('Save button on Add screen pressed');
         onDisplayNotification();
         navigation.navigate('Drawer', {
-          screen: 'Home',
+          screen: 'HomeLocationsTabs',
           params: {
-            add_gdd: new_props,
+            screen: 'Home',
+            params: {
+              add_gdd: new_props,
+            },
           },
         });
       }}
