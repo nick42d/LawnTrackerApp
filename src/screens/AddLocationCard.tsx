@@ -61,8 +61,8 @@ export default function AddLocationCardScreen({
               params: {
                 add_location: {
                   name: 'test',
-                  latitude: coordinate[0],
-                  longitude: coordinate[1],
+                  latitude: coordinate[1],
+                  longitude: coordinate[0],
                 },
               },
             },
