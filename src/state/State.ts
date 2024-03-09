@@ -53,6 +53,8 @@ export type LocationsState = {
   addLocation: ((loc: Location) => void) | undefined;
 };
 
+export type AddLocation = Omit<Location, 'weather'>;
+
 export type Location = {
   name: string;
   latitude: number;

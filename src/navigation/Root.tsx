@@ -17,17 +17,21 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
-import AddNewScreen from '../screens/AddNew';
-import ViewCardScreen from '../screens/ViewCard';
+import AddGddCardScreen from '../screens/AddGddCard';
+import ViewGddCardScreen from '../screens/ViewGddCard';
 import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
+import {AddLocation, Location} from '../state/State';
+import AddLocationCardScreen from '../screens/AddLocationCard';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
   Drawer: NavigatorScreenParams<AppDrawerParamList>;
-  Add: undefined;
-  ViewCard: {gddCard: GddTracker};
+  AddGddCard: undefined;
+  AddLocationCard: undefined;
+  ViewGddCard: {gddCard: GddTracker};
+  ViewLocationCard: undefined;
 };
 
 export type AppDrawerParamList = {
@@ -37,7 +41,7 @@ export type AppDrawerParamList = {
 
 export type HomeLocationsTabParamList = {
   Home: {add_gdd: GddTracker} | undefined;
-  Locations: undefined;
+  Locations: {add_location: AddLocation} | undefined;
 };
 
 export type AppScreenNavigationProp<T extends keyof RootStackParamList> =
@@ -73,8 +77,12 @@ export function AppRootStackNavigator() {
           component={AppDrawerNavigator}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="Add" component={AddNewScreen} />
-        <Stack.Screen name="ViewCard" component={ViewCardScreen} />
+        <Stack.Screen name="AddGddCard" component={AddGddCardScreen} />
+        <Stack.Screen name="ViewGddCard" component={ViewGddCardScreen} />
+        <Stack.Screen
+          name="AddLocationCard"
+          component={AddLocationCardScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

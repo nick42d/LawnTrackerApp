@@ -85,7 +85,7 @@ export function GddCard({
       style={central_styles.default.listCard}
       onPress={() => {
         console.log('Pressed card');
-        navigation.navigate('ViewCard', {
+        navigation.navigate('ViewGddCard', {
           gddCard: item,
         });
       }}>

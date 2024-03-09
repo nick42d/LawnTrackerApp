@@ -18,7 +18,9 @@ import {
 } from 'react-native-paper';
 import {enGB, registerTranslation} from 'react-native-paper-dates';
 import merge from 'deepmerge';
+import MapLibreGL from '@maplibre/maplibre-react-native';
 
+MapLibreGL.setAccessToken(null);
 registerTranslation('en-GB', enGB);
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({

@@ -12,6 +12,7 @@ import {LocationsCard} from '../Components';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 
 export default function LocationsScreen({
+  route,
   navigation,
 }: HomeLocationsTabScreenProps<'Locations'>): React.JSX.Element {
   const locations = useContext(LocationsContext);
@@ -19,8 +20,33 @@ export default function LocationsScreen({
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing on Locations screen');
     setRefreshing(true);
+    if (locations.refresh !== undefined) {
+      locations.refresh();
+    } else {
+      console.log('Refresh callback not set, doing nothing');
+    }
     setRefreshing(false);
   }, []);
+
+  React.useEffect(() => {
+    if (route.params?.add_location) {
+      console.log(`Adding card to Home screen`);
+      const locationToAdd = route.params.add_location;
+      locations.addLocation
+        ? locations.addLocation({
+            name: locationToAdd.name,
+            latitude: locationToAdd.latitude,
+            longitude: locationToAdd.longitude,
+            weather: {
+              today: undefined,
+              historical: undefined,
+              forecast: undefined,
+            },
+          })
+        : console.log('No location to add');
+    }
+  }, [route.params?.add_location]);
+
   return (
     <View style={{flex: 1}}>
       <FlatList
@@ -36,6 +62,7 @@ export default function LocationsScreen({
         icon={'plus'}
         onPress={() => {
           console.log('Pressed plus button on locations screen');
+          navigation.navigate('AddLocationCard');
         }}
         style={[styles.fabStyle]}
       />

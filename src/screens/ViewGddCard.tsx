@@ -7,7 +7,9 @@ import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH, T_BASE} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
 
-function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
+export default function ViewGddCardScreen({
+  route,
+}: AppScreenProps<'ViewGddCard'>) {
   const item = route.params.gddCard;
   // const {locations} = useContext(LocationsContext);
   // if locations
@@ -58,5 +60,3 @@ function ViewCardScreen({route}: AppScreenProps<'ViewCard'>) {
     </View>
   );
 }
-
-export default ViewCardScreen;

@@ -28,7 +28,7 @@ export default function HomeScreen({
   React.useEffect(() => {
     console.log('Reloading Home');
     if (route.params?.add_gdd) {
-      console.log(`Adding ${route.params.add_gdd}`);
+      console.log(`Adding card to Home screen`);
       const gddTrackersTemp = gddTrackers;
       const gdd_to_add = route.params.add_gdd;
       gddTrackersTemp.push(gdd_to_add);
@@ -67,8 +67,8 @@ export default function HomeScreen({
       <FAB
         icon={'plus'}
         onPress={() => {
-          console.log('Pressed plus button');
-          navigation.navigate('Add');
+          console.log('Pressed plus button on Home screen');
+          navigation.navigate('AddGddCard');
         }}
         style={[styles.fabStyle]}
       />

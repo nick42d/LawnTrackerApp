@@ -20,8 +20,11 @@ import {onDisplayNotification} from '../Notification';
 import {GddTracker} from '../Types';
 import {LocationsContext} from '../providers/LocationsContext';
 import {PaperSelect} from 'react-native-paper-select';
+import SaveButton from '../components/SaveButton';
 
-function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
+export default function AddGddCardScreen({
+  navigation,
+}: AppScreenProps<'AddGddCard'>) {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [target, setTarget] = useState('');
@@ -38,18 +41,25 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        SaveButton(
-          !validateInput(),
-          navigation,
-          newGddTracker(
-            name,
-            desc,
-            pickableLocations.value,
-            Number(target),
-            Number(toggle),
-            startDate,
-          ),
-        ),
+        SaveButton(!validateInput(), () => {
+          navigation.navigate('Drawer', {
+            screen: 'HomeLocationsTabs',
+            params: {
+              screen: 'Home',
+              params: {
+                // Assume all fields are valid, as you can't click the button otherwise.
+                add_gdd: newGddTracker(
+                  name,
+                  desc,
+                  pickableLocations.value,
+                  Number(target),
+                  Number(toggle),
+                  startDate,
+                ),
+              },
+            },
+          });
+        }),
     });
   }, [name, pickableLocations.value, startDate, target, desc, toggle]);
 
@@ -153,31 +163,3 @@ function AddNewScreen({navigation}: AppScreenProps<'Add'>) {
     </ScrollView>
   );
 }
-
-function SaveButton(
-  disabled: boolean,
-  navigation: AppScreenNavigationProp<'Add'>,
-  new_props: GddTracker,
-) {
-  return (
-    <Appbar.Action
-      onPress={() => {
-        console.log('Save button on Add screen pressed');
-        onDisplayNotification();
-        navigation.navigate('Drawer', {
-          screen: 'HomeLocationsTabs',
-          params: {
-            screen: 'Home',
-            params: {
-              add_gdd: new_props,
-            },
-          },
-        });
-      }}
-      disabled={disabled}
-      icon="content-save"
-    />
-  );
-}
-
-export default AddNewScreen;
