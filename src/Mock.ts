@@ -8,6 +8,7 @@ import {
   UnitOfMeasure,
   BaseTemp,
   Location,
+  SettingsState,
 } from './state/State';
 
 export function defaultSettings(): Settings {

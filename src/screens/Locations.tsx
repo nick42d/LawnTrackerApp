@@ -26,7 +26,7 @@ export default function LocationsScreen({
       console.log('Refresh callback not set, doing nothing');
     }
     setRefreshing(false);
-  }, []);
+  }, [locations.refresh]);
 
   React.useEffect(() => {
     if (route.params?.add_location) {

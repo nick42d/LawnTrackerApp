@@ -1,8 +1,34 @@
 // File to contain functions that call weather api and process weather api
 import {API_KEY} from '../apikey';
-import {apiHistoryToAppForecast, apiHistoryToAppHistory} from './Types';
+import {
+  WeatherApiCurrent,
+  apiCurrentToAppCurrent,
+  apiHistoryToAppForecast,
+  apiHistoryToAppHistory,
+} from './Types';
 import {WeatherApiHistory} from './Types';
-import {Location, WeatherAppForecast, WeatherAppHistory} from './state/State';
+import {
+  Location,
+  WeatherAppCurrent,
+  WeatherAppForecast,
+  WeatherAppHistory,
+} from './state/State';
+
+export async function fetchWeatherCurrent(
+  lat: number,
+  long: number,
+): Promise<void | WeatherAppCurrent> {
+  console.log(`Attempting to fetch from API, current weather`);
+  return await fetch(
+    `https://api.weatherapi.com/v1/current.json?&key=${API_KEY}&q=${lat},${long}&aqi=no`,
+  )
+    // TODO: Not finished!!
+    .then(res => res.json() as Promise<WeatherApiCurrent>)
+    .then(json => apiCurrentToAppCurrent(json))
+    .catch(err =>
+      console.log(`Error receieved fetching current weather: ${err}`),
+    );
+}
 
 export async function fetchWeatherForecast(
   lat: number,

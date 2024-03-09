@@ -1,5 +1,11 @@
 // Module intended to contain state management logic for app.
 
+export type SettingsState = {
+  settings: Settings;
+  setDarkMode: ((value: boolean) => void) | undefined;
+  setAutoDarkMode: ((value: boolean) => void) | undefined;
+};
+
 export type Settings = {
   algorithm: GDDAlgorithm;
   warning_threshold_perc: number;
@@ -60,6 +66,10 @@ export type Location = {
   latitude: number;
   longitude: number;
   weather: Weather;
+};
+
+export type WeatherAppCurrent = {
+  location_name: string;
 };
 
 export type Weather = {

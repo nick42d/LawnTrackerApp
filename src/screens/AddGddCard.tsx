@@ -32,9 +32,9 @@ export default function AddGddCardScreen({
   const [startDate, setStartDate] = useState(new Date());
   const {locations} = useContext(LocationsContext);
   const [pickableLocations, setPickableLocations] = useState({
-    value: '',
+    value: locations[0].name,
     list: locations.map((loc, idx) => ({_id: idx.toString(), value: loc.name})),
-    selectedList: new Array(),
+    selectedList: [{_id: '0', value: locations[0].name}],
     error: '',
   });
 

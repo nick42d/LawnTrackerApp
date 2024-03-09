@@ -24,7 +24,7 @@ export default function HomeScreen({
       console.log('Refresh callback not set, doing nothing');
     }
     setRefreshing(false);
-  }, []);
+  }, [refresh]);
   React.useEffect(() => {
     console.log('Reloading Home');
     if (route.params?.add_gdd) {

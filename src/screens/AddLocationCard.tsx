@@ -1,6 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {
   Appbar,
+  Banner,
   Divider,
   FAB,
   HelperText,
@@ -29,6 +30,7 @@ import MapLibreGL, {
   MapView,
 } from '@maplibre/maplibre-react-native';
 import styles from '../Styles';
+import {fetchWeatherCurrent} from '../Api';
 
 const mapstyles = StyleSheet.create({
   page: {
@@ -46,21 +48,21 @@ const mapstyles = StyleSheet.create({
 export default function AddLocationCardScreen({
   navigation,
 }: AppScreenProps<'AddLocationCard'>): React.JSX.Element {
-  const [location, setLocation] = useState<Location>();
   const [coordinate, setCoordinate] = useState([0.5, 0.5]);
-  const [ref, setRef] = useState<MapView | null>();
+  const [locName, setLocName] = useState('');
+  const [locUndefined, setLocUndefined] = useState(true);
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
-        SaveButton(false, () => {
+        SaveButton(locUndefined, () => {
           navigation.navigate('Drawer', {
             screen: 'HomeLocationsTabs',
             params: {
               screen: 'Locations',
               params: {
                 add_location: {
-                  name: 'test',
+                  name: locName,
                   latitude: coordinate[1],
                   longitude: coordinate[0],
                 },
@@ -69,20 +71,26 @@ export default function AddLocationCardScreen({
           });
         }),
     });
-  }, [coordinate]);
+  }, [coordinate, locName, locUndefined]);
 
   return (
     <View style={mapstyles.page}>
       <MapLibreGL.MapView
-        ref={ref => {
-          setRef(ref);
-        }}
         style={mapstyles.map}
         logoEnabled={true}
         onPress={feat => {
           const coords = feat.geometry.coordinates;
           console.log(`Handling onPress on map, coords ${coords}`);
           setCoordinate(coords);
+          fetchWeatherCurrent(coords[1], coords[0]).then(res => {
+            if (res !== undefined) {
+              console.log(`Got location name: ${res.location_name}`);
+              setLocName(res.location_name);
+              setLocUndefined(false);
+            } else {
+              setLocUndefined(true);
+            }
+          });
           console.log(`Setting onPress on map, coords ${coordinate}`);
           // ref?.getPointInView(coords).then(point => {
           //   console.log(`Setting marker coords ${point}`);
@@ -99,20 +107,24 @@ export default function AddLocationCardScreen({
           //   })
           //   .catch(err => console.log(`Error ${err} received`));
         }}
-        onUserLocationUpdate={loc => {
-          setLocation(loc);
-          console.log(`set location to ${JSON.stringify(loc)}`);
-        }}
         styleURL="https://demotiles.maplibre.org/style.json">
-        <MapLibreGL.UserLocation />
-        <MapLibreGL.Camera centerCoordinate={[50, 50]} />
-        <MapLibreGL.MarkerView coordinate={coordinate}>
-          <View>
-            <Icon size={40} source="map-marker" />
-          </View>
-        </MapLibreGL.MarkerView>
-        <MapLibreGL.PointAnnotation id="pt-ann" coordinate={coordinate}>
-          <Icon size={40} source="camera" />
+        <MapLibreGL.UserLocation
+          onUpdate={loc =>
+            console.log(
+              `Received location change, set location to ${JSON.stringify(loc)}`,
+            )
+          }
+        />
+        <MapLibreGL.Camera centerCoordinate={coordinate} />
+        <MapLibreGL.PointAnnotation
+          id="pt-ann"
+          key="pt-ann"
+          coordinate={coordinate}
+          title="Location">
+          <Icon source="map-marker" size={40} />
+          <MapLibreGL.Callout
+            title={`${locName} ${coordinate[1].toFixed(4)}, ${coordinate[0].toFixed(4)}`}
+          />
         </MapLibreGL.PointAnnotation>
       </MapLibreGL.MapView>
     </View>

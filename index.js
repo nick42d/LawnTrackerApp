@@ -19,25 +19,14 @@ import {
 import {enGB, registerTranslation} from 'react-native-paper-dates';
 import merge from 'deepmerge';
 import MapLibreGL from '@maplibre/maplibre-react-native';
+import {SettingsContextProvider} from './src/providers/SettingsContext';
+import {useContext} from 'react';
 
 MapLibreGL.setAccessToken(null);
 registerTranslation('en-GB', enGB);
 
-const {LightTheme, DarkTheme} = adaptNavigationTheme({
-  reactNavigationLight: NavigationDefaultTheme,
-  reactNavigationDark: NavigationDarkTheme,
-});
-const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
-const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
-
 export default function Main() {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <PaperProvider
-      theme={isDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
-      <App />
-    </PaperProvider>
-  );
+  return <App />;
 }
 
 AppRegistry.registerComponent(appName, () => Main);

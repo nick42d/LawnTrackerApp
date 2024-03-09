@@ -1,17 +1,15 @@
-import {useContext} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {List, MD3DarkTheme, Switch} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {gddAlgorithmToText, unitOfMeasureToText} from '../state/State';
+import {AppDrawerScreenProps} from '../navigation/Root';
 
-export default function SettingsScreen() {
-  const settings = useContext(SettingsContext);
+export default function SettingsScreen({
+  route,
+}: AppDrawerScreenProps<'Settings'>) {
+  const {settings, setDarkMode, setAutoDarkMode} = useContext(SettingsContext);
   return (
     <List.Section>
-      <List.Item
-        onPress={() => {}}
-        title="Locations"
-        description="Coming soon"
-      />
       <List.Item
         onPress={() => {}}
         title="Algorithm"
@@ -26,7 +24,16 @@ export default function SettingsScreen() {
         onPress={() => {}}
         title="Dark mode"
         description={'Will not turn off automatically'}
-        right={() => <Switch value={settings.dark_mode_enabled} />}
+        right={() => (
+          <Switch
+            value={settings.dark_mode_enabled}
+            onValueChange={chg => {
+              if (setDarkMode !== undefined) {
+                setDarkMode(chg);
+              }
+            }}
+          />
+        )}
       />
       <List.Item
         onPress={() => {}}
@@ -34,7 +41,16 @@ export default function SettingsScreen() {
         description={
           'Whether system settings will automatically put app into dark mode'
         }
-        right={() => <Switch value={settings.auto_dark_mode} />}
+        right={() => (
+          <Switch
+            value={settings.auto_dark_mode}
+            onValueChange={chg => {
+              if (setAutoDarkMode !== undefined) {
+                setAutoDarkMode(chg);
+              }
+            }}
+          />
+        )}
       />
       <List.Item
         onPress={() => {}}

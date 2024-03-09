@@ -1,5 +1,6 @@
 import {
   UnitOfMeasure,
+  WeatherAppCurrent,
   WeatherAppForecast,
   WeatherAppHistory,
   WeatherCondition,
@@ -88,6 +89,11 @@ export function apiHistoryToAppForecast(
     maxtemp_c: day.day.maxtemp_c,
     mintemp_c: day.day.mintemp_c,
   }));
+}
+export function apiCurrentToAppCurrent(
+  api: WeatherApiCurrent,
+): WeatherAppCurrent {
+  return {location_name: api.location.name};
 }
 
 export type WeatherApiHistory = {
@@ -180,6 +186,26 @@ export type WeatherApiHour = {
   gust_kph: number;
   uv: number;
 };
+
+export type WeatherApiCurrent = {
+  location: WeatherApiLocation;
+  current: WeatherApiCurrentWeather;
+};
+export type WeatherApiCurrentWeather = Omit<
+  WeatherApiHour,
+  | 'time_epoch'
+  | 'time'
+  | 'windchill_c'
+  | 'windchill_f'
+  | 'heatindex_c'
+  | 'heatindex_f'
+  | 'dewpoint_c'
+  | 'dewpoint_f'
+  | 'feels_like_snow'
+  | 'will_it_snow'
+  | 'feels_like_rain'
+  | 'will_it_rain'
+>;
 
 export type WeatherApiCondition = {
   text: string;
