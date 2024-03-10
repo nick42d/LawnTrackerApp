@@ -1,5 +1,5 @@
-import {useContext, useEffect, useState} from 'react';
-import {List, MD3DarkTheme, Switch} from 'react-native-paper';
+import React, {useContext, useEffect, useState} from 'react';
+import {List, MD3DarkTheme, Switch, Text} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {gddAlgorithmToText, unitOfMeasureToText} from '../state/State';
 import {AppDrawerScreenProps} from '../navigation/Root';
@@ -55,14 +55,14 @@ export default function SettingsScreen({
       <List.Item
         onPress={() => {}}
         title="Default base temp"
-        // TODO: Show actual value, not enum number
-        description={settings.default_base_temp}
+        description="Default base temp to use when adding GDD trackers"
+        right={() => <Text>{settings.default_base_temp}</Text>}
       />
       <List.Item
         onPress={() => {}}
         title="Warning threshold percentage"
-        // TODO: Show actual value, not enum number
-        description={settings.warning_threshold_perc}
+        description="Percentage completion to trigger amber status"
+        right={() => <Text>{settings.warning_threshold_perc}</Text>}
       />
       <List.Item
         onPress={() => {}}

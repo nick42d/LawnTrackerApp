@@ -6,55 +6,111 @@ import {LocationsContext} from '../providers/LocationsContext';
 import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH, T_BASE} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
+import {GddTracker} from '../Types';
+import {Location, WeatherAppForecast} from '../state/State';
+
+const ESTIMATED_DAYS = 5;
+
+type GraphPlotItem = {value: number; label: string};
+type GddGraphPlot = {
+  items: GraphPlotItem[];
+  forecast_start: number;
+  estimate_start: number;
+};
+
+function listAverage(list: number[]): number {
+  if (list.length === 0) return 0;
+  return list.reduce((sum, acc) => acc + sum, 0) / list.length;
+}
+function forecastsToGddArr(
+  forecasts: WeatherAppForecast[] | undefined,
+  startDateUnix: number,
+  tBase: number,
+): number[] {
+  if (forecasts === undefined) return [];
+  return forecasts
+    .filter(x => x.date_unix >= startDateUnix)
+    .map(x => calcGdd(x.mintemp_c, x.maxtemp_c, tBase));
+}
+function getGraphPlot(
+  item: GddTracker,
+  locations: Location[],
+): GddGraphPlot | undefined {
+  const startDateUnix = item.start_date_unix_ms / 1000;
+  const tBase = item.base_temp;
+  const itemLocation = locations.find(loc => loc.name === item.location_name);
+  if (itemLocation === undefined) return undefined;
+  const history_gdd_arr = forecastsToGddArr(
+    itemLocation.weather.historical,
+    startDateUnix,
+    tBase,
+  );
+  const forecast_gdd_arr = forecastsToGddArr(
+    itemLocation.weather.forecast,
+    startDateUnix,
+    tBase,
+  );
+  const average_gdd = listAverage(history_gdd_arr.concat(forecast_gdd_arr));
+  const estimate_gdd_arr = Array(ESTIMATED_DAYS).fill(average_gdd);
+  const forecast_start = history_gdd_arr.length;
+  const estimate_start = forecast_start + forecast_gdd_arr.length;
+  let sum = 0;
+  const items: GraphPlotItem[] = history_gdd_arr
+    .concat(forecast_gdd_arr)
+    .concat(estimate_gdd_arr)
+    .map((x, i) => {
+      sum += x;
+      // TODO: Date here
+      return {value: sum, label: i.toString()};
+    });
+  return {items, forecast_start, estimate_start};
+}
 
 export default function ViewGddCardScreen({
   route,
 }: AppScreenProps<'ViewGddCard'>) {
   const {locations} = useContext(LocationsContext);
   const item = route.params.gddCard;
-  // if locations
-  // const daily_gdds_filter = daily_gdds.forecasts.filter(
-  //   this_item => this_item.date >= item.start_date,
-  // );
-  // const daily_gdds_arr = daily_gdds_filter.map(item_2 => ({
-  //   value: calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
-  //   label: item_2.date.getDate().toString(),
-  // }));
-  // const daily_forecast_arr = daily_forecast.forecasts.map(item_2 => ({
-  //   value: calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
-  //   label: item_2.date.getDate().toString(),
-  // }));
-  // const daily_concat = daily_gdds_arr.concat(daily_forecast_arr);
-  // // TODO: neaten
-  // const daily_gdds_values = daily_gdds_arr.map(ele => ele.value);
-  // const daily_gdds_acc = daily_gdds_values.map(
-  //   (
-  //     sum => value =>
-  //       (sum += value)
-  //   )(0),
-  // );
-  // const daily_gdds_acc_arr = daily_gdds_acc.map((val, idx) => ({
-  //   value: val,
-  //   label: daily_gdds_arr[idx].label,
-  // }));
+  const plot = getGraphPlot(item, locations);
+  const forecast_start = plot?.forecast_start as number;
+  const estimate_start = plot?.estimate_start as number;
+  const segments = [
+    {
+      startIndex: forecast_start - 1,
+      endIndex: estimate_start - 1,
+      strokeDashArray: [5, 5],
+    },
+    {
+      startIndex: estimate_start - 1,
+      endIndex: plot?.items.length as number,
+      strokeDashArray: [2, 6],
+    },
+  ];
+  const data = plot ? plot.items : [];
   return (
     <View>
       <Text>{item.name}</Text>
       <View>
         <LineChart
-        // data={daily_concat}
-        // lineSegments={[
-        //   {startIndex: 6, endIndex: 99, strokeDashArray: [3, 3]},
-        // ]}
-        // width={GRAPH_WIDTH}
-        // showReferenceLine1
-        // referenceLine1Position={15}
-        // isAnimated
-        // curved
-        // showScrollIndicator
-        // secondaryData={daily_gdds_acc_arr}
-        // secondaryLineConfig={{color: 'blue'}}
-        // secondaryYAxis={{yAxisColor: 'blue'}}
+          data={data}
+          lineSegments={segments}
+          width={GRAPH_WIDTH}
+          showReferenceLine1
+          referenceLine1Config={{
+            thickness: 3,
+            color: 'red',
+            dashWidth: 10,
+            dashGap: -10,
+          }}
+          referenceLine1Position={item.target_gdd}
+          isAnimated
+          curved
+          spacing={25}
+          thickness={3}
+          showScrollIndicator
+          color="green"
+          dataPointsColor="green"
+          hideDataPoints
         />
       </View>
     </View>

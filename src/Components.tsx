@@ -5,10 +5,12 @@ import {calcGdd} from './Knowledge';
 import {T_BASE} from './Consts';
 import {SettingsContext} from './providers/SettingsContext';
 import {Button, Card, Icon, Text} from 'react-native-paper';
-import {Image, StyleSheet} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {Location} from './state/State';
 import {HomeLocationsTabScreenProps} from './navigation/Root';
 import * as central_styles from './Styles';
+
+const TITLE_VARIANT = 'titleLarge';
 
 type CardPropsParamList = {
   item: GddTracker;
@@ -39,6 +41,7 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
       <Card.Title
         title={location.name}
         subtitle={location.weather.today?.description}
+        titleVariant={TITLE_VARIANT}
         left={() => (
           <Text>{location.weather.historical?.pop()?.maxtemp_c}°</Text>
         )}
@@ -76,7 +79,6 @@ function calc_gdd_total(
   item: GddTracker,
   locations: Location[],
 ): number | undefined {
-  console.log(`Calculating GDD total for ${item.name}`);
   let itemsLocation = locations.find(loc => loc.name === item.location_name);
   if (itemsLocation === undefined) return undefined;
   if (itemsLocation.weather.historical === undefined) return undefined;
@@ -86,10 +88,7 @@ function calc_gdd_total(
       this_item.date_unix >= item.start_date_unix_ms / 1000,
   );
   const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
-    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
-  );
-  console.log(
-    `Start date ${item.start_date_unix_ms} array ${JSON.stringify(itemsLocation.weather.historical)}`,
+    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, item.base_temp),
   );
   return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
 }
@@ -116,16 +115,23 @@ export function GddCard({
       <Card.Title
         title={item.name}
         subtitle={item.description}
+        titleVariant={TITLE_VARIANT}
         left={() => (
-          <Text
-            variant="bodyLarge"
-            style={GetGddTitleStyle(
-              settings.warning_threshold_perc,
-              actual_gdd as number,
-              item.target_gdd,
-            )}>
-            {actual_gdd}
-          </Text>
+          <View
+            style={{
+              borderRadius: 5,
+              ...GetGddTitleStyle(
+                settings.warning_threshold_perc,
+                actual_gdd as number,
+                item.target_gdd,
+              ),
+            }}>
+            <Text
+              style={{textAlign: 'center', textAlignVertical: 'center'}}
+              variant="bodyLarge">
+              {actual_gdd}
+            </Text>
+          </View>
         )}
       />
       <Card.Content>
