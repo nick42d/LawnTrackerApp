@@ -7,3 +7,5 @@ export const GRAPH_WIDTH = 300;
 // Specific to weatherapi.com
 export const MAX_HISTORY_DAYS = 6;
 export const MAX_FORECAST_DAYS = 3;
+// Harcoded - TODO: predictive
+export const ESTIMATED_DAYS = 7;

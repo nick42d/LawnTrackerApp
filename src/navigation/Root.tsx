@@ -23,6 +23,7 @@ import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {AddLocation, Location} from '../state/State';
 import AddLocationCardScreen from '../screens/AddLocationCard';
+import ViewLocationCardScreen from '../screens/ViewLocationCard';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -31,7 +32,7 @@ export type RootStackParamList = {
   AddGddCard: undefined;
   AddLocationCard: undefined;
   ViewGddCard: {gddCard: GddTracker};
-  ViewLocationCard: undefined;
+  ViewLocationCard: {location: Location};
 };
 
 export type AppDrawerParamList = {
@@ -80,6 +81,10 @@ export function AppRootStackNavigator() {
         />
         <Stack.Screen name="AddGddCard" component={AddGddCardScreen} />
         <Stack.Screen name="ViewGddCard" component={ViewGddCardScreen} />
+        <Stack.Screen
+          name="ViewLocationCard"
+          component={ViewLocationCardScreen}
+        />
         <Stack.Screen
           name="AddLocationCard"
           component={AddLocationCardScreen}

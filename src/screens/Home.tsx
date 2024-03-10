@@ -3,7 +3,7 @@ import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import React, {useState} from 'react';
 import {LocationsContext} from '../providers/LocationsContext';
 import {mockGddTrackers} from '../Mock';
-import {GddCard} from '../Components';
+import {GddCard} from '../components/GddCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import styles from '../Styles';
 

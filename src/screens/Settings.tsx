@@ -1,14 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {List, MD3DarkTheme, Switch, Text} from 'react-native-paper';
+import {Divider, List, MD3DarkTheme, Switch, Text} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {gddAlgorithmToText, unitOfMeasureToText} from '../state/State';
 import {AppDrawerScreenProps} from '../navigation/Root';
+import {View} from 'react-native';
 
 export default function SettingsScreen({
   route,
 }: AppDrawerScreenProps<'Settings'>) {
   const {settings, setDarkMode, setAutoDarkMode} = useContext(SettingsContext);
   return (
+    // TODO: ScrollView
     <List.Section>
       <List.Item
         onPress={() => {}}

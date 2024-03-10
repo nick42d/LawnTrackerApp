@@ -5,10 +5,10 @@ import {LineChart} from 'react-native-gifted-charts';
 import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import {calcGdd} from '../Knowledge';
 import {LocationsContext} from '../providers/LocationsContext';
-import {GRAPH_WIDTH, T_BASE} from '../Consts';
+import {GRAPH_WIDTH} from '../Consts';
 import styles from '../Styles';
 import {mockLocations} from '../Mock';
-import {LocationsCard} from '../Components';
+import {LocationsCard} from '../components/LocationsCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 
 export default function LocationsScreen({
