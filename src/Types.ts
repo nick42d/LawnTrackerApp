@@ -21,18 +21,17 @@ export function newGddTracker(
     name,
     target_gdd,
     base_temp,
-    start_date_unix: start_date.valueOf(),
+    start_date_unix_ms: start_date.valueOf(),
   };
   return ret;
 }
 
-// TODO: Change to unix date
 export type GddTracker = {
   name: string;
   description: string;
   target_gdd: number;
   base_temp: number;
-  start_date_unix: number;
+  start_date_unix_ms: number;
   location_name: string;
 };
 

@@ -72,25 +72,37 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
   );
 }
 
+function calc_gdd_total(
+  item: GddTracker,
+  locations: Location[],
+): number | undefined {
+  console.log(`Calculating GDD total for ${item.name}`);
+  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  if (itemsLocation === undefined) return undefined;
+  if (itemsLocation.weather.historical === undefined) return undefined;
+  const daily_gdds_filter = itemsLocation.weather.historical.filter(
+    this_item =>
+      // Locations has unix seconds time but item has unix ms
+      this_item.date_unix >= item.start_date_unix_ms / 1000,
+  );
+  const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
+    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
+  );
+  console.log(
+    `Start date ${item.start_date_unix_ms} array ${JSON.stringify(itemsLocation.weather.historical)}`,
+  );
+  return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
+}
+
 export function GddCard({
   item,
   onReset,
   onDelete,
   navigation,
 }: CardPropsParamList) {
-  function calc_gdd_total() {
-    const locations = useContext(LocationsContext);
-    if (locations.locations[0].weather.historical === undefined) return 0;
-    const daily_gdds_filter = locations.locations[0].weather.historical.filter(
-      this_item => this_item.date_unix >= item.start_date_unix,
-    );
-    const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
-      calcGdd(item_2.mintemp_c, item_2.maxtemp_c, T_BASE),
-    );
-    return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
-  }
-  const actual_gdd = calc_gdd_total();
   const {settings} = useContext(SettingsContext);
+  const {locations} = useContext(LocationsContext);
+  const actual_gdd = calc_gdd_total(item, locations);
   return (
     <Card
       mode="elevated"
@@ -109,7 +121,7 @@ export function GddCard({
             variant="bodyLarge"
             style={GetGddTitleStyle(
               settings.warning_threshold_perc,
-              actual_gdd,
+              actual_gdd as number,
               item.target_gdd,
             )}>
             {actual_gdd}
@@ -127,7 +139,7 @@ export function GddCard({
         </Text>
         <Text>
           <Icon source="calendar-start" size={20} />
-          Start date: {new Date(item.start_date_unix).toDateString()}
+          Start date: {new Date(item.start_date_unix_ms).toDateString()}
         </Text>
         <Text>
           <Icon source="calendar-end" size={20} />
