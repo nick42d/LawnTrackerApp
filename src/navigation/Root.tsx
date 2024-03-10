@@ -37,6 +37,7 @@ export type RootStackParamList = {
 export type AppDrawerParamList = {
   HomeLocationsTabs: NavigatorScreenParams<HomeLocationsTabParamList>;
   Settings: undefined;
+  Help: undefined;
 };
 
 export type HomeLocationsTabParamList = {

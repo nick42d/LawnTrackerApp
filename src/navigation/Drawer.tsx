@@ -8,6 +8,7 @@ import {Appbar, Drawer, Switch, Text} from 'react-native-paper';
 import {AppTabNavigator} from './Tab';
 import SettingsScreen from '../screens/Settings';
 import {getHeaderTitle} from '@react-navigation/elements';
+import HelpScreen from '../screens/Help';
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -22,6 +23,7 @@ export function AppDrawerNavigator() {
         component={AppTabNavigator}
       />
       <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
+      <DrawerNavigator.Screen name="Help" component={HelpScreen} />
     </DrawerNavigator.Navigator>
   );
 }
@@ -64,7 +66,7 @@ export function AppDrawerContent({navigation}: any): React.JSX.Element {
       <Drawer.Item
         icon="help-circle-outline"
         label="Help"
-        onPress={() => console.log('Pressed Help')}
+        onPress={() => navigation.navigate('Help')}
       />
     </View>
   );

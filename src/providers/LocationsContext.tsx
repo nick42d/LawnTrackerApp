@@ -19,6 +19,7 @@ export const LocationsContext = React.createContext<LocationsState>({
   locations: [],
   refresh: undefined,
   addLocation: undefined,
+  deleteLocationName: undefined,
 });
 
 export const LocationsContextProvider = ({
@@ -61,8 +62,14 @@ export const LocationsContextProvider = ({
     locations.push(location);
     setLocations(locations);
   }
+  function deleteLocationName(locName: string) {
+    console.log(`Deleting location name ${locName}`);
+    const new_locations = locations.filter(item => item.name !== locName);
+    setLocations(new_locations);
+  }
   return (
-    <LocationsContext.Provider value={{locations, refresh, addLocation}}>
+    <LocationsContext.Provider
+      value={{locations, refresh, addLocation, deleteLocationName}}>
       {children}
     </LocationsContext.Provider>
   );

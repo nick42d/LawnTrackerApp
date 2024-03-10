@@ -60,6 +60,12 @@ export default function SettingsScreen({
       />
       <List.Item
         onPress={() => {}}
+        title="Warning threshold percentage"
+        // TODO: Show actual value, not enum number
+        description={settings.warning_threshold_perc}
+      />
+      <List.Item
+        onPress={() => {}}
         title="API Key"
         description="Enter your weatherapi.com API"
       />

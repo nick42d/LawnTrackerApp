@@ -23,6 +23,12 @@ type LocationsCardProps = {
 };
 
 export function LocationsCard({location, navigation}: LocationsCardProps) {
+  // Unsure if this is better than prop drilling
+  const {deleteLocationName} = useContext(LocationsContext);
+  function onDelete() {
+    // TODO: Check that no GddCards use this location
+    if (deleteLocationName !== undefined) deleteLocationName(location.name);
+  }
   return (
     <Card
       mode="elevated"
@@ -56,6 +62,12 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
           Insert start date
         </Text>
       </Card.Content>
+      <Card.Actions>
+        <Button onPress={onDelete}>
+          <Icon source="delete" size={20} />
+          Delete
+        </Button>
+      </Card.Actions>
     </Card>
   );
 }
@@ -78,7 +90,7 @@ export function GddCard({
     return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
   }
   const actual_gdd = calc_gdd_total();
-  const settings = useContext(SettingsContext);
+  const {settings} = useContext(SettingsContext);
   return (
     <Card
       mode="elevated"

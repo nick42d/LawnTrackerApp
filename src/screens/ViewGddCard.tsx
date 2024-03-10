@@ -10,8 +10,8 @@ import {AppScreenProps} from '../navigation/Root';
 export default function ViewGddCardScreen({
   route,
 }: AppScreenProps<'ViewGddCard'>) {
+  const {locations} = useContext(LocationsContext);
   const item = route.params.gddCard;
-  // const {locations} = useContext(LocationsContext);
   // if locations
   // const daily_gdds_filter = daily_gdds.forecasts.filter(
   //   this_item => this_item.date >= item.start_date,

@@ -57,6 +57,7 @@ export type LocationsState = {
   locations: Location[];
   refresh: (() => void) | undefined;
   addLocation: ((loc: Location) => void) | undefined;
+  deleteLocationName: ((locName: string) => void) | undefined;
 };
 
 export type AddLocation = Omit<Location, 'weather'>;
