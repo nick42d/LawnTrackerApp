@@ -75,7 +75,7 @@ export function getGraphPlot(
   );
   // TODO bounds check
   const lastForecastDateUnix =
-    forecast_gdd_arr[forecast_gdd_arr.length - 1].dateUnix;
+    forecast_gdd_arr[forecast_gdd_arr.length - 1]?.dateUnix;
   const estimate_gdd_arr = estimateToGddArr(
     average_gdd,
     lastForecastDateUnix,

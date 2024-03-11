@@ -66,7 +66,7 @@ export function GddCard({
         left={() => (
           <View
             style={{
-              borderRadius: 5,
+              borderRadius: 6,
               ...GetGddTitleStyle(
                 settings.warning_threshold_perc,
                 actual_gdd as number,

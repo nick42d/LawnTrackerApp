@@ -33,7 +33,8 @@ export default function ViewGddCardScreen({
   const data = plot ? plot.items : [];
   return (
     <View>
-      <Text>{item.name}</Text>
+      <Text variant="displaySmall">{item.name}</Text>
+      <Text>{item.description}</Text>
       <View>
         <LineChart
           data={data}
