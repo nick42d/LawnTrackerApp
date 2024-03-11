@@ -49,7 +49,9 @@ export default function ViewGddCardScreen({
           referenceLine1Position={item.target_gdd}
           isAnimated
           curved
-          spacing={25}
+          rotateLabel
+          xAxisIndicesWidth={60}
+          spacing={60}
           thickness={3}
           showScrollIndicator
           color="green"

@@ -3,6 +3,17 @@ import {calcGdd} from '../Knowledge';
 import {GddTracker} from '../Types';
 import {Location, WeatherAppForecast} from '../state/State';
 
+export enum WeatherSource {
+  Historical,
+  Forecast,
+  Estimated,
+  // TODO: Remove
+  Unimplemented,
+}
+export type GddEstimate = {
+  estimateType: WeatherSource;
+  estimateDateUnixMs: number;
+};
 export type GraphPlotItem = {value: number; label: string};
 export type DailyGdd = {gdd: number; dateUnix: number};
 export type GddGraphPlot = {
@@ -28,6 +39,19 @@ function forecastsToGddArr(
       dateUnix: x.date_unix,
     }));
 }
+function estimateToGddArr(
+  estimate: number,
+  startDateUnix: number,
+  numberDays: number,
+): DailyGdd[] {
+  return Array(numberDays)
+    .fill(estimate)
+    .map((x, i) => ({
+      gdd: x,
+      // Manual calculation to add days
+      dateUnix: startDateUnix + (i + 1) * 60 * 60 * 24,
+    }));
+}
 export function getGraphPlot(
   item: GddTracker,
   locations: Location[],
@@ -49,7 +73,14 @@ export function getGraphPlot(
   const average_gdd = listAverage(
     history_gdd_arr.concat(forecast_gdd_arr).map(x => x.gdd),
   );
-  const estimate_gdd_arr = Array(ESTIMATED_DAYS).fill(average_gdd);
+  // TODO bounds check
+  const lastForecastDateUnix =
+    forecast_gdd_arr[forecast_gdd_arr.length - 1].dateUnix;
+  const estimate_gdd_arr = estimateToGddArr(
+    average_gdd,
+    lastForecastDateUnix,
+    ESTIMATED_DAYS,
+  );
   const forecast_start = history_gdd_arr.length;
   const estimate_start = forecast_start + forecast_gdd_arr.length;
   let sum = 0;
@@ -59,7 +90,21 @@ export function getGraphPlot(
     .map(x => {
       sum += x.gdd;
       // TODO: Prevent crash if empty
-      return {value: sum, label: new Date(x.dateUnix).toDateString()};
+      // Need to convert from DateUnix to DateUnixMs...
+      return {value: sum, label: new Date(x.dateUnix * 1000).toDateString()};
     });
   return {items, forecast_start, estimate_start};
+}
+export function getGddEstimate(
+  temp: GddGraphPlot | undefined,
+  targetGdd: number,
+): GddEstimate | undefined {
+  if (temp === undefined) return undefined;
+  const estimatedDayItem = temp.items.find(x => x.value >= targetGdd);
+  if (estimatedDayItem === undefined) return undefined;
+  const estimatedDay = new Date(estimatedDayItem.label);
+  return {
+    estimateDateUnixMs: estimatedDay.getTime(),
+    estimateType: WeatherSource.Unimplemented,
+  };
 }

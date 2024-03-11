@@ -9,6 +9,7 @@ import {calcGdd} from '../Knowledge';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import {LocationsContext} from '../providers/LocationsContext';
+import {WeatherSource, getGddEstimate, getGraphPlot} from '../plot/Gdd';
 
 type CardPropsParamList = {
   item: GddTracker;
@@ -43,6 +44,11 @@ export function GddCard({
   const {settings} = useContext(SettingsContext);
   const {locations} = useContext(LocationsContext);
   const actual_gdd = calc_gdd_total(item, locations);
+  // TODO: Fix undefined case
+  const estimateTemp = getGddEstimate(
+    getGraphPlot(item, locations),
+    item.target_gdd,
+  );
   return (
     <Card
       mode="elevated"
@@ -90,11 +96,12 @@ export function GddCard({
         </Text>
         <Text>
           <Icon source="calendar-end" size={20} />
-          Projected end date: tbc
+          Projected end date:{' '}
+          {new Date(estimateTemp?.estimateDateUnixMs).toDateString()}
         </Text>
         <Text>
           <Icon source="chart-timeline-variant-shimmer" size={20} />
-          Projection type: tbc
+          Projection type: {WeatherSource[estimateTemp?.estimateType]}
         </Text>
       </Card.Content>
       <Card.Actions>
