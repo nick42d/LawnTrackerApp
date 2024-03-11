@@ -16,6 +16,7 @@ import {AppDrawerScreenProps} from '../navigation/Root';
 import {ScrollView, View} from 'react-native';
 import DialogContent from 'react-native-paper/lib/typescript/components/Dialog/DialogContent';
 import {setGestureState} from 'react-native-reanimated';
+import GenericSelectionDialog from '../components/SelectionDialog';
 
 export default function SettingsScreen({
   route,
@@ -103,39 +104,5 @@ export default function SettingsScreen({
         />
       </Portal>
     </ScrollView>
-  );
-}
-
-function GenericSelectionDialog<T>(props: {
-  visible: boolean;
-  setVisible: (set: boolean) => void;
-  values: {label: string; value: T}[];
-  curValue: T;
-  setCurValue: (set: T) => void;
-}): React.JSX.Element {
-  return (
-    <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-      <Dialog.Title>Select Base Temp</Dialog.Title>
-      <Dialog.Content>
-        <RadioButton.Group
-          // All types in JavaSCript can be converted to a string, so this is safe.
-          value={String(props.curValue)}
-          onValueChange={val =>
-            console.log(`Radio button pressed, ${JSON.stringify(val)}`)
-          }>
-          {props.values.map(value => {
-            return (
-              <RadioButton.Item
-                label={value.label}
-                value={String(value.value)}
-              />
-            );
-          })}
-        </RadioButton.Group>
-      </Dialog.Content>
-      <Dialog.Actions>
-        <Button onPress={() => props.setVisible(false)}>Done</Button>
-      </Dialog.Actions>
-    </Dialog>
   );
 }
