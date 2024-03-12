@@ -42,6 +42,7 @@ export default function AddGddCardScreen({
   const [toggle, setToggle] = useState('0');
   const [startDate, setStartDate] = useState(new Date());
   const {locations} = useContext(LocationsContext);
+  // TODO: default location
   const [location, setLocation] = useState('');
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
@@ -71,7 +72,10 @@ export default function AddGddCardScreen({
   }, [name, location, startDate, target, desc, toggle]);
 
   function dateInRange(): boolean {
-    return false;
+    const firstAcceptableDate = new Date();
+    // TODO set to midnight
+    firstAcceptableDate.setDate(startDate.getDate() - MAX_HISTORY_DAYS);
+    return startDate >= firstAcceptableDate;
   }
   function locationSelected(): boolean {
     return location.length !== 0;

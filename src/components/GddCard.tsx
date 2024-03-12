@@ -4,7 +4,7 @@ import {CARD_TITLE_VARIANT} from '../Components';
 import * as central_styles from '../Styles';
 import {GddTracker} from '../Types';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {Location} from '../state/State';
+import {GDDAlgorithm, Location} from '../state/State';
 import {calcGdd} from '../Knowledge';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
@@ -20,6 +20,7 @@ type CardPropsParamList = {
 function calc_gdd_total(
   item: GddTracker,
   locations: Location[],
+  algorithm: GDDAlgorithm,
 ): number | undefined {
   let itemsLocation = locations.find(loc => loc.name === item.location_name);
   if (itemsLocation === undefined) return undefined;
@@ -30,7 +31,7 @@ function calc_gdd_total(
       this_item.date_unix >= item.start_date_unix_ms / 1000,
   );
   const daily_gdds_arr = daily_gdds_filter.map(item_2 =>
-    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, item.base_temp),
+    calcGdd(item_2.mintemp_c, item_2.maxtemp_c, item.base_temp, algorithm),
   );
   return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
 }
@@ -43,10 +44,10 @@ export function GddCard({
 }: CardPropsParamList) {
   const {settings} = useContext(SettingsContext);
   const {locations} = useContext(LocationsContext);
-  const actual_gdd = calc_gdd_total(item, locations);
+  const actual_gdd = calc_gdd_total(item, locations, settings.algorithm);
   // TODO: Fix undefined case
   const estimateTemp = getGddEstimate(
-    getGraphPlot(item, locations),
+    getGraphPlot(item, locations, settings.algorithm),
     item.target_gdd,
   );
   return (

@@ -9,13 +9,15 @@ import {AppScreenProps} from '../navigation/Root';
 import {GddTracker} from '../Types';
 import {Location, WeatherAppForecast} from '../state/State';
 import {getGraphPlot} from '../plot/Gdd';
+import {SettingsContext} from '../providers/SettingsContext';
 
 export default function ViewGddCardScreen({
   route,
 }: AppScreenProps<'ViewGddCard'>) {
   const {locations} = useContext(LocationsContext);
+  const {settings} = useContext(SettingsContext);
   const item = route.params.gddCard;
-  const plot = getGraphPlot(item, locations);
+  const plot = getGraphPlot(item, locations, settings.algorithm);
   const forecast_start = plot?.forecast_start as number;
   const estimate_start = plot?.estimate_start as number;
   const segments = [
