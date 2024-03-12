@@ -13,6 +13,7 @@ import {
 import {SettingsContext} from '../providers/SettingsContext';
 import {
   GDDAlgorithm,
+  UnitOfMeasure,
   gddAlgorithmToText,
   unitOfMeasureToText,
 } from '../state/State';
@@ -23,6 +24,7 @@ import {setGestureState} from 'react-native-reanimated';
 import GenericSelectionDialog from '../components/SelectionDialog';
 
 const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
+const UNITS_OF_MEASURE = [UnitOfMeasure.Imperial, UnitOfMeasure.Metric];
 
 export default function SettingsScreen({
   route,
@@ -36,6 +38,9 @@ export default function SettingsScreen({
   function ShowAlgorithmDialog() {
     setAlgorithmDialogVisible(true);
   }
+  function ShowUnitOfMeasureDialog() {
+    setUnitOfMeasureDialogVisible(true);
+  }
   function setDarkMode(value: boolean) {
     if (setSettings !== undefined)
       setSettings({...settings, dark_mode_enabled: value});
@@ -47,6 +52,10 @@ export default function SettingsScreen({
   function setAlgorithm(value: GDDAlgorithm) {
     if (setSettings !== undefined) setSettings({...settings, algorithm: value});
   }
+  function setUnitOfMeasure(value: UnitOfMeasure) {
+    if (setSettings !== undefined)
+      setSettings({...settings, unit_of_measure: value});
+  }
   return (
     <ScrollView>
       <List.Section>
@@ -56,7 +65,7 @@ export default function SettingsScreen({
           description={gddAlgorithmToText(settings.algorithm)}
         />
         <List.Item
-          onPress={() => {}}
+          onPress={ShowUnitOfMeasureDialog}
           title="Unit of measure"
           description={unitOfMeasureToText(settings.unit_of_measure)}
         />
@@ -132,9 +141,23 @@ export default function SettingsScreen({
           }}
           curValue={settings.algorithm}
           setCurValue={(set: string) => {
-            setAlgorithm(GDDAlgorithm[set as keyof typeof GDDAlgorithm]);
+            setAlgorithm(Number(set));
           }}
-          values={ALGORITHMS.map(x => ({label: String(x), value: x}))}
+          values={ALGORITHMS.map(x => ({label: GDDAlgorithm[x], value: x}))}
+        />
+        <GenericSelectionDialog<UnitOfMeasure>
+          visible={unitOfMeasureDialogVisible}
+          setVisible={x => {
+            setUnitOfMeasureDialogVisible(x);
+          }}
+          curValue={settings.unit_of_measure}
+          setCurValue={(set: string) => {
+            setUnitOfMeasure(Number(set));
+          }}
+          values={UNITS_OF_MEASURE.map(x => ({
+            label: UnitOfMeasure[x],
+            value: x,
+          }))}
         />
       </Portal>
     </ScrollView>
