@@ -5,7 +5,7 @@ export default function GenericSelectionDialog<T>(props: {
   setVisible: (set: boolean) => void;
   values: {label: string; value: T}[];
   curValue: T;
-  setCurValue: (set: T) => void;
+  setCurValue: (set: string) => void;
 }): React.JSX.Element {
   return (
     <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
@@ -14,9 +14,11 @@ export default function GenericSelectionDialog<T>(props: {
         <RadioButton.Group
           // All types in JavaSCript can be converted to a string, so this is safe.
           value={String(props.curValue)}
-          onValueChange={val =>
-            console.log(`Radio button pressed, ${JSON.stringify(val)}`)
-          }>
+          onValueChange={val => {
+            // TODO: fix typing
+            props.setCurValue(val);
+            return console.log(`Radio button pressed, ${JSON.stringify(val)}`);
+          }}>
           {props.values.map(value => {
             return (
               <RadioButton.Item

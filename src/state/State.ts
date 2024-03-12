@@ -2,8 +2,7 @@
 
 export type SettingsState = {
   settings: Settings;
-  setDarkMode: ((value: boolean) => void) | undefined;
-  setAutoDarkMode: ((value: boolean) => void) | undefined;
+  setSettings: ((settings: Settings) => void) | undefined;
 };
 
 export type Settings = {
