@@ -1,16 +1,27 @@
 import React, {useContext, useState} from 'react';
 import {
   Appbar,
+  Button,
+  Dialog,
   Divider,
   HelperText,
+  List,
   MD3DarkTheme,
   MD3LightTheme,
+  Portal,
+  RadioButton,
   SegmentedButtons,
   Text,
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import {ScrollView, View} from 'react-native';
+import {
+  ScrollView,
+  Touchable,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
@@ -31,12 +42,8 @@ export default function AddGddCardScreen({
   const [toggle, setToggle] = useState('0');
   const [startDate, setStartDate] = useState(new Date());
   const {locations} = useContext(LocationsContext);
-  const [pickableLocations, setPickableLocations] = useState({
-    value: locations[0].name,
-    list: locations.map((loc, idx) => ({_id: idx.toString(), value: loc.name})),
-    selectedList: [{_id: '0', value: locations[0].name}],
-    error: '',
-  });
+  const [location, setLocation] = useState('');
+  const [tempDialogShown, setTempDialogShown] = useState(false);
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -51,7 +58,7 @@ export default function AddGddCardScreen({
                 add_gdd: newGddTracker(
                   name,
                   desc,
-                  pickableLocations.value,
+                  location,
                   Number(target),
                   Number(toggle),
                   startDate,
@@ -61,13 +68,13 @@ export default function AddGddCardScreen({
           });
         }),
     });
-  }, [name, pickableLocations.value, startDate, target, desc, toggle]);
+  }, [name, location, startDate, target, desc, toggle]);
 
   function dateInRange(): boolean {
     return false;
   }
   function locationSelected(): boolean {
-    return pickableLocations.value.length !== 0;
+    return location.length !== 0;
   }
   function nameEntered(): boolean {
     return name.length !== 0;
@@ -122,21 +129,14 @@ export default function AddGddCardScreen({
         <HelperText type="error" visible={!dateInRange()}>
           Date too far in the past - minimum range {MAX_HISTORY_DAYS}
         </HelperText>
-        <PaperSelect
-          label="Select location"
-          value={pickableLocations.value}
-          onSelection={value => {
-            setPickableLocations({
-              ...pickableLocations,
-              value: value.text,
-              selectedList: value.selectedList,
-              error: '',
-            });
-          }}
-          arrayList={[...pickableLocations.list]}
-          selectedArrayList={pickableLocations.selectedList}
-          multiEnable={false}
-        />
+        <TouchableHighlight onPress={_ => setTempDialogShown(true)}>
+          <TextInput
+            label="Select Location"
+            value={location}
+            right={<TextInput.Icon icon="map-marker" />}
+            editable={false}
+          />
+        </TouchableHighlight>
         <HelperText type="error" visible={!locationSelected()}>
           Location must be selected
         </HelperText>
@@ -160,6 +160,39 @@ export default function AddGddCardScreen({
           }))}
         />
       </View>
+      <Portal>
+        <Dialog
+          visible={tempDialogShown}
+          onDismiss={() => setTempDialogShown(false)}>
+          <Dialog.Title>Select Location</Dialog.Title>
+          <Dialog.Content>
+            <RadioButton.Group
+              // All types in JavaSCript can be converted to a string, so this is safe.
+              value={location}
+              onValueChange={val => {
+                setLocation(val);
+                return console.log(
+                  `Radio button pressed, ${JSON.stringify(val)}`,
+                );
+              }}>
+              {locations.map(l => {
+                return <RadioButton.Item label={l.name} value={l.name} />;
+              })}
+            </RadioButton.Group>
+            <Button
+              icon="plus"
+              onPress={_ => {
+                setTempDialogShown(false);
+                navigation.navigate('AddLocationCard');
+              }}>
+              Add location
+            </Button>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setTempDialogShown(false)}>Done</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 }

@@ -1,15 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  Button,
-  Dialog,
-  Divider,
-  List,
-  MD3DarkTheme,
-  Portal,
-  RadioButton,
-  Switch,
-  Text,
-} from 'react-native-paper';
+import {List, Portal, Switch, Text} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {
   BaseTemp,
@@ -20,8 +10,6 @@ import {
 } from '../state/State';
 import {AppDrawerScreenProps} from '../navigation/Root';
 import {ScrollView, View} from 'react-native';
-import DialogContent from 'react-native-paper/lib/typescript/components/Dialog/DialogContent';
-import {setGestureState} from 'react-native-reanimated';
 import GenericSelectionDialog, {
   SliderSelectionDialog,
 } from '../components/SelectionDialog';
@@ -142,6 +130,7 @@ export default function SettingsScreen({
       </List.Section>
       <Portal>
         <GenericSelectionDialog<BaseTemp>
+          title="Select Base Temp"
           visible={baseTempDialogVisible}
           setVisible={x => {
             setBaseTempDialogVisible(x);
@@ -153,6 +142,7 @@ export default function SettingsScreen({
           values={BASE_TEMPS.map(x => ({label: BaseTemp[x], value: x}))}
         />
         <GenericSelectionDialog<GDDAlgorithm>
+          title="Select Algorithm"
           visible={algorithmDialogVisible}
           setVisible={x => {
             setAlgorithmDialogVisible(x);
@@ -164,6 +154,7 @@ export default function SettingsScreen({
           values={ALGORITHMS.map(x => ({label: GDDAlgorithm[x], value: x}))}
         />
         <GenericSelectionDialog<UnitOfMeasure>
+          title="Select Unit of Measure"
           visible={unitOfMeasureDialogVisible}
           setVisible={x => {
             setUnitOfMeasureDialogVisible(x);
@@ -178,6 +169,7 @@ export default function SettingsScreen({
           }))}
         />
         <SliderSelectionDialog
+          title="Select Warning Threshold Perc"
           setCurValue={setWarningThreshold}
           setVisible={setThresholdDialogVisible}
           visible={thresholdDialogVisible}

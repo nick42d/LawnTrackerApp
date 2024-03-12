@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import {Button, Dialog, RadioButton, Text} from 'react-native-paper';
 
 export default function GenericSelectionDialog<T>(props: {
+  title: string;
   visible: boolean;
   setVisible: (set: boolean) => void;
   values: {label: string; value: T}[];
@@ -11,7 +12,7 @@ export default function GenericSelectionDialog<T>(props: {
 }): React.JSX.Element {
   return (
     <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-      <Dialog.Title>Select Base Temp</Dialog.Title>
+      <Dialog.Title>{props.title}</Dialog.Title>
       <Dialog.Content>
         <RadioButton.Group
           // All types in JavaSCript can be converted to a string, so this is safe.
@@ -38,6 +39,7 @@ export default function GenericSelectionDialog<T>(props: {
   );
 }
 export function SliderSelectionDialog(props: {
+  title: string;
   visible: boolean;
   setVisible: (set: boolean) => void;
   curValue: number;
@@ -45,7 +47,7 @@ export function SliderSelectionDialog(props: {
 }): React.JSX.Element {
   return (
     <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-      <Dialog.Title>Select Base Temp</Dialog.Title>
+      <Dialog.Title>{props.title}</Dialog.Title>
       <Dialog.Content>
         <Text>{(props.curValue * 100).toFixed(0)}%</Text>
         <Slider
