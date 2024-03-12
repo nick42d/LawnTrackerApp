@@ -1,4 +1,6 @@
-import {Button, Dialog, RadioButton} from 'react-native-paper';
+import Slider from '@react-native-community/slider';
+import {View} from 'react-native';
+import {Button, Dialog, RadioButton, Text} from 'react-native-paper';
 
 export default function GenericSelectionDialog<T>(props: {
   visible: boolean;
@@ -28,6 +30,31 @@ export default function GenericSelectionDialog<T>(props: {
             );
           })}
         </RadioButton.Group>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button onPress={() => props.setVisible(false)}>Done</Button>
+      </Dialog.Actions>
+    </Dialog>
+  );
+}
+export function SliderSelectionDialog(props: {
+  visible: boolean;
+  setVisible: (set: boolean) => void;
+  curValue: number;
+  setCurValue: (set: number) => void;
+}): React.JSX.Element {
+  return (
+    <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
+      <Dialog.Title>Select Base Temp</Dialog.Title>
+      <Dialog.Content>
+        <Text>{(props.curValue * 100).toFixed(0)}%</Text>
+        <Slider
+          value={props.curValue}
+          minimumValue={0}
+          maximumValue={1}
+          onValueChange={x => props.setCurValue(x)}
+          step={0.05}
+        />
       </Dialog.Content>
       <Dialog.Actions>
         <Button onPress={() => props.setVisible(false)}>Done</Button>

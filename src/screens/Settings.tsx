@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {
+  BaseTemp,
   GDDAlgorithm,
   UnitOfMeasure,
   gddAlgorithmToText,
@@ -21,10 +22,13 @@ import {AppDrawerScreenProps} from '../navigation/Root';
 import {ScrollView, View} from 'react-native';
 import DialogContent from 'react-native-paper/lib/typescript/components/Dialog/DialogContent';
 import {setGestureState} from 'react-native-reanimated';
-import GenericSelectionDialog from '../components/SelectionDialog';
+import GenericSelectionDialog, {
+  SliderSelectionDialog,
+} from '../components/SelectionDialog';
 
 const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
 const UNITS_OF_MEASURE = [UnitOfMeasure.Imperial, UnitOfMeasure.Metric];
+const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
 
 export default function SettingsScreen({
   route,
@@ -34,9 +38,16 @@ export default function SettingsScreen({
   const [unitOfMeasureDialogVisible, setUnitOfMeasureDialogVisible] =
     useState(false);
   const [algorithmDialogVisible, setAlgorithmDialogVisible] = useState(false);
+  const [thresholdDialogVisible, setThresholdDialogVisible] = useState(false);
 
   function ShowAlgorithmDialog() {
     setAlgorithmDialogVisible(true);
+  }
+  function ShowThresholdDialog() {
+    setThresholdDialogVisible(true);
+  }
+  function ShowBaseTempDialog() {
+    setBaseTempDialogVisible(true);
   }
   function ShowUnitOfMeasureDialog() {
     setUnitOfMeasureDialogVisible(true);
@@ -51,6 +62,14 @@ export default function SettingsScreen({
   }
   function setAlgorithm(value: GDDAlgorithm) {
     if (setSettings !== undefined) setSettings({...settings, algorithm: value});
+  }
+  function setWarningThreshold(value: number) {
+    if (setSettings !== undefined)
+      setSettings({...settings, warning_threshold_perc: value});
+  }
+  function setDefaultBaseTemp(value: BaseTemp) {
+    if (setSettings !== undefined)
+      setSettings({...settings, default_base_temp: value});
   }
   function setUnitOfMeasure(value: UnitOfMeasure) {
     if (setSettings !== undefined)
@@ -102,18 +121,18 @@ export default function SettingsScreen({
           )}
         />
         <List.Item
-          onPress={() => {
-            setBaseTempDialogVisible(true);
-          }}
+          onPress={ShowBaseTempDialog}
           title="Default base temp"
           description="Default base temp to use when adding GDD trackers"
           right={() => <Text>{settings.default_base_temp}</Text>}
         />
         <List.Item
-          onPress={() => {}}
+          onPress={ShowThresholdDialog}
           title="Warning threshold percentage"
           description="Percentage completion to trigger amber status"
-          right={() => <Text>{settings.warning_threshold_perc}</Text>}
+          right={() => (
+            <Text>{(settings.warning_threshold_perc * 100).toFixed(0)}%</Text>
+          )}
         />
         <List.Item
           onPress={() => {}}
@@ -122,17 +141,16 @@ export default function SettingsScreen({
         />
       </List.Section>
       <Portal>
-        <GenericSelectionDialog<number>
+        <GenericSelectionDialog<BaseTemp>
           visible={baseTempDialogVisible}
           setVisible={x => {
             setBaseTempDialogVisible(x);
           }}
-          curValue={1}
-          setCurValue={(set: string) => {}}
-          values={[
-            {label: '123', value: 1},
-            {label: '1234', value: 2},
-          ]}
+          curValue={settings.default_base_temp}
+          setCurValue={(set: string) => {
+            setDefaultBaseTemp(Number(set));
+          }}
+          values={BASE_TEMPS.map(x => ({label: BaseTemp[x], value: x}))}
         />
         <GenericSelectionDialog<GDDAlgorithm>
           visible={algorithmDialogVisible}
@@ -158,6 +176,12 @@ export default function SettingsScreen({
             label: UnitOfMeasure[x],
             value: x,
           }))}
+        />
+        <SliderSelectionDialog
+          setCurValue={setWarningThreshold}
+          setVisible={setThresholdDialogVisible}
+          visible={thresholdDialogVisible}
+          curValue={settings.warning_threshold_perc}
         />
       </Portal>
     </ScrollView>
