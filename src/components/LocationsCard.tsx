@@ -4,11 +4,13 @@ import {CARD_TITLE_VARIANT} from '../Components';
 import * as central_styles from '../Styles';
 import {GddTracker} from '../Types';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {Location} from '../state/State';
+import {Location, WeatherCondition} from '../state/State';
 import {calcGdd} from '../Knowledge';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import {LocationsContext} from '../providers/LocationsContext';
+import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
+
 type LocationsCardProps = {
   location: Location;
   navigation: HomeLocationsTabScreenProps<'Locations'>['navigation'];
@@ -21,6 +23,13 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
     // TODO: Check that no GddCards use this location
     if (deleteLocationName !== undefined) deleteLocationName(location.name);
   }
+  // TODO: Add day/night
+  function getWeatherIcon(condition: WeatherCondition): any {
+    return WEATHER_IMAGES.find(x => x.code === condition.code)?.daySrc;
+  }
+  const weatherIconCode = location.weather.today
+    ? getWeatherIcon(location.weather.today)
+    : 0;
   return (
     <Card
       mode="elevated"
@@ -36,11 +45,7 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
         left={() => (
           <Text>{location.weather.historical?.pop()?.maxtemp_c}°</Text>
         )}
-        right={() => (
-          <Image
-            source={require('../../assets/weather_icons/64x64/day/353.png')}
-          />
-        )}
+        right={() => <Image source={weatherIconCode} />}
       />
       <Card.Content>
         <Text>
