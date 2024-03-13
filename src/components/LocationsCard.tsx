@@ -45,11 +45,11 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
       <Card.Content>
         <Text>
           <Icon source="latitude" size={20} />
-          {location.latitude}
+          {location.latitude.toFixed(4)}
         </Text>
         <Text>
           <Icon source="longitude" size={20} />
-          {location.longitude}
+          {location.longitude.toFixed(4)}
         </Text>
         <Text>
           <Icon source="calendar-start" size={20} />

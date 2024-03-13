@@ -66,14 +66,14 @@ export function GddCard({
         titleVariant={CARD_TITLE_VARIANT}
         left={() => (
           <View
-            style={{
-              borderRadius: 6,
-              ...GetGddTitleStyle(
+            style={StyleSheet.flatten([
+              GetGddTitleStyle(
                 settings.warning_threshold_perc,
                 actual_gdd as number,
                 item.target_gdd,
               ),
-            }}>
+              {borderRadius: 6},
+            ])}>
             <Text
               style={{textAlign: 'center', textAlignVertical: 'center'}}
               variant="bodyLarge">

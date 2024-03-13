@@ -1,28 +1,7 @@
 import React, {useContext, useState} from 'react';
-import {
-  Appbar,
-  Banner,
-  Divider,
-  FAB,
-  HelperText,
-  Icon,
-  MD3DarkTheme,
-  MD3LightTheme,
-  SegmentedButtons,
-  Text,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
+import {Icon, Text} from 'react-native-paper';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from '../Knowledge';
-import {newGddTracker} from '../Types';
 import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
-import {MAX_HISTORY_DAYS} from '../Consts';
-import {onDisplayNotification} from '../Notification';
-import {GddTracker} from '../Types';
-import {LocationsContext} from '../providers/LocationsContext';
-import {PaperSelect} from 'react-native-paper-select';
 import SaveButton from '../components/SaveButton';
 import MapLibreGL, {
   MarkerView,
@@ -127,6 +106,11 @@ export default function AddLocationCardScreen({
           />
         </MapLibreGL.PointAnnotation>
       </MapLibreGL.MapView>
+      <View style={{position: 'absolute'}}>
+        <Text style={{color: 'black'}} variant="titleLarge">
+          {locName}: {coordinate[0].toFixed(2)},{coordinate[1].toFixed(2)}
+        </Text>
+      </View>
     </View>
   );
 }
