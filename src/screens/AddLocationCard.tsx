@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {Icon, Text} from 'react-native-paper';
+import {Icon, Searchbar, Text} from 'react-native-paper';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
 import SaveButton from '../components/SaveButton';
@@ -107,6 +107,7 @@ export default function AddLocationCardScreen({
         </MapLibreGL.PointAnnotation>
       </MapLibreGL.MapView>
       <View style={{position: 'absolute'}}>
+        <Searchbar value="Search" />
         <Text style={{color: 'black'}} variant="titleLarge">
           {locName}: {coordinate[0].toFixed(2)},{coordinate[1].toFixed(2)}
         </Text>

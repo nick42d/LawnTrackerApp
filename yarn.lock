@@ -5968,11 +5968,6 @@ react-native-paper-dates@^0.22.3:
   dependencies:
     color "^4.2.3"
 
-react-native-paper-select@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-paper-select/-/react-native-paper-select-1.1.0.tgz#6a028220ea15f21a3c542fcab0cb26a45d030fa3"
-  integrity sha512-wAOG+Bg80DBlmO3yjoBhwgIDfHRGGKcPv2jBOWMKbEH+HBtqXRI8Uee3anIG/uYFOSMUcN7ePilzgWI0WWKyow==
-
 react-native-paper@^5.12.3:
   version "5.12.3"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.12.3.tgz#d583119722ebbfbb7fe40400181d63748cca3683"
