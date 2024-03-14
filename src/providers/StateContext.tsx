@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {WeatherApiHistory} from '../Types';
+import React, {useEffect, useState} from 'react';
+import {GddTracker, WeatherApiHistory} from '../Types';
 import {
   MAX_FORECAST_DAYS,
   MAX_HISTORY_DAYS,
@@ -7,29 +7,27 @@ import {
   PERTH_LONG,
 } from '../Consts';
 import {API_KEY} from '../../apikey';
-import {Location, LocationsState} from '../state/State';
-import {mockLocations} from '../Mock';
+import {Location, StateManager} from '../state/State';
+import {defaultStateManager, mockGddTrackers, mockLocations} from '../Mock';
 import {
   addWeatherToLocation,
   fetchWeatherForecast,
   fetchWeatherHistorical,
 } from '../Api';
 
-export const LocationsContext = React.createContext<LocationsState>({
-  locations: [],
-  refresh: undefined,
-  addLocation: undefined,
-  deleteLocationName: undefined,
-});
+export const StateContext = React.createContext<StateManager>(
+  defaultStateManager(),
+);
 
-export const LocationsContextProvider = ({
+export const StateContextProvider = ({
   children,
 }: React.PropsWithChildren): React.JSX.Element => {
   const [locations, setLocations] = React.useState(mockLocations());
+  const [gddTrackers, setGddTrackers] = useState(mockGddTrackers());
   useEffect(() => {
-    refresh();
+    refreshWeather();
   }, []);
-  function refresh() {
+  function refreshWeather() {
     Promise.all(
       locations.map(async location => {
         const weatherFuture = await Promise.all([
@@ -58,9 +56,27 @@ export const LocationsContextProvider = ({
       setLocations(locations_tmp);
     });
   }
+  function addGddTracker(gddTracker: GddTracker) {
+    setGddTrackers([...gddTrackers, gddTracker]);
+  }
+  function resetGddTrackerName(name: string) {
+    console.log(`Resetting GDD tracker name ${name}`);
+    const new_state = gddTrackers.map(element =>
+      element.name === name
+        ? {...element, start_date_unix_ms: Date.now()}
+        : element,
+    );
+    setGddTrackers(new_state);
+  }
+  function deleteGddTrackerName(trackerName: string) {
+    console.log(`Deleting GDD tracker name ${trackerName}`);
+    const newGddTrackers = gddTrackers.filter(
+      item => item.name !== trackerName,
+    );
+    setGddTrackers(newGddTrackers);
+  }
   function addLocation(location: Location) {
-    locations.push(location);
-    setLocations(locations);
+    setLocations([...locations, location]);
   }
   function deleteLocationName(locName: string) {
     console.log(`Deleting location name ${locName}`);
@@ -68,9 +84,18 @@ export const LocationsContextProvider = ({
     setLocations(new_locations);
   }
   return (
-    <LocationsContext.Provider
-      value={{locations, refresh, addLocation, deleteLocationName}}>
+    <StateContext.Provider
+      value={{
+        locations,
+        gddTrackers,
+        refreshWeather,
+        addLocation,
+        deleteLocationName,
+        addGddTracker,
+        deleteGddTrackerName,
+        resetGddTrackerName,
+      }}>
       {children}
-    </LocationsContext.Provider>
+    </StateContext.Provider>
   );
 };

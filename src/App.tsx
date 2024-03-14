@@ -1,7 +1,6 @@
 /**
  * @format
  */
-import {LocationsContextProvider} from './providers/LocationsContext';
 import {AppRootStackNavigator} from './navigation/Root';
 import {
   DarkTheme as NavigationDarkTheme,
@@ -20,6 +19,7 @@ import {
   SettingsContext,
   SettingsContextProvider,
 } from './providers/SettingsContext';
+import {StateContextProvider} from './providers/StateContext';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -45,9 +45,9 @@ function PaperWrapper() {
   return (
     <PaperProvider
       theme={appDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
-      <LocationsContextProvider>
+      <StateContextProvider>
         <AppRootStackNavigator />
-      </LocationsContextProvider>
+      </StateContextProvider>
     </PaperProvider>
   );
 }

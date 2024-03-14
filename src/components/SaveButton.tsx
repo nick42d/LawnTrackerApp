@@ -25,16 +25,13 @@ function navigate<T extends keyof HomeLocationsTabParamList>(
   });
 }
 
-export default function SaveButton(
-  disabled: boolean,
-  navigation_func: () => void,
-) {
+export default function SaveButton(disabled: boolean, onPress: () => void) {
   return (
     <Appbar.Action
       onPress={() => {
         console.log('Save button on screen pressed');
         onDisplayNotification();
-        navigation_func();
+        onPress();
       }}
       disabled={disabled}
       icon="content-save"

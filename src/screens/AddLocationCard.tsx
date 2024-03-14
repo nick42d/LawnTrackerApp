@@ -10,6 +10,7 @@ import MapLibreGL, {
 } from '@maplibre/maplibre-react-native';
 import styles from '../Styles';
 import {fetchWeatherCurrent} from '../Api';
+import {StateContext} from '../providers/StateContext';
 
 const mapstyles = StyleSheet.create({
   page: {
@@ -25,8 +26,10 @@ const mapstyles = StyleSheet.create({
 });
 
 export default function AddLocationCardScreen({
+  route,
   navigation,
 }: AppScreenProps<'AddLocationCard'>): React.JSX.Element {
+  const {addLocation} = useContext(StateContext);
   const [coordinate, setCoordinate] = useState([0.5, 0.5]);
   const [locName, setLocName] = useState('');
   const [locUndefined, setLocUndefined] = useState(true);
@@ -35,19 +38,18 @@ export default function AddLocationCardScreen({
     navigation.setOptions({
       headerRight: () =>
         SaveButton(locUndefined, () => {
-          navigation.navigate('Drawer', {
-            screen: 'HomeLocationsTabs',
-            params: {
-              screen: 'Locations',
-              params: {
-                add_location: {
-                  name: locName,
-                  latitude: coordinate[1],
-                  longitude: coordinate[0],
-                },
-              },
+          addLocation({
+            name: locName,
+            latitude: coordinate[1],
+            longitude: coordinate[0],
+            weather: {
+              today: undefined,
+              historical: undefined,
+              forecast: undefined,
             },
           });
+          navigation.goBack();
+          route.params?.onGoBack(locName);
         }),
     });
   }, [coordinate, locName, locUndefined]);

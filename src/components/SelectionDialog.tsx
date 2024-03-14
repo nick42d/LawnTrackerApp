@@ -22,9 +22,10 @@ export default function GenericSelectionDialog<T>(props: {
             props.setCurValue(val);
             return console.log(`Radio button pressed, ${JSON.stringify(val)}`);
           }}>
-          {props.values.map(value => {
+          {props.values.map((value, i) => {
             return (
               <RadioButton.Item
+                key={i}
                 label={value.label}
                 value={String(value.value)}
               />

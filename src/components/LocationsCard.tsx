@@ -8,8 +8,8 @@ import {Location, WeatherCondition} from '../state/State';
 import {calcGdd} from '../Knowledge';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
-import {LocationsContext} from '../providers/LocationsContext';
 import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
+import {StateContext} from '../providers/StateContext';
 
 type LocationsCardProps = {
   location: Location;
@@ -18,7 +18,7 @@ type LocationsCardProps = {
 
 export function LocationsCard({location, navigation}: LocationsCardProps) {
   // Unsure if this is better than prop drilling
-  const {deleteLocationName} = useContext(LocationsContext);
+  const {deleteLocationName} = useContext(StateContext);
   function onDelete() {
     // TODO: Check that no GddCards use this location
     if (deleteLocationName !== undefined) deleteLocationName(location.name);

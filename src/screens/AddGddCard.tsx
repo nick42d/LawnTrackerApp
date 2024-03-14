@@ -1,37 +1,23 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
-  Appbar,
   Button,
   Dialog,
   Divider,
   HelperText,
-  List,
-  MD3DarkTheme,
-  MD3LightTheme,
   Portal,
   RadioButton,
   SegmentedButtons,
   Text,
   TextInput,
-  useTheme,
 } from 'react-native-paper';
-import {
-  ScrollView,
-  Touchable,
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  View,
-} from 'react-native';
+import {ScrollView, TouchableHighlight, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../Types';
-import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
+import {AppScreenProps} from '../navigation/Root';
 import {MAX_HISTORY_DAYS} from '../Consts';
-import {onDisplayNotification} from '../Notification';
-import {GddTracker} from '../Types';
-import {LocationsContext} from '../providers/LocationsContext';
-import {PaperSelect} from 'react-native-paper-select';
 import SaveButton from '../components/SaveButton';
+import {StateContext} from '../providers/StateContext';
 
 export default function AddGddCardScreen({
   navigation,
@@ -41,32 +27,27 @@ export default function AddGddCardScreen({
   const [target, setTarget] = useState('');
   const [toggle, setToggle] = useState('0');
   const [startDate, setStartDate] = useState(new Date());
-  const {locations} = useContext(LocationsContext);
+  const {locations, addGddTracker} = useContext(StateContext);
   // TODO: default location
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState(locations[0].name);
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
         SaveButton(!validateInput(), () => {
-          navigation.navigate('Drawer', {
-            screen: 'HomeLocationsTabs',
-            params: {
-              screen: 'Home',
-              params: {
-                // Assume all fields are valid, as you can't click the button otherwise.
-                add_gdd: newGddTracker(
-                  name,
-                  desc,
-                  location,
-                  Number(target),
-                  Number(toggle),
-                  startDate,
-                ),
-              },
-            },
-          });
+          // Assume all fields are valid, as you can't click the button otherwise.
+          addGddTracker(
+            newGddTracker(
+              name,
+              desc,
+              location,
+              Number(target),
+              Number(toggle),
+              startDate,
+            ),
+          );
+          navigation.goBack();
         }),
     });
   }, [name, location, startDate, target, desc, toggle]);
@@ -137,7 +118,14 @@ export default function AddGddCardScreen({
           <TextInput
             label="Select Location"
             value={location}
-            right={<TextInput.Icon icon="map-marker" />}
+            right={
+              <TextInput.Icon
+                icon="map-marker"
+                // If this isn't done, clicking the icon will do nothing.
+                // Potential a standard <Icon> would work better.
+                onPress={_ => setTempDialogShown(true)}
+              />
+            }
             editable={false}
           />
         </TouchableHighlight>
@@ -179,15 +167,23 @@ export default function AddGddCardScreen({
                   `Radio button pressed, ${JSON.stringify(val)}`,
                 );
               }}>
-              {locations.map(l => {
-                return <RadioButton.Item label={l.name} value={l.name} />;
+              {locations.map((l, i) => {
+                return (
+                  <RadioButton.Item key={i} label={l.name} value={l.name} />
+                );
               })}
             </RadioButton.Group>
             <Button
               icon="plus"
               onPress={_ => {
                 setTempDialogShown(false);
-                navigation.navigate('AddLocationCard');
+                navigation.navigate('AddLocationCard', {
+                  onGoBack: locName => {
+                    setTempDialogShown(true);
+                    // TODO: Safety checks
+                    setLocation(locName);
+                  },
+                });
               }}>
               Add location
             </Button>

@@ -8,8 +8,8 @@ import {GDDAlgorithm, Location} from '../state/State';
 import {calcGdd} from '../Knowledge';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
-import {LocationsContext} from '../providers/LocationsContext';
 import {WeatherSource, getGddEstimate, getGraphPlot} from '../plot/Gdd';
+import {StateContext} from '../providers/StateContext';
 
 type CardPropsParamList = {
   item: GddTracker;
@@ -43,7 +43,7 @@ export function GddCard({
   navigation,
 }: CardPropsParamList) {
   const {settings} = useContext(SettingsContext);
-  const {locations} = useContext(LocationsContext);
+  const {locations} = useContext(StateContext);
   const actual_gdd = calc_gdd_total(item, locations, settings.algorithm);
   // TODO: Fix undefined case
   const estimateTemp = getGddEstimate(

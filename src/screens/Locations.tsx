@@ -1,56 +1,33 @@
 import React, {useContext, useState} from 'react';
 import {FAB, Text} from 'react-native-paper';
-import {List} from 'react-native-paper';
-import {LineChart} from 'react-native-gifted-charts';
 import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
-import {calcGdd} from '../Knowledge';
-import {LocationsContext} from '../providers/LocationsContext';
-import {GRAPH_WIDTH} from '../Consts';
 import styles from '../Styles';
-import {mockLocations} from '../Mock';
 import {LocationsCard} from '../components/LocationsCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
+import {StateContext} from '../providers/StateContext';
 
 export default function LocationsScreen({
   route,
   navigation,
 }: HomeLocationsTabScreenProps<'Locations'>): React.JSX.Element {
-  const locations = useContext(LocationsContext);
+  const {locations, refreshWeather} = useContext(StateContext);
   const [refreshing, setRefreshing] = useState(false);
+
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing on Locations screen');
     setRefreshing(true);
-    if (locations.refresh !== undefined) {
-      locations.refresh();
+    if (refreshWeather !== undefined) {
+      refreshWeather();
     } else {
       console.log('Refresh callback not set, doing nothing');
     }
     setRefreshing(false);
-  }, [locations.refresh]);
-
-  React.useEffect(() => {
-    if (route.params?.add_location) {
-      console.log(`Adding card to Home screen`);
-      const locationToAdd = route.params.add_location;
-      locations.addLocation
-        ? locations.addLocation({
-            name: locationToAdd.name,
-            latitude: locationToAdd.latitude,
-            longitude: locationToAdd.longitude,
-            weather: {
-              today: undefined,
-              historical: undefined,
-              forecast: undefined,
-            },
-          })
-        : console.log('No location to add');
-    }
-  }, [route.params?.add_location]);
+  }, [refreshWeather]);
 
   return (
     <View style={{flex: 1}}>
       <FlatList
-        data={locations.locations}
+        data={locations}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

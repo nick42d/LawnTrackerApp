@@ -9,6 +9,7 @@ import {
   BaseTemp,
   Location,
   SettingsState,
+  StateManager,
 } from './state/State';
 
 export function defaultSettings(): Settings {
@@ -20,6 +21,28 @@ export function defaultSettings(): Settings {
     dark_mode_enabled: false,
     api_key: undefined,
     default_base_temp: BaseTemp.Ten,
+  };
+}
+
+export function defaultStateManager(): StateManager {
+  function LogErrorCallbackNotSet(callbackName: string) {
+    console.log(`Error - ${callbackName} not set`);
+  }
+  return {
+    locations: [],
+    gddTrackers: [],
+    refreshWeather: () => {
+      LogErrorCallbackNotSet('refreshWeather');
+    },
+    addLocation: _ => {
+      LogErrorCallbackNotSet('addLocation');
+    },
+    deleteLocationName: _ => {
+      LogErrorCallbackNotSet('deleteLocationName');
+    },
+    addGddTracker: _ => LogErrorCallbackNotSet('addGddTracker'),
+    deleteGddTrackerName: _ => LogErrorCallbackNotSet('deleteGddTrackerName'),
+    resetGddTrackerName: _ => LogErrorCallbackNotSet('resetGddTrackerName'),
   };
 }
 

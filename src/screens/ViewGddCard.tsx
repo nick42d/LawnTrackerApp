@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
-import {LocationsContext} from '../providers/LocationsContext';
 import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
@@ -10,11 +9,12 @@ import {GddTracker} from '../Types';
 import {Location, WeatherAppForecast} from '../state/State';
 import {getGraphPlot} from '../plot/Gdd';
 import {SettingsContext} from '../providers/SettingsContext';
+import {StateContext} from '../providers/StateContext';
 
 export default function ViewGddCardScreen({
   route,
 }: AppScreenProps<'ViewGddCard'>) {
-  const {locations} = useContext(LocationsContext);
+  const {locations} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
   const item = route.params.gddCard;
   const plot = getGraphPlot(item, locations, settings.algorithm);

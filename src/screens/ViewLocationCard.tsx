@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import {Text} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
-import {LocationsContext} from '../providers/LocationsContext';
 import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
