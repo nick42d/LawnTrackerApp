@@ -15,6 +15,7 @@ import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import styles from '../Styles';
 import {StateContext} from '../providers/StateContext';
 import DialogContent from 'react-native-paper/lib/typescript/components/Dialog/DialogContent';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 export default function HomeScreen({
   route,
@@ -91,16 +92,13 @@ export default function HomeScreen({
         style={[styles.fabStyle]}
       />
       <Portal>
-        <Dialog visible={showDialog} onDismiss={() => setShowDialog(false)}>
-          <Dialog.Title>{dialogTitle}</Dialog.Title>
-          <Dialog.Content>
-            <Text>{dialogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={_ => setShowDialog(false)}>Cancel</Button>
-            <Button onPress={_ => dialogCallback()}>Ok</Button>
-          </Dialog.Actions>
-        </Dialog>
+        <ConfirmationDialog
+          title={dialogTitle}
+          message={dialogMessage}
+          visible={showDialog}
+          setVisible={setShowDialog}
+          onOk={dialogCallback}
+        />
       </Portal>
     </View>
   );

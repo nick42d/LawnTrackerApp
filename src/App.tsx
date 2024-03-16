@@ -20,7 +20,6 @@ import {
   SettingsContextProvider,
 } from './providers/SettingsContext';
 import {StateContextProvider} from './providers/StateContext';
-import {MMKV} from 'react-native-mmkv';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -28,9 +27,6 @@ const {LightTheme, DarkTheme} = adaptNavigationTheme({
 });
 const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
 const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
-// Re-use MMKV instance throughout app.
-// TODO: Encryption
-export const storage = new MMKV();
 
 export default function App(): React.JSX.Element {
   return (
