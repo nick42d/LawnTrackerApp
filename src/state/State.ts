@@ -1,6 +1,7 @@
 // Module intended to contain state management logic for app.
 
 import {GddTracker} from '../Types';
+import {Weather} from '../api/Types';
 
 export type SettingsState = {
   settings: Settings;
@@ -71,33 +72,5 @@ export type Location = {
   name: string;
   latitude: number;
   longitude: number;
-  weather: Weather;
-};
-
-export type WeatherAppCurrent = {
-  location_name: string;
-};
-
-export type Weather = {
-  historical: WeatherAppForecast[] | undefined;
-  today: WeatherCondition | undefined;
-  forecast: WeatherAppForecast[] | undefined;
-};
-
-export type WeatherAppHistory = {
-  historical: WeatherAppForecast[];
-  current: WeatherCondition;
-};
-
-export type WeatherAppForecast = {
-  date_unix: number;
-  maxtemp_c: number;
-  mintemp_c: number;
-};
-
-export type WeatherCondition = {
-  // TODO: Add enum for condition
-  icon_url: string;
-  code: number;
-  description: string;
+  weather: Weather | undefined;
 };

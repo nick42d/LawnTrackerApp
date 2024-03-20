@@ -2,14 +2,12 @@ import {Image, StyleSheet, View} from 'react-native';
 import {Button, Card, Icon, Text} from 'react-native-paper';
 import {CARD_TITLE_VARIANT} from '../Components';
 import * as central_styles from '../Styles';
-import {GddTracker} from '../Types';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {Location, WeatherCondition} from '../state/State';
-import {calcGdd} from '../Knowledge';
+import {Location} from '../state/State';
 import {useContext} from 'react';
-import {SettingsContext} from '../providers/SettingsContext';
 import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
 import {StateContext} from '../providers/StateContext';
+import {WeatherAppCondition} from '../api/Types';
 
 type LocationsCardProps = {
   location: Location;
@@ -24,11 +22,11 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
     if (deleteLocationName !== undefined) deleteLocationName(location.name);
   }
   // TODO: Add day/night
-  function getWeatherIcon(condition: WeatherCondition): any {
+  function getWeatherIcon(condition: WeatherAppCondition): any {
     return WEATHER_IMAGES.find(x => x.code === condition.code)?.daySrc;
   }
-  const weatherIconCode = location.weather.today
-    ? getWeatherIcon(location.weather.today)
+  const weatherIconCode = location.weather
+    ? getWeatherIcon(location.weather.current_condition)
     : 0;
   return (
     <Card
@@ -40,12 +38,12 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
       }}>
       <Card.Title
         title={location.name}
-        subtitle={location.weather.today?.description}
+        subtitle={location.weather?.current_condition.code.toString()}
         titleVariant={CARD_TITLE_VARIANT}
         left={() => (
-          <Text>{location.weather.historical?.pop()?.maxtemp_c}°</Text>
+          <Text>{location.weather?.current_condition.temp.toString()}°</Text>
         )}
-        right={() => <Image source={weatherIconCode} />}
+        // right={() => <Image source={weatherIconCode} />}
       />
       <Card.Content>
         <Text>

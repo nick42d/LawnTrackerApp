@@ -122,11 +122,6 @@ export default function SettingsScreen({
             <Text>{(settings.warning_threshold_perc * 100).toFixed(0)}%</Text>
           )}
         />
-        <List.Item
-          onPress={() => {}}
-          title="API Key"
-          description="Enter your weatherapi.com API"
-        />
       </List.Section>
       <Portal>
         <GenericSelectionDialog<BaseTemp>

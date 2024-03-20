@@ -6,7 +6,7 @@ import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
 import {GddTracker} from '../Types';
-import {Location, WeatherAppForecast} from '../state/State';
+import {Location} from '../state/State';
 
 export default function ViewLocationCardScreen({
   route,

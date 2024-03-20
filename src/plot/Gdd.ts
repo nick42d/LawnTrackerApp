@@ -1,7 +1,8 @@
 import {ESTIMATED_DAYS} from '../Consts';
 import {calcGdd} from '../Knowledge';
 import {GddTracker} from '../Types';
-import {GDDAlgorithm, Location, WeatherAppForecast} from '../state/State';
+import {WeatherAppDay} from '../api/Types';
+import {GDDAlgorithm, Location} from '../state/State';
 
 export enum WeatherSource {
   Historical,
@@ -26,8 +27,8 @@ function listAverage(list: number[]): number {
   if (list.length === 0) return 0;
   return list.reduce((sum, acc) => acc + sum, 0) / list.length;
 }
-function forecastsToGddArr(
-  forecasts: WeatherAppForecast[] | undefined,
+function weatherDaysToGddArr(
+  forecasts: WeatherAppDay[] | undefined,
   startDateUnix: number,
   tBase: number,
   algorithm: GDDAlgorithm,
@@ -36,7 +37,7 @@ function forecastsToGddArr(
   return forecasts
     .filter(x => x.date_unix >= startDateUnix)
     .map(x => ({
-      gdd: calcGdd(x.mintemp_c, x.maxtemp_c, tBase, algorithm),
+      gdd: calcGdd(x.mintemp, x.maxtemp, tBase, algorithm),
       dateUnix: x.date_unix,
     }));
 }
@@ -62,14 +63,15 @@ export function getGraphPlot(
   const tBase = item.base_temp;
   const itemLocation = locations.find(loc => loc.name === item.location_name);
   if (itemLocation === undefined) return undefined;
-  const history_gdd_arr = forecastsToGddArr(
-    itemLocation.weather.historical,
+  if (itemLocation.weather === undefined) return undefined;
+  const history_gdd_arr = weatherDaysToGddArr(
+    itemLocation.weather.weather_array,
     startDateUnix,
     tBase,
     algorithm,
   );
-  const forecast_gdd_arr = forecastsToGddArr(
-    itemLocation.weather.forecast,
+  const forecast_gdd_arr = weatherDaysToGddArr(
+    itemLocation.weather.weather_array,
     startDateUnix,
     tBase,
     algorithm,

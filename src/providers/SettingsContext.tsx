@@ -2,6 +2,7 @@ import {createContext, useEffect, useState} from 'react';
 import {defaultSettings as defaultSettings} from '../Mock';
 import {Settings, SettingsState} from '../state/State';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {fetchLocations, fetchWeather} from '../Api';
 
 export const SettingsContext = createContext<SettingsState>({
   settings: defaultSettings(),
@@ -11,6 +12,7 @@ export const SettingsContext = createContext<SettingsState>({
 export function SettingsContextProvider({children}: React.PropsWithChildren) {
   const [settings, setSettings] = useState(defaultSettings());
   useEffect(() => {
+    // Test async storage
     console.log('Settings context loaded');
     const promise = AsyncStorage.getItem('settingset')
       .then(x => {
@@ -20,6 +22,7 @@ export function SettingsContextProvider({children}: React.PropsWithChildren) {
       .catch(() => console.log('Error setting setting'));
   }, []);
   function setSettingsWrapper(settingTemp: Settings) {
+    // Test async storage
     console.log('Setting settings');
     const promise = AsyncStorage.setItem('settingset', 'true')
       .then(() => console.log('Setting set'))

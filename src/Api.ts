@@ -1,103 +1,106 @@
 // File to contain functions that call weather api and process weather api
-import {API_KEY} from '../apikey';
+import {Location} from './state/State';
 import {
-  WeatherApiCurrent,
-  apiCurrentToAppCurrent,
-  apiHistoryToAppForecast,
-  apiHistoryToAppHistory,
-} from './Types';
-import {WeatherApiHistory} from './Types';
+  API_LOCATIONS_LANGUAGE,
+  API_LOCATIONS_URL,
+  API_TIMEZONE,
+  API_WEATHER_CURRENT_PARAMS,
+  API_WEATHER_DAILY_PARAMS,
+  API_WEATHER_URL,
+} from './Consts';
 import {
-  Location,
-  WeatherAppCurrent,
-  WeatherAppForecast,
-  WeatherAppHistory,
-} from './state/State';
+  Weather,
+  WeatherApiForecast,
+  WeatherApiLocations,
+  WeatherAppDay,
+  apiLocationsToAppLocations,
+  apiWeatherToAppWeather,
+} from './api/Types';
+import {celsiustoFarenheit, farenheitToCelsius} from './Knowledge';
 
-export async function fetchWeatherCurrent(
-  lat: number,
-  long: number,
-): Promise<void | WeatherAppCurrent> {
-  console.log(`Attempting to fetch from API, current weather`);
-  return await fetch(
-    `https://api.weatherapi.com/v1/current.json?&key=${API_KEY}&q=${lat},${long}&aqi=no`,
+export async function fetchLocations(locName: string, results: number) {
+  const response = await fetch(
+    `${API_LOCATIONS_URL}?name=${locName}&count=${results}&language=${API_LOCATIONS_LANGUAGE}&format=json`,
   )
-    // TODO: Not finished!!
-    .then(res => res.json() as Promise<WeatherApiCurrent>)
-    .then(json => apiCurrentToAppCurrent(json))
-    .catch(err =>
-      console.log(`Error receieved fetching current weather: ${err}`),
-    );
+    .then(r => {
+      return r.json() as Promise<WeatherApiLocations>;
+    })
+    .then(l => {
+      return apiLocationsToAppLocations(l);
+    })
+    .catch(e => console.log('Error', e));
+  return response;
 }
-
-export async function fetchWeatherForecast(
-  lat: number,
-  long: number,
-  days: number,
-): Promise<void | WeatherAppForecast[]> {
-  console.log(`Attempting to fetch from API, forecast weather, days:${days}`);
-  return await fetch(
-    `https://api.weatherapi.com/v1/forecast.json?&key=${API_KEY}&q=${lat},${long}&days=${days}&hour=17&aqi=no`,
+export async function fetchWeather(
+  latitude: number,
+  longitude: number,
+  past_days: number,
+  forecast_days: number,
+): Promise<void | Weather> {
+  const response = await fetch(
+    `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=${API_TIMEZONE}&past_days=${past_days}&forecast_days=${forecast_days}&format=json`,
   )
-    .then(res => res.json() as Promise<WeatherApiHistory>)
-    .then(json => apiHistoryToAppForecast(json))
-    .catch(err => console.log(err));
-}
-
-export async function fetchWeatherHistorical(
-  lat: number,
-  long: number,
-  start: Date,
-  end: Date,
-): Promise<void | WeatherAppHistory> {
-  const start_unix = Math.floor(start.getTime() / 1000);
-  const end_unix = Math.floor(end.getTime() / 1000);
-  console.log(
-    `Attempting to fetch from API, historical weather from ${start.toDateString()}`,
-  );
-  return await fetch(
-    `https://api.weatherapi.com/v1/history.json?&key=${API_KEY}&q=${lat},${long}&unixdt=${start_unix}&unixend_dt=${end_unix}&hour=17`,
-  )
-    .then(res => res.json() as Promise<WeatherApiHistory>)
-    .then(json => apiHistoryToAppHistory(json))
-    .catch(err => console.log(err));
+    .then(r => {
+      return r.json() as Promise<WeatherApiForecast>;
+    })
+    .then(w => {
+      return apiWeatherToAppWeather(w);
+    })
+    .catch(e => console.log('Error', e));
+  return response;
 }
 
 export function addWeatherToLocation(
   location: Location,
-  newWeatherHistory: WeatherAppHistory | void,
-  newWeatherForecast: WeatherAppForecast[] | void,
+  newWeather: Weather | void,
 ): Location {
-  newWeatherHistory ? (location.weather.today = newWeatherHistory.current) : {};
-  newWeatherHistory
-    ? (location.weather.historical = addWeatherForecast(
-        location.weather.historical,
-        newWeatherHistory.historical,
-      ))
-    : {};
-  newWeatherForecast
-    ? (location.weather.forecast = addWeatherForecast(
-        location.weather.forecast,
-        newWeatherForecast,
-      ))
-    : {};
+  if (newWeather === undefined) return location;
+  if (location.weather === undefined) {
+    location.weather = newWeather;
+    return location;
+  }
+  location.weather = addWeather(location.weather, newWeather);
   return location;
 }
 
-export function addWeatherForecast(
-  forecast: WeatherAppForecast[] | undefined,
-  new_forecast: WeatherAppForecast[],
-): WeatherAppForecast[] {
-  if (forecast === undefined) return new_forecast;
-  const new_min_day: number = new_forecast.reduce<number>(
-    (acc: number, cur: WeatherAppForecast) => {
+export function convertWeatherUnits(
+  weather: WeatherAppDay,
+  // NOTE: Assumes you checked that unit was different!
+  newUnit: 'Celsius' | 'Farenheit',
+): WeatherAppDay {
+  const newWeather = {
+    date_unix: weather.date_unix,
+    weather_type: weather.weather_type,
+    mintemp:
+      newUnit === 'Celsius'
+        ? farenheitToCelsius(weather.mintemp)
+        : celsiustoFarenheit(weather.mintemp),
+    maxtemp:
+      newUnit === 'Celsius'
+        ? farenheitToCelsius(weather.maxtemp)
+        : celsiustoFarenheit(weather.maxtemp),
+  };
+  return newWeather;
+}
+
+export function addWeather(weather: Weather, newWeather: Weather): Weather {
+  const isUnitChange = weather.temperature_unit !== newWeather.temperature_unit;
+  const newMinDay: number = newWeather.weather_array.reduce<number>(
+    (acc: number, cur: WeatherAppDay) => {
       return acc < cur.date_unix ? acc : cur.date_unix;
     },
     Date.now(),
   );
-  const filtered_weather_days = forecast.filter(
-    cur => cur.date_unix < new_min_day,
-  );
-  const combined_weather = filtered_weather_days.concat(new_forecast);
-  return combined_weather;
+  // Filter old weather array to remove old values and then convert temperature units if needed.
+  const filteredDays = weather.weather_array
+    .filter(cur => cur.date_unix < newMinDay)
+    .map(w =>
+      isUnitChange ? convertWeatherUnits(w, newWeather.temperature_unit) : w,
+    );
+  const combinedDays = filteredDays.concat(newWeather.weather_array);
+  return {
+    current_condition: newWeather.current_condition,
+    temperature_unit: newWeather.temperature_unit,
+    weather_array: combinedDays,
+  };
 }

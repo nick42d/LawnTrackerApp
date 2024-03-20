@@ -1,19 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {GddTracker, WeatherApiHistory} from '../Types';
-import {
-  MAX_FORECAST_DAYS,
-  MAX_HISTORY_DAYS,
-  PERTH_LAT,
-  PERTH_LONG,
-} from '../Consts';
-import {API_KEY} from '../../apikey';
+import {GddTracker} from '../Types';
+import {MAX_FORECAST_DAYS, MAX_HISTORY_DAYS} from '../Consts';
 import {Location, StateManager} from '../state/State';
 import {defaultStateManager, mockGddTrackers, mockLocations} from '../Mock';
-import {
-  addWeatherToLocation,
-  fetchWeatherForecast,
-  fetchWeatherHistorical,
-} from '../Api';
+import {addWeatherToLocation, fetchWeather} from '../Api';
 
 export const StateContext = React.createContext<StateManager>(
   defaultStateManager(),
@@ -30,30 +20,17 @@ export const StateContextProvider = ({
   function refreshWeather() {
     Promise.all(
       locations.map(async location => {
-        const weatherFuture = await Promise.all([
-          fetchWeatherHistorical(
-            location.latitude,
-            location.longitude,
-            new Date(
-              new Date().setDate(new Date().getDate() - MAX_HISTORY_DAYS),
-            ),
-            new Date(),
-          ),
-          fetchWeatherForecast(
-            location.latitude,
-            location.longitude,
-            MAX_FORECAST_DAYS,
-          ),
-        ]);
-        return addWeatherToLocation(
-          location,
-          weatherFuture[0],
-          weatherFuture[1],
+        const weatherFuture = await fetchWeather(
+          location.latitude,
+          location.longitude,
+          MAX_HISTORY_DAYS,
+          MAX_FORECAST_DAYS,
         );
+        return addWeatherToLocation(location, weatherFuture);
       }),
-    ).then(locations_tmp => {
+    ).then(newLocations => {
       console.log('Received response, setting locations');
-      setLocations(locations_tmp);
+      setLocations(newLocations);
     });
   }
   function addGddTracker(gddTracker: GddTracker) {

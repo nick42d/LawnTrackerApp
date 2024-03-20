@@ -1,11 +1,26 @@
-export const PERTH_LAT = -32.0494;
-export const PERTH_LONG = 115.9122;
-export const SYDNEY_LAT = -33.8688;
-export const SYDNEY_LONG = 151.2093;
 // Hardcoded - TODO: Device specific
 export const GRAPH_WIDTH = 300;
 // Specific to weatherapi.com
-export const MAX_HISTORY_DAYS = 6;
-export const MAX_FORECAST_DAYS = 3;
+export const MAX_HISTORY_DAYS = 30;
+export const MAX_FORECAST_DAYS = 7;
 // Harcoded - TODO: predictive
 export const ESTIMATED_DAYS = 7;
+// Openmeteo params
+// API parameters for current day
+export const API_WEATHER_CURRENT_PARAMS = [
+  'is_day',
+  'weather_code',
+  'temperature_2m',
+];
+// API parameters for each day
+export const API_WEATHER_DAILY_PARAMS = [
+  'temperature_2m_max',
+  'temperature_2m_min',
+];
+export const API_TIMEZONE = 'auto';
+export const API_WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+export const API_LOCATIONS_URL =
+  'https://geocoding-api.open-meteo.com/v1/search';
+// Currently hardcoded
+export const API_TEMPERATURE_UNIT = 'Celsius';
+export const API_LOCATIONS_LANGUAGE = 'en';

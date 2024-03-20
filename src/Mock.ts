@@ -1,6 +1,5 @@
 // Mock functions to generate test types when initially testing app.
 
-import {PERTH_LAT, PERTH_LONG, SYDNEY_LAT, SYDNEY_LONG} from './Consts';
 import {GddTracker} from './Types';
 import {
   Settings,
@@ -8,9 +7,13 @@ import {
   UnitOfMeasure,
   BaseTemp,
   Location,
-  SettingsState,
   StateManager,
 } from './state/State';
+
+const PERTH_LAT = -32.0494;
+const PERTH_LONG = 115.9122;
+const SYDNEY_LAT = -33.8688;
+const SYDNEY_LONG = 151.2093;
 
 export function defaultSettings(): Settings {
   return {
@@ -52,13 +55,13 @@ export function mockLocations(): Location[] {
       latitude: PERTH_LAT,
       longitude: PERTH_LONG,
       name: 'Perth',
-      weather: {historical: undefined, today: undefined, forecast: undefined},
+      weather: undefined,
     },
     {
       latitude: SYDNEY_LAT,
       longitude: SYDNEY_LONG,
       name: 'Sydney',
-      weather: {historical: undefined, today: undefined, forecast: undefined},
+      weather: undefined,
     },
   ];
 }

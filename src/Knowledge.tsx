@@ -17,3 +17,11 @@ export function calcGdd(
     return (t_max + t_min) / 2 - t_base;
   }
 }
+
+export function celsiustoFarenheit(c: number): number {
+  return (c * 9) / 5 + 32;
+}
+
+export function farenheitToCelsius(f: number): number {
+  return ((f - 32) * 5) / 9;
+}
