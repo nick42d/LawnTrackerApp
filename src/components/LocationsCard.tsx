@@ -31,7 +31,7 @@ export function LocationsCard({location, navigation}: LocationsCardProps) {
     if (condition.isDay) {
       return {img: weatherImageSrc.daySrc, desc: weatherImageSrc.descDay};
     } else {
-      return {img: weatherImageSrc.daySrc, desc: weatherImageSrc.descDay};
+      return {img: weatherImageSrc.nightSrc, desc: weatherImageSrc.descNight};
     }
   }
   const weatherImages = location.weather
