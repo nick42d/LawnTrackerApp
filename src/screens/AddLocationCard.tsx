@@ -46,11 +46,7 @@ export default function AddLocationCardScreen({
             name: locName,
             latitude: coordinate[1],
             longitude: coordinate[0],
-            weather: {
-              today: undefined,
-              historical: undefined,
-              forecast: undefined,
-            },
+            weather: undefined,
           });
           navigation.goBack();
           route.params?.onGoBack(locName);
@@ -58,40 +54,16 @@ export default function AddLocationCardScreen({
     });
   }, [coordinate, locName, locUndefined]);
 
+  function prettyLocTooltip(): string {
+    if (locName.length === 0) return '';
+    return `${locName} ${coordinate[1].toFixed(4)}, ${coordinate[0].toFixed(4)}`;
+  }
+
   return (
     <View style={mapstyles.page}>
       <MapLibreGL.MapView
         style={mapstyles.map}
         logoEnabled={true}
-        onPress={feat => {
-          const coords = feat.geometry.coordinates;
-          console.log(`Handling onPress on map, coords ${coords}`);
-          setCoordinate(coords);
-          fetchWeatherCurrent(coords[1], coords[0]).then(res => {
-            if (res !== undefined) {
-              console.log(`Got location name: ${res.location_name}`);
-              setLocName(res.location_name);
-              setLocUndefined(false);
-            } else {
-              setLocUndefined(true);
-            }
-          });
-          console.log(`Setting onPress on map, coords ${coordinate}`);
-          // ref?.getPointInView(coords).then(point => {
-          //   console.log(`Setting marker coords ${point}`);
-          //   setCoordinate(point);
-          // });
-          // ref
-          //   ?.getPointInView([1, 1, 1])
-          //   .then(json => {
-          //     console.log('Component converted coordinates');
-          //     setCoordinate(json);
-          //     console.log(
-          //       `old: ${feat.geometry.coordinates}, new: ${JSON.stringify(json)}`,
-          //     );
-          //   })
-          //   .catch(err => console.log(`Error ${err} received`));
-        }}
         styleURL="https://demotiles.maplibre.org/style.json">
         <MapLibreGL.UserLocation
           onUpdate={loc =>
@@ -108,9 +80,7 @@ export default function AddLocationCardScreen({
           anchor={{x: 0.5, y: 1}}
           title="Location">
           <Icon source="map-marker" size={40} />
-          <MapLibreGL.Callout
-            title={`${locName} ${coordinate[1].toFixed(4)}, ${coordinate[0].toFixed(4)}`}
-          />
+          <MapLibreGL.Callout title={prettyLocTooltip()} />
         </MapLibreGL.PointAnnotation>
       </MapLibreGL.MapView>
       <View style={{position: 'absolute', top: 10}}>
@@ -149,6 +119,8 @@ export default function AddLocationCardScreen({
                   description={s.admin1 + ', ' + s.country}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
+                    setLocUndefined(false);
+                    setLocName(s.name);
                     setCoordinate([s.longitude, s.latitude]);
                     setSearchResultsShown(false);
                   }}
@@ -162,7 +134,7 @@ export default function AddLocationCardScreen({
       </View>
       <View style={{position: 'absolute', bottom: 0}}>
         <Text style={{color: 'black'}} variant="titleLarge">
-          {locName}: {coordinate[0].toFixed(2)},{coordinate[1].toFixed(2)}
+          {prettyLocTooltip()}
         </Text>
       </View>
     </View>
