@@ -1,14 +1,9 @@
 import React, {useContext, useState} from 'react';
 import {Icon, List, Searchbar, Text} from 'react-native-paper';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {AppScreenNavigationProp, AppScreenProps} from '../navigation/Root';
+import {StyleSheet, View} from 'react-native';
+import {AppScreenProps} from '../navigation/Root';
 import SaveButton from '../components/SaveButton';
-import MapLibreGL, {
-  MarkerView,
-  Location,
-  MapView,
-} from '@maplibre/maplibre-react-native';
-import styles from '../Styles';
+import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../Api';
 import {WeatherAppLocation} from '../api/Types';
@@ -73,18 +68,22 @@ export default function AddLocationCardScreen({
           }
         />
         <MapLibreGL.Camera centerCoordinate={coordinate} />
-        <MapLibreGL.PointAnnotation
-          id="pt-ann"
-          key="pt-ann"
-          coordinate={coordinate}
-          anchor={{x: 0.5, y: 1}}
-          title="Location">
-          <Icon source="map-marker" size={40} />
-          <MapLibreGL.Callout title={prettyLocTooltip()} />
-        </MapLibreGL.PointAnnotation>
+        {!locUndefined ? (
+          // NOTE: Icon looks shit in light mode - greyed out when selected and black when not.
+          <MapLibreGL.PointAnnotation
+            id="pt-ann"
+            key="pt-ann"
+            coordinate={coordinate}
+            anchor={{x: 0.5, y: 1}}
+            title="Location">
+            <Icon source="map-marker" size={40} />
+            <MapLibreGL.Callout title={prettyLocTooltip()} />
+          </MapLibreGL.PointAnnotation>
+        ) : undefined}
       </MapLibreGL.MapView>
       <View style={{position: 'absolute', top: 10}}>
         <Searchbar
+          // NOTE: Doing this on change introduces race conditions
           onChangeText={t => {
             setSearch(t);
             fetchLocations(search, 5).then(l => {
@@ -110,6 +109,7 @@ export default function AddLocationCardScreen({
         />
         {searchResultsShown ? (
           <List.Section
+            // Style doesn't work very well on Light Mode
             style={{borderRadius: 10, backgroundColor: 'black', opacity: 0.8}}>
             {searchResults.map((s, i) => {
               return (
