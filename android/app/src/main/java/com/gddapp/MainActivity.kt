@@ -13,7 +13,7 @@ class MainActivity : ReactActivity() {
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.
    */
-  override fun getMainComponentName(): String = "GddApp"
+  override fun getMainComponentName(): String = "Lawn Tracker"
 
   // react-native-screens install instructions
   override fun onCreate(savedInstanceState: Bundle?) {
