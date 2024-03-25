@@ -8,6 +8,7 @@ import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../Api';
 import {WeatherAppLocation} from '../api/Types';
 
+const NUMBER_SEARCH_RESULTS = 5;
 const mapstyles = StyleSheet.create({
   page: {
     flex: 1,
@@ -29,7 +30,10 @@ export default function AddLocationCardScreen({
   const [coordinate, setCoordinate] = useState([0.5, 0.5]);
   const [locName, setLocName] = useState('');
   const [locUndefined, setLocUndefined] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchState, setSearchState] = useState({
+    query: '',
+    showSuggestions: false,
+  });
   const [searchResults, setSearchResults] = useState<WeatherAppLocation[]>([]);
   const [searchResultsShown, setSearchResultsShown] = useState(false);
 
@@ -48,6 +52,30 @@ export default function AddLocationCardScreen({
         }),
     });
   }, [coordinate, locName, locUndefined]);
+
+  // Handle state updates to provide search suggestions whilst handling race conditions.
+  React.useEffect(() => {
+    let active = true;
+    if (
+      searchState.showSuggestions === false ||
+      searchState.query.length === 0
+    ) {
+      setSearchResultsShown(false);
+    } else {
+      console.log('Requesting search results');
+      fetchLocations(searchState.query, NUMBER_SEARCH_RESULTS).then(l => {
+        if (l && active === true) {
+          console.log('setting search results');
+          setSearchResults(l.locations);
+          setSearchResultsShown(true);
+        }
+      });
+    }
+    return () => {
+      active = false;
+      console.log('Closing search suggestions effect');
+    };
+  }, [searchState]);
 
   function prettyLocTooltip(): string {
     if (locName.length === 0) return '';
@@ -83,28 +111,13 @@ export default function AddLocationCardScreen({
       </MapLibreGL.MapView>
       <View style={{position: 'absolute', top: 10}}>
         <Searchbar
-          // NOTE: Doing this on change introduces race conditions
           onChangeText={t => {
-            setSearch(t);
-            fetchLocations(search, 5).then(l => {
-              if (l) {
-                console.log('setting search results');
-                setSearchResults(l.locations);
-                setSearchResultsShown(true);
-              }
-            });
+            setSearchState({showSuggestions: true, query: t});
           }}
           onSubmitEditing={_ =>
-            fetchLocations(search, 5).then(l => {
-              if (l) {
-                console.log('setting search results');
-                // DUPLICATE CODE
-                setSearchResults(l.locations);
-                setSearchResultsShown(true);
-              }
-            })
+            setSearchState({...searchState, showSuggestions: true})
           }
-          value={search}
+          value={searchState.query}
           style={{width: 380}}
         />
         {searchResultsShown ? (
@@ -122,7 +135,7 @@ export default function AddLocationCardScreen({
                     setLocUndefined(false);
                     setLocName(s.name);
                     setCoordinate([s.longitude, s.latitude]);
-                    setSearchResultsShown(false);
+                    setSearchState({...searchState, showSuggestions: false});
                   }}
                 />
               );
