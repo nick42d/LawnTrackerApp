@@ -34,6 +34,7 @@ export function defaultStateManager(): StateManager {
   return {
     locations: [],
     gddTrackers: [],
+    status: 'Initialised',
     refreshWeather: () => {
       LogErrorCallbackNotSet('refreshWeather');
     },

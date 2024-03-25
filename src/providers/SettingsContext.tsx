@@ -1,37 +1,58 @@
 import {createContext, useEffect, useState} from 'react';
 import {defaultSettings as defaultSettings} from '../Mock';
-import {Settings, SettingsState} from '../state/State';
+import {ContextStatus, SettingsState} from '../state/State';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {fetchLocations, fetchWeather} from '../Api';
 
+export const SETTINGS_STORAGE_KEY = 'SETTINGS';
 export const SettingsContext = createContext<SettingsState>({
   settings: defaultSettings(),
+  status: 'Initialised',
   setSettings: undefined,
 });
 
 export function SettingsContextProvider({children}: React.PropsWithChildren) {
   const [settings, setSettings] = useState(defaultSettings());
+  const [status, setStatus] = useState<ContextStatus>('Initialised');
+
+  // On load, load up settings if stored locally.
   useEffect(() => {
-    // Test async storage
     console.log('Settings context loaded');
-    const promise = AsyncStorage.getItem('settingset')
+    setStatus('Loading');
+    AsyncStorage.getItem(SETTINGS_STORAGE_KEY)
       .then(x => {
-        if (x === 'true') console.log('Settings storage variable set');
-        else console.log('Settings storage variable not set');
+        if (x !== null) {
+          console.log('Loading Settings from device');
+          // NOTE: Parse could fail if someone else writes to this key!
+          setSettings(JSON.parse(x));
+        } else console.log('No Settings on device - using defaults');
+        setStatus('Loaded');
       })
-      .catch(() => console.log('Error setting setting'));
+      .catch(() => console.log('Error getting settings'));
   }, []);
-  function setSettingsWrapper(settingTemp: Settings) {
-    // Test async storage
-    console.log('Setting settings');
-    const promise = AsyncStorage.setItem('settingset', 'true')
-      .then(() => console.log('Setting set'))
-      .catch(() => console.log('Error setting setting'));
-    setSettings(settingTemp);
-  }
+  // Keep settings synced to AsyncStorage
+  // TODO: Better handle race conditions
+  useEffect(() => {
+    let active = true;
+    console.log('Settings state changed');
+    if (status === 'Loaded') {
+      console.log('Setting settings');
+      AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
+        .then(() =>
+          !active
+            ? console.error(
+                'Destructor called on effect before write settings finished',
+              )
+            : console.log('Settings set'),
+        )
+        .catch(() => console.log('Error setting settings'));
+    }
+    return () => {
+      active = false;
+      console.log('Cleaning up settings effect');
+    };
+  }, [settings]);
   return (
-    <SettingsContext.Provider
-      value={{settings, setSettings: setSettingsWrapper}}>
+    <SettingsContext.Provider value={{settings, status, setSettings}}>
       {children}
     </SettingsContext.Provider>
   );

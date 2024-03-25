@@ -8,6 +8,7 @@ import {GddTracker} from '../Types';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
+  Text,
   useTheme,
 } from 'react-native-paper';
 import {
@@ -24,6 +25,10 @@ import {DrawerScreenProps} from '@react-navigation/drawer';
 import {AddLocation, Location} from '../state/State';
 import AddLocationCardScreen from '../screens/AddLocationCard';
 import ViewLocationCardScreen from '../screens/ViewLocationCard';
+import {useContext} from 'react';
+import {SettingsContext} from '../providers/SettingsContext';
+import {View} from 'react-native';
+import LoadingScreen from '../screens/Loading';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -65,8 +70,21 @@ export type HomeLocationsTabScreenProps<
   AppDrawerScreenProps<keyof AppDrawerParamList>
 >;
 
-export function AppRootStackNavigator() {
+export function LoadableApp() {
+  const {status: settingsStatus} = useContext(SettingsContext);
+  const {status: appStatus} = useContext(SettingsContext);
+
+  // TODO: Handle initialising also.
+  return settingsStatus !== 'Loaded' || appStatus !== 'Loaded' ? (
+    <LoadingScreen />
+  ) : (
+    <AppRootStackNavigator />
+  );
+}
+
+function AppRootStackNavigator() {
   const paperTheme = useTheme<Theme>();
+
   return (
     <NavigationContainer theme={paperTheme}>
       <Stack.Navigator

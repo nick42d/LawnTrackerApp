@@ -5,8 +5,11 @@ import {Weather} from '../api/Types';
 
 export type SettingsState = {
   settings: Settings;
+  status: ContextStatus;
   setSettings: ((settings: Settings) => void) | undefined;
 };
+
+export type ContextStatus = 'Initialised' | 'Loading' | 'Loaded';
 
 export type Settings = {
   algorithm: GDDAlgorithm;
@@ -58,6 +61,7 @@ export enum BaseTemp {
 export type StateManager = {
   locations: Location[];
   gddTrackers: GddTracker[];
+  status: ContextStatus;
   refreshWeather: () => void;
   addLocation: (loc: Location) => void;
   deleteLocationName: (locName: string) => void;

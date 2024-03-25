@@ -1,7 +1,7 @@
 /**
  * @format
  */
-import {AppRootStackNavigator} from './navigation/Root';
+import {LoadableApp} from './navigation/Root';
 import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
@@ -46,7 +46,7 @@ function PaperWrapper() {
     <PaperProvider
       theme={appDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
       <StateContextProvider>
-        <AppRootStackNavigator />
+        <LoadableApp />
       </StateContextProvider>
     </PaperProvider>
   );
