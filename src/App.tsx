@@ -20,6 +20,7 @@ import {
   SettingsContextProvider,
 } from './providers/SettingsContext';
 import {StateContextProvider} from './providers/StateContext';
+import Maplibre from '@maplibre/maplibre-react-native';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,

@@ -18,4 +18,17 @@ buildscript {
     }
 }
 
+// Added for React Native Background Fetch
+// https://github.com/transistorsoft/react-native-background-fetch/blob/master/docs/INSTALL-AUTO-ANDROID.md
+allprojects {
+    repositories {
+        maven {
+            // react-native-background-fetch
+            url("${project(':react-native-background-fetch').projectDir}/libs")
+        }
+
+    }
+}
+
+
 apply plugin: "com.facebook.react.rootproject"

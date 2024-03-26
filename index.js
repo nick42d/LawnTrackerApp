@@ -22,6 +22,7 @@ import MapLibreGL from '@maplibre/maplibre-react-native';
 import {SettingsContextProvider} from './src/providers/SettingsContext';
 import {useContext} from 'react';
 
+MapLibreGL.requestAndroidLocationPermissions();
 MapLibreGL.setAccessToken(null);
 registerTranslation('en-GB', enGB);
 
