@@ -1,17 +1,20 @@
 import React, {useContext, useState} from 'react';
-import {FAB, Text} from 'react-native-paper';
+import {FAB, Portal, Snackbar, Text} from 'react-native-paper';
 import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import styles from '../Styles';
 import {LocationsCard} from '../components/LocationsCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {StateContext} from '../providers/StateContext';
+import {StateContext, StateContextError} from '../providers/StateContext';
 
 export default function LocationsScreen({
   route,
   navigation,
 }: HomeLocationsTabScreenProps<'Locations'>): React.JSX.Element {
-  const {locations, refreshWeather} = useContext(StateContext);
+  const {locations, refreshWeather, deleteLocationName} =
+    useContext(StateContext);
   const [refreshing, setRefreshing] = useState(false);
+  const [alert, setAlert] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing on Locations screen');
@@ -24,6 +27,21 @@ export default function LocationsScreen({
     setRefreshing(false);
   }, [refreshWeather]);
 
+  function onDelete(name: string) {
+    // TODO: Check that no GddCards use this location
+    if (deleteLocationName !== undefined) {
+      try {
+        deleteLocationName(name);
+      } catch (e) {
+        if (e instanceof StateContextError) {
+          setAlert(e.message);
+          setShowAlert(true);
+        } else {
+          throw e;
+        }
+      }
+    }
+  }
   return (
     <View style={{flex: 1}}>
       <FlatList
@@ -32,7 +50,11 @@ export default function LocationsScreen({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({item}) => (
-          <LocationsCard location={item} navigation={navigation} />
+          <LocationsCard
+            onDelete={() => onDelete(item.name)}
+            location={item}
+            navigation={navigation}
+          />
         )}
       />
       <FAB
@@ -43,61 +65,16 @@ export default function LocationsScreen({
         }}
         style={[styles.fabStyle]}
       />
+      <Portal>
+        <Snackbar
+          // Unsure if duration does anything
+          duration={6000}
+          visible={showAlert}
+          action={{label: 'Dismiss', onPress: () => setShowAlert(false)}}
+          onDismiss={() => setShowAlert(false)}>
+          {alert}
+        </Snackbar>
+      </Portal>
     </View>
-  );
-}
-
-function ViewWeather() {
-  const {locations} = useContext(LocationsContext);
-  const [refreshing, setRefreshing] = useState(false);
-  const {refresh} = React.useContext(LocationsContext);
-  const onRefresh = React.useCallback(() => {
-    console.log('Refreshing on Locations screen');
-    setRefreshing(true);
-    refresh ? refresh() : console.log('No refresh func found');
-    setRefreshing(false);
-  }, []);
-  // function gdds_data() {
-  //   return weather.forecasts.map(day => ({
-  //     value: calcGdd(day.mintemp_c, day.maxtemp_c, T_BASE),
-  //   }));
-  // }
-  // function gdds_data_low() {
-  //   return weather.forecasts.map(day => ({
-  //     value: day.mintemp_c,
-  //   }));
-  // }
-  // function gdds_data_high() {
-  //   return weather.forecasts.map(day => ({
-  //     value: day.maxtemp_c,
-  //   }));
-  // }
-  return (
-    // <ScrollView
-    //   refreshControl={
-    //     <RefreshControl refreshing={false} onRefresh={onRefresh} />
-    //   }>
-    //   <Text>{weather.location}</Text>
-    //   <List.Section>
-    //     <List.Subheader>Weather</List.Subheader>
-    //     {weather.forecasts.map(gdd => (
-    //       <List.Item title={gdd.date.toString()} description={gdd.mintemp_c} />
-    //     ))}
-    //     <LineChart
-    //       // TODO: Don't hardcode the width, get it from the device...
-    //       width={GRAPH_WIDTH}
-    //       data={gdds_data_high()}
-    //       data2={gdds_data_low()}
-    //       data3={gdds_data()}
-    //       color1="red"
-    //       color2="blue"
-    //       color3="green"
-    //       isAnimated
-    //       curved
-    //       adjustToWidth
-    //     />
-    //   </List.Section>
-    // </ScrollView>
-    <View></View>
   );
 }

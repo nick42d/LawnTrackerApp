@@ -6,21 +6,40 @@ import {defaultStateManager, mockGddTrackers, mockLocations} from '../Mock';
 import {addWeatherToLocation, fetchWeather} from '../Api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export class StateContextError extends Error {
+  name: 'DELETE_LOCATIONS_ERROR';
+  message: string;
+  cause: any;
+  constructor({
+    name,
+    message,
+    cause,
+  }: {
+    name: 'DELETE_LOCATIONS_ERROR';
+    message: string;
+    cause?: any;
+  }) {
+    super();
+    this.name = name;
+    this.message = message;
+    this.cause = cause;
+  }
+}
 const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
 export const StateContext = React.createContext<StateManager>(
   defaultStateManager(),
 );
-export const StateContextProvider = ({
+export function StateContextProvider({
   children,
-}: React.PropsWithChildren): React.JSX.Element => {
+}: React.PropsWithChildren): React.JSX.Element {
   const [locations, setLocations] = useState(mockLocations());
   const [gddTrackers, setGddTrackers] = useState(mockGddTrackers());
   const [status, setStatus] = useState<ContextStatus>('Initialised');
 
   // On load, load up state and then refresh weather.
   useEffect(() => {
-    console.log('Settings context loaded');
+    console.log('App state context loaded');
     setStatus('Loading');
     AsyncStorage.multiGet([LOCATIONS_STORAGE_KEY, GDD_TRACKERS_STORAGE_KEY])
       .then(x => {
@@ -36,31 +55,21 @@ export const StateContextProvider = ({
         ) {
           console.log('Loading app state from device');
           // NOTE: Parse could fail if someone else writes to these keys!
-          setLocations(JSON.parse(containsLoc[1]));
           setGddTrackers(JSON.parse(containsGddTrackers[1]));
+          setLocations(JSON.parse(containsLoc[1]));
+          console.log('Loaded app state from device');
         } else console.log('Missing some App state on device - using defaults');
         setStatus('Loaded');
       })
-      .then(() => refreshWeather())
       .catch(() => console.log('Error getting app state'));
   }, []);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
-  // TODO: Consider splitting handlers into two effects
   useEffect(() => {
     let active = true;
-    console.log('App state changed');
+    console.log('App state changed - trackers');
     if (status === 'Loaded') {
-      console.log('Setting app state');
-      AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
-        .then(() =>
-          !active
-            ? console.error(
-                'Destructor called on effect before write locations finished',
-              )
-            : console.log('Locations set'),
-        )
-        .catch(() => console.log('Error setting locations'));
+      console.log('Setting app state - trackers');
       AsyncStorage.setItem(
         GDD_TRACKERS_STORAGE_KEY,
         JSON.stringify(gddTrackers),
@@ -73,12 +82,38 @@ export const StateContextProvider = ({
             : console.log('Trackers set'),
         )
         .catch(() => console.log('Error setting trackers'));
+    } else {
+      console.log('Not syncing app state as not Loaded - trackers');
     }
     return () => {
       active = false;
-      console.log('Cleaning up app state effect');
+      console.log('Cleaning up app state effect - trackers');
     };
-  }, [locations, gddTrackers]);
+  }, [gddTrackers]);
+  // Keep state synced to AsyncStorage
+  // TODO: Better handle race conditions
+  useEffect(() => {
+    let active = true;
+    console.log('App state changed - locations');
+    if (status === 'Loaded') {
+      console.log('Setting app state - locations');
+      AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
+        .then(() =>
+          !active
+            ? console.error(
+                'Destructor called on effect before write locations finished',
+              )
+            : console.log('Locations set'),
+        )
+        .catch(() => console.log('Error setting locations'));
+    } else {
+      console.log('Not syncing app state as not Loaded - locations');
+    }
+    return () => {
+      active = false;
+      console.log('Cleaning up app state effect - locations');
+    };
+  }, [locations]);
 
   function refreshWeather() {
     Promise.all(
@@ -119,7 +154,14 @@ export const StateContextProvider = ({
     setLocations([...locations, location]);
   }
   function deleteLocationName(locName: string) {
-    console.log(`Deleting location name ${locName}`);
+    console.log(`Attempting to delete location name ${locName}`);
+    if (gddTrackers.find(t => t.location_name === locName) !== undefined) {
+      console.log(`Unable to delete location as used in an existing tracker`);
+      throw new StateContextError({
+        name: 'DELETE_LOCATIONS_ERROR',
+        message: 'Error deleting location as is used in a current tracker',
+      });
+    }
     const new_locations = locations.filter(item => item.name !== locName);
     setLocations(new_locations);
   }
@@ -128,7 +170,7 @@ export const StateContextProvider = ({
       value={{
         locations,
         gddTrackers,
-        status: status,
+        status,
         refreshWeather,
         addLocation,
         deleteLocationName,
@@ -139,4 +181,4 @@ export const StateContextProvider = ({
       {children}
     </StateContext.Provider>
   );
-};
+}

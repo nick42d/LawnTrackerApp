@@ -9,21 +9,20 @@ import {
   WEATHER_IMAGES,
   WeatherImagesObject,
 } from '../../assets/weather_icons/WeatherImages';
-import {StateContext} from '../providers/StateContext';
+import {StateContext, StateContextError} from '../providers/StateContext';
 import {WeatherAppCondition} from '../api/Types';
 
 type LocationsCardProps = {
   location: Location;
   navigation: HomeLocationsTabScreenProps<'Locations'>['navigation'];
+  onDelete: () => void;
 };
 
-export function LocationsCard({location, navigation}: LocationsCardProps) {
-  // Unsure if this is better than prop drilling
-  const {deleteLocationName} = useContext(StateContext);
-  function onDelete() {
-    // TODO: Check that no GddCards use this location
-    if (deleteLocationName !== undefined) deleteLocationName(location.name);
-  }
+export function LocationsCard({
+  location,
+  navigation,
+  onDelete,
+}: LocationsCardProps) {
   // TODO: Type checking
   function getWeatherImagesObject(condition: WeatherAppCondition) {
     const weatherImageSrc = WEATHER_IMAGES.find(x => x.code === condition.code);

@@ -35,6 +35,17 @@ export default function HomeScreen({
     resetGddTrackerName,
   } = React.useContext(StateContext);
 
+  const onRefresh = React.useCallback(() => {
+    console.log('Refreshing Home screen');
+    setRefreshing(true);
+    if (refreshWeather !== undefined) {
+      refreshWeather();
+    } else {
+      console.log('Refresh callback not set, doing nothing');
+    }
+    setRefreshing(false);
+  }, [refreshWeather]);
+
   function onDelete(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
@@ -55,17 +66,6 @@ export default function HomeScreen({
     setDialogMessage('Are you sure you want to reset?');
     setShowDialog(true);
   }
-
-  const onRefresh = React.useCallback(() => {
-    console.log('Refreshing Home screen');
-    setRefreshing(true);
-    if (refreshWeather !== undefined) {
-      refreshWeather();
-    } else {
-      console.log('Refresh callback not set, doing nothing');
-    }
-    setRefreshing(false);
-  }, [refreshWeather]);
 
   return (
     <View style={{flex: 1}}>

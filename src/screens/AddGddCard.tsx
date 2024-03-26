@@ -139,7 +139,7 @@ export default function AddGddCardScreen({
           onChangeText={target => setTarget(target)}
           left={<TextInput.Icon icon="target" />}
         />
-        <HelperText type="error" visible={!nameEntered()}>
+        <HelperText type="error" visible={!targetEntered()}>
           Number must be entered as a Target
         </HelperText>
         <Text>Base Temp</Text>
