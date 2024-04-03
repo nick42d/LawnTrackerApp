@@ -1,4 +1,4 @@
-import notifee from '@notifee/react-native';
+import notifee, {Event} from '@notifee/react-native';
 
 export async function onDisplayNotification() {
   // Request permissions (required for iOS)
@@ -23,4 +23,17 @@ export async function onDisplayNotification() {
       },
     },
   });
+}
+
+/// Handle a background event recieved by notifee
+export async function BackgroundEventCallback({type, detail}: Event) {
+  const {notification, pressAction} = detail;
+  console.log(
+    'Notifee Background Event Handler called, type: ',
+    type,
+    ', notification: ',
+    notification,
+    ', pressAction: ',
+    pressAction,
+  );
 }
