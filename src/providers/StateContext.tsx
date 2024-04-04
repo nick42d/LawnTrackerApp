@@ -5,28 +5,16 @@ import {ContextStatus, Location, StateManager} from '../state/State';
 import {defaultStateManager, mockGddTrackers, mockLocations} from '../Mock';
 import {addWeatherToLocation, fetchWeather} from '../Api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  OnLoad,
+  onChangeGddTrackers as OnChangeGddTrackers,
+  OnChangeLocations,
+} from './statecontext/EffectHandlers';
+import {StateContextError} from './statecontext/Error';
 
-export class StateContextError extends Error {
-  name: 'DELETE_LOCATIONS_ERROR';
-  message: string;
-  cause: any;
-  constructor({
-    name,
-    message,
-    cause,
-  }: {
-    name: 'DELETE_LOCATIONS_ERROR';
-    message: string;
-    cause?: any;
-  }) {
-    super();
-    this.name = name;
-    this.message = message;
-    this.cause = cause;
-  }
-}
-const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
-const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
+export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
+export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
+
 export const StateContext = React.createContext<StateManager>(
   defaultStateManager(),
 );
@@ -39,80 +27,17 @@ export function StateContextProvider({
 
   // On load, load up state and then refresh weather.
   useEffect(() => {
-    console.log('App state context loaded');
-    setStatus('Loading');
-    AsyncStorage.multiGet([LOCATIONS_STORAGE_KEY, GDD_TRACKERS_STORAGE_KEY])
-      .then(x => {
-        const containsLoc = x.find(y => y[0] === LOCATIONS_STORAGE_KEY);
-        const containsGddTrackers = x.find(
-          y => y[0] === GDD_TRACKERS_STORAGE_KEY,
-        );
-        if (
-          containsLoc !== undefined &&
-          containsLoc[1] !== null &&
-          containsGddTrackers !== undefined &&
-          containsGddTrackers[1] !== null
-        ) {
-          console.log('Loading app state from device');
-          // NOTE: Parse could fail if someone else writes to these keys!
-          setGddTrackers(JSON.parse(containsGddTrackers[1]));
-          setLocations(JSON.parse(containsLoc[1]));
-          console.log('Loaded app state from device');
-        } else console.log('Missing some App state on device - using defaults');
-        setStatus('Loaded');
-      })
-      .catch(() => console.log('Error getting app state'));
+    OnLoad(setStatus, setGddTrackers, setLocations);
   }, []);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
-    let active = true;
-    console.log('App state changed - trackers');
-    if (status === 'Loaded') {
-      console.log('Setting app state - trackers');
-      AsyncStorage.setItem(
-        GDD_TRACKERS_STORAGE_KEY,
-        JSON.stringify(gddTrackers),
-      )
-        .then(() =>
-          !active
-            ? console.error(
-                'Destructor called on effect before write trackers finished',
-              )
-            : console.log('Trackers set'),
-        )
-        .catch(() => console.log('Error setting trackers'));
-    } else {
-      console.log('Not syncing app state as not Loaded - trackers');
-    }
-    return () => {
-      active = false;
-      console.log('Cleaning up app state effect - trackers');
-    };
+    OnChangeGddTrackers(status, gddTrackers);
   }, [gddTrackers]);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
-    let active = true;
-    console.log('App state changed - locations');
-    if (status === 'Loaded') {
-      console.log('Setting app state - locations');
-      AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
-        .then(() =>
-          !active
-            ? console.error(
-                'Destructor called on effect before write locations finished',
-              )
-            : console.log('Locations set'),
-        )
-        .catch(() => console.log('Error setting locations'));
-    } else {
-      console.log('Not syncing app state as not Loaded - locations');
-    }
-    return () => {
-      active = false;
-      console.log('Cleaning up app state effect - locations');
-    };
+    OnChangeLocations(status, locations);
   }, [locations]);
 
   function refreshWeather() {

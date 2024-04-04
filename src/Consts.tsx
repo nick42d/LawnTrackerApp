@@ -24,3 +24,5 @@ export const API_LOCATIONS_URL =
 // Currently hardcoded
 export const API_TEMPERATURE_UNIT = 'Celsius';
 export const API_LOCATIONS_LANGUAGE = 'en';
+// How often to run react-native-background-fetch - could differ between dev and prod
+export const BACKGROUND_REFRESH_INTERVAL = 15;

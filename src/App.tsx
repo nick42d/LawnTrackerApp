@@ -21,7 +21,6 @@ import {
 } from './providers/SettingsContext';
 import {StateContextProvider} from './providers/StateContext';
 import React from 'react';
-import {initBackgroundFetch} from './Worker';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -31,11 +30,6 @@ const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
 const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
 
 export default function App(): React.JSX.Element {
-  // TODO: Figure out where this needs to go!
-  // Initialize BackgroundFetch only once when component mounts.
-  React.useEffect(() => {
-    initBackgroundFetch();
-  }, []);
   return (
     // TODO: Safe Area
     <SettingsContextProvider>
