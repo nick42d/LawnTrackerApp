@@ -8,7 +8,10 @@ import {
   gddAlgorithmToText,
   unitOfMeasureToText,
 } from '../state/State';
-import {AppDrawerScreenProps} from '../navigation/Root';
+import {
+  AppDrawerScreenProps,
+  BasicAppDrawerScreenProps,
+} from '../navigation/Root';
 import {ScrollView, View} from 'react-native';
 import GenericSelectionDialog, {
   SliderSelectionDialog,
@@ -18,9 +21,7 @@ const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
 const UNITS_OF_MEASURE = [UnitOfMeasure.Imperial, UnitOfMeasure.Metric];
 const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
 
-export default function SettingsScreen({
-  route,
-}: AppDrawerScreenProps<'Settings'>) {
+export default function SettingsScreen() {
   const {settings, setSettings} = useContext(SettingsContext);
   const [baseTempDialogVisible, setBaseTempDialogVisible] = useState(false);
   const [unitOfMeasureDialogVisible, setUnitOfMeasureDialogVisible] =

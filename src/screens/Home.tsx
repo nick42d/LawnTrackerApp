@@ -9,12 +9,10 @@ import {
 } from 'react-native-paper';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import React, {useState} from 'react';
-import {mockGddTrackers} from '../Mock';
 import {GddCard} from '../components/GddCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import styles from '../Styles';
 import {StateContext} from '../providers/StateContext';
-import DialogContent from 'react-native-paper/lib/typescript/components/Dialog/DialogContent';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 export default function HomeScreen({

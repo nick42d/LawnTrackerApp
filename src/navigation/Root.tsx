@@ -97,15 +97,25 @@ function AppRootStackNavigator() {
           component={AppDrawerNavigator}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="AddGddCard" component={AddGddCardScreen} />
-        <Stack.Screen name="ViewGddCard" component={ViewGddCardScreen} />
+        <Stack.Screen
+          name="AddGddCard"
+          component={AddGddCardScreen}
+          options={{title: 'Add GDD Tracker'}}
+        />
+        <Stack.Screen
+          name="ViewGddCard"
+          component={ViewGddCardScreen}
+          options={{title: 'View Card'}}
+        />
         <Stack.Screen
           name="ViewLocationCard"
           component={ViewLocationCardScreen}
+          options={{title: 'View Location'}}
         />
         <Stack.Screen
           name="AddLocationCard"
           component={AddLocationCardScreen}
+          options={{title: 'Add Location'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

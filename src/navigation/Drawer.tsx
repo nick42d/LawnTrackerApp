@@ -9,6 +9,7 @@ import {AppTabNavigator} from './Tab';
 import SettingsScreen from '../screens/Settings';
 import {getHeaderTitle} from '@react-navigation/elements';
 import HelpScreen from '../screens/Help';
+import {AppDrawerScreenProps, AppScreenProps} from './Root';
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -21,6 +22,7 @@ export function AppDrawerNavigator() {
       <DrawerNavigator.Screen
         name="HomeLocationsTabs"
         component={AppTabNavigator}
+        options={{title: 'LawnTracker'}}
       />
       <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
       <DrawerNavigator.Screen name="Help" component={HelpScreen} />

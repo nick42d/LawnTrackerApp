@@ -4,7 +4,8 @@ import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import styles from '../Styles';
 import {LocationsCard} from '../components/LocationsCard';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {StateContext, StateContextError} from '../providers/StateContext';
+import {StateContext} from '../providers/StateContext';
+import {StateContextError} from '../providers/statecontext/Error';
 
 export default function LocationsScreen({
   route,
