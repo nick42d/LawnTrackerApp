@@ -20,6 +20,7 @@ export default function HomeScreen({
   navigation,
 }: HomeLocationsTabScreenProps<'Home'>) {
   const [refreshing, setRefreshing] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
   // Required to use a higher order function due to type signature of useState.
   const [dialogCallback, setDialogCallback] = useState(() => () => {});
   const [dialogTitle, setDialogTitle] = useState('');
@@ -81,13 +82,29 @@ export default function HomeScreen({
           />
         )}
       />
-      <FAB
-        icon={'plus'}
+      <FAB.Group
+        open={fabOpen}
+        visible
+        icon={fabOpen ? 'sun-thermometer' : 'plus'}
+        label={fabOpen ? 'GDD Tracker' : undefined}
+        actions={[
+          {
+            label: 'Timed Tracker',
+            icon: 'calendar-clock',
+            onPress: () => {
+              console.warn(
+                'Pressed add Timed Tracker button, currently unhandled',
+              );
+            },
+          },
+        ]}
+        onStateChange={({open}) => setFabOpen(open)}
         onPress={() => {
-          console.log('Pressed plus button on Home screen');
-          navigation.navigate('AddGddCard');
+          if (fabOpen) {
+            console.log('Pressed add GDD Tracker button');
+            navigation.navigate('AddGddCard');
+          }
         }}
-        style={[styles.fabStyle]}
       />
       <Portal>
         <ConfirmationDialog
