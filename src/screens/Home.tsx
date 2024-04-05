@@ -7,12 +7,12 @@ import {
   Portal,
   Text,
 } from 'react-native-paper';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
-import {GddCard} from '../components/GddCard';
-import {HomeLocationsTabScreenProps} from '../navigation/Root';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { TrackerCard } from '../components/TrackerCard';
+import { HomeLocationsTabScreenProps } from '../navigation/Root';
 import styles from '../Styles';
-import {StateContext} from '../providers/StateContext';
+import { StateContext } from '../providers/StateContext';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 export default function HomeScreen({
@@ -22,15 +22,15 @@ export default function HomeScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   // Required to use a higher order function due to type signature of useState.
-  const [dialogCallback, setDialogCallback] = useState(() => () => {});
+  const [dialogCallback, setDialogCallback] = useState(() => () => { });
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
   const [showDialog, setShowDialog] = useState(false);
 
   const {
-    gddTrackers,
+    trackers: gddTrackers,
     refreshWeather,
-    deleteGddTrackerName,
+    deleteTrackerName: deleteGddTrackerName,
     resetGddTrackerName,
   } = React.useContext(StateContext);
 
@@ -67,14 +67,14 @@ export default function HomeScreen({
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={gddTrackers}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({item}) => (
-          <GddCard
+        renderItem={({ item }) => (
+          <TrackerCard
             item={item}
             navigation={navigation}
             onDelete={() => onDelete(item.name)}
@@ -85,25 +85,36 @@ export default function HomeScreen({
       <FAB.Group
         open={fabOpen}
         visible
-        icon={fabOpen ? 'sun-thermometer' : 'plus'}
-        label={fabOpen ? 'GDD Tracker' : undefined}
+        icon={fabOpen ? 'close' : 'plus'}
         actions={[
           {
-            label: 'Timed Tracker',
+            label: 'Calendar Tracker',
             icon: 'calendar-clock',
             onPress: () => {
-              console.warn(
-                'Pressed add Timed Tracker button, currently unhandled',
-              );
+              console.log('Pressed add Calendar Tracker button');
+              navigation.navigate('AddCalendarTracker');
+            },
+          },
+          {
+            label: 'Timed Tracker',
+            icon: 'clock-start',
+            onPress: () => {
+              console.log('Pressed add Timed Tracker button');
+              navigation.navigate('AddTimedTracker');
+            },
+          },
+          {
+            label: 'GDD Tracker',
+            icon: 'weather-cloudy-clock',
+            onPress: () => {
+              console.log('Pressed add GDD Tracker button');
+              navigation.navigate('AddGddTracker');
             },
           },
         ]}
-        onStateChange={({open}) => setFabOpen(open)}
+        onStateChange={({ open }) => setFabOpen(open)}
         onPress={() => {
-          if (fabOpen) {
-            console.log('Pressed add GDD Tracker button');
-            navigation.navigate('AddGddCard');
-          }
+          console.log('Pressed add button on home screen a second time');
         }}
       />
       <Portal>

@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {GddTracker} from '../Types';
-import {MAX_FORECAST_DAYS, MAX_HISTORY_DAYS} from '../Consts';
-import {ContextStatus, Location, StateManager} from '../state/State';
-import {defaultStateManager, mockGddTrackers, mockLocations} from '../Mock';
-import {addWeatherToLocation, fetchWeather} from '../Api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { GddTracker, Tracker } from '../Types';
+import { MAX_FORECAST_DAYS, MAX_HISTORY_DAYS } from '../Consts';
+import { ContextStatus, Location, StateManager } from '../state/State';
+import { defaultStateManager, mockTrackers, mockLocations } from '../Mock';
+import { addWeatherToLocation, fetchWeather } from '../Api';
 import {
-  OnLoad,
   onChangeGddTrackers as OnChangeGddTrackers,
   OnChangeLocations,
+  GetStoredState,
 } from './statecontext/EffectHandlers';
-import {StateContextError} from './statecontext/Error';
+import { StateContextError } from './statecontext/Error';
+import { initBackgroundFetch } from './statecontext/BackgroundFetch';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -22,18 +22,32 @@ export function StateContextProvider({
   children,
 }: React.PropsWithChildren): React.JSX.Element {
   const [locations, setLocations] = useState(mockLocations());
-  const [gddTrackers, setGddTrackers] = useState(mockGddTrackers());
+  const [trackers, setTrackers] = useState(mockTrackers());
   const [status, setStatus] = useState<ContextStatus>('Initialised');
-
   // On load, load up state and then refresh weather.
   useEffect(() => {
-    OnLoad(setStatus, setGddTrackers, setLocations);
+    console.log('App state context loaded, checking device for app state');
+    setStatus('Loading');
+    GetStoredState()
+      .then(s => {
+        if (s === undefined) {
+          console.info("App state wasn't on device, using defaults");
+          return;
+        }
+        setTrackers(s.trackers);
+        setLocations(s.locations);
+        setStatus('Loaded');
+        console.log('Loaded app state from device');
+      })
+      .catch(() => console.log('Error getting app state'));
+    // Initialize BackgroundFetch only once when component mounts.
+    initBackgroundFetch();
   }, []);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
-    OnChangeGddTrackers(status, gddTrackers);
-  }, [gddTrackers]);
+    OnChangeGddTrackers(status, trackers);
+  }, [trackers]);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
@@ -56,31 +70,35 @@ export function StateContextProvider({
       setLocations(newLocations);
     });
   }
-  function addGddTracker(gddTracker: GddTracker) {
-    setGddTrackers([...gddTrackers, gddTracker]);
+  function addTracker(tracker: Tracker) {
+    setTrackers([...trackers, tracker]);
   }
+  // Note - not all trackers can be reset, but more than just GDD trackers.
   function resetGddTrackerName(name: string) {
     console.log(`Resetting GDD tracker name ${name}`);
-    const new_state = gddTrackers.map(element =>
+    const new_state = trackers.map(element =>
       element.name === name
-        ? {...element, start_date_unix_ms: Date.now()}
+        ? { ...element, start_date_unix_ms: Date.now() }
         : element,
     );
-    setGddTrackers(new_state);
+    setTrackers(new_state);
   }
-  function deleteGddTrackerName(trackerName: string) {
-    console.log(`Deleting GDD tracker name ${trackerName}`);
-    const newGddTrackers = gddTrackers.filter(
-      item => item.name !== trackerName,
-    );
-    setGddTrackers(newGddTrackers);
+  function deleteTrackerName(trackerName: string) {
+    console.log(`Deleting tracker name ${trackerName}`);
+    const newTrackers = trackers.filter(item => item.name !== trackerName);
+    setTrackers(newTrackers);
   }
   function addLocation(location: Location) {
     setLocations([...locations, location]);
   }
   function deleteLocationName(locName: string) {
     console.log(`Attempting to delete location name ${locName}`);
-    if (gddTrackers.find(t => t.location_name === locName) !== undefined) {
+    // Can't delete a location if it's used in a GDD Tracker.
+    if (
+      trackers.find(t => {
+        t.kind === 'gdd' && t.location_name === locName;
+      }) !== undefined
+    ) {
       console.log(`Unable to delete location as used in an existing tracker`);
       throw new StateContextError({
         name: 'DELETE_LOCATIONS_ERROR',
@@ -94,13 +112,13 @@ export function StateContextProvider({
     <StateContext.Provider
       value={{
         locations,
-        gddTrackers,
+        trackers,
         status,
         refreshWeather,
         addLocation,
         deleteLocationName,
-        addGddTracker,
-        deleteGddTrackerName,
+        addTracker,
+        deleteTrackerName,
         resetGddTrackerName,
       }}>
       {children}

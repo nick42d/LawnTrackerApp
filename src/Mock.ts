@@ -1,6 +1,6 @@
 // Mock functions to generate test types when initially testing app.
 
-import {GddTracker} from './Types';
+import { GddTracker, Tracker } from './Types';
 import {
   Settings,
   GDDAlgorithm,
@@ -33,7 +33,7 @@ export function defaultStateManager(): StateManager {
   }
   return {
     locations: [],
-    gddTrackers: [],
+    trackers: [],
     status: 'Initialised',
     refreshWeather: () => {
       LogErrorCallbackNotSet('refreshWeather');
@@ -44,8 +44,8 @@ export function defaultStateManager(): StateManager {
     deleteLocationName: _ => {
       LogErrorCallbackNotSet('deleteLocationName');
     },
-    addGddTracker: _ => LogErrorCallbackNotSet('addGddTracker'),
-    deleteGddTrackerName: _ => LogErrorCallbackNotSet('deleteGddTrackerName'),
+    addTracker: _ => LogErrorCallbackNotSet('addGddTracker'),
+    deleteTrackerName: _ => LogErrorCallbackNotSet('deleteGddTrackerName'),
     resetGddTrackerName: _ => LogErrorCallbackNotSet('resetGddTrackerName'),
   };
 }
@@ -67,39 +67,38 @@ export function mockLocations(): Location[] {
   ];
 }
 
-export function mockGddTrackers(): GddTracker[] {
+export function mockTrackers(): Tracker[] {
   return [
     {
+      kind: 'gdd',
       location_name: 'Perth',
       description: 'Both Lawns',
       name: 'Buffalo',
-      start_date_unix_ms: new Date('2024-3-1').valueOf(),
+      start_date_unix_ms: new Date('2024-4-1').valueOf(),
       target_gdd: 250,
       base_temp: 0,
     },
     {
+      kind: 'gdd',
       location_name: 'Perth',
       description: 'Front lawn PGR',
       name: 'Bermuda',
-      start_date_unix_ms: new Date('2024-2-28').valueOf(),
+      start_date_unix_ms: new Date('2024-3-28').valueOf(),
       target_gdd: 100,
       base_temp: 0,
     },
     {
-      location_name: 'Perth',
+      kind: 'timed',
       description: 'Front lawn PGR',
       name: 'Bermuda2',
       start_date_unix_ms: new Date('2024-2-28').valueOf(),
-      target_gdd: 50,
-      base_temp: 0,
+      duration_days: 7,
     },
     {
-      location_name: 'Perth',
+      kind: 'calendar',
       description: 'Front lawn PGR',
       name: 'Bermuda3',
-      start_date_unix_ms: new Date('2024-3-3').valueOf(),
-      target_gdd: 240,
-      base_temp: 0,
+      target_date_unix_ms: new Date('2024-3-3').valueOf(),
     },
   ];
 }

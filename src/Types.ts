@@ -1,6 +1,5 @@
-import {UnitOfMeasure} from './state/State';
+import { UnitOfMeasure } from './state/State';
 
-// Dummying up Ids currently...
 export function newGddTracker(
   name: string,
   description: string,
@@ -9,7 +8,8 @@ export function newGddTracker(
   base_temp: number,
   start_date: Date,
 ): GddTracker {
-  const ret: GddTracker = {
+  return {
+    kind: 'gdd',
     location_name,
     description,
     name,
@@ -17,10 +17,54 @@ export function newGddTracker(
     base_temp,
     start_date_unix_ms: start_date.valueOf(),
   };
-  return ret;
 }
 
+export function newCalendarTracker(
+  name: string,
+  description: string,
+  target_date: Date,
+): CalendarTracker {
+  return {
+    kind: 'calendar',
+    description,
+    name,
+    target_date_unix_ms: target_date.valueOf(),
+  };
+}
+
+export function newTimedTracker(
+  name: string,
+  description: string,
+  start_date: Date,
+  duration_days: number,
+): TimedTracker {
+  return {
+    kind: 'timed',
+    description,
+    name,
+    start_date_unix_ms: start_date.valueOf(),
+    duration_days,
+  };
+}
+
+export type Tracker = GddTracker | TimedTracker | CalendarTracker;
+
+export type CalendarTracker = {
+  kind: 'calendar';
+  name: string;
+  description: string;
+  target_date_unix_ms: number;
+};
+export type TimedTracker = {
+  kind: 'timed';
+  name: string;
+  description: string;
+  start_date_unix_ms: number;
+  duration_days: number;
+};
+
 export type GddTracker = {
+  kind: 'gdd';
   name: string;
   description: string;
   target_gdd: number;

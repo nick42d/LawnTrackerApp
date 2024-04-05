@@ -4,7 +4,7 @@ import {
   NavigatorScreenParams,
   Theme,
 } from '@react-navigation/native';
-import {GddTracker} from '../Types';
+import { GddTracker } from '../Types';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
@@ -17,27 +17,31 @@ import {
   StackScreenProps,
   createStackNavigator,
 } from '@react-navigation/stack';
-import {getHeaderTitle} from '@react-navigation/elements';
-import AddGddCardScreen from '../screens/AddGddCard';
+import { getHeaderTitle } from '@react-navigation/elements';
+import AddGddTrackerScreen from '../screens/AddGddTracker';
 import ViewGddCardScreen from '../screens/ViewGddCard';
-import {AppDrawerNavigator} from './Drawer';
-import {DrawerScreenProps} from '@react-navigation/drawer';
-import {AddLocation, Location} from '../state/State';
+import { AppDrawerNavigator } from './Drawer';
+import { DrawerScreenProps } from '@react-navigation/drawer';
+import { AddLocation, Location } from '../state/State';
 import AddLocationCardScreen from '../screens/AddLocationCard';
 import ViewLocationCardScreen from '../screens/ViewLocationCard';
-import {useContext} from 'react';
-import {SettingsContext} from '../providers/SettingsContext';
-import {View} from 'react-native';
+import { useContext } from 'react';
+import { SettingsContext } from '../providers/SettingsContext';
+import { View } from 'react-native';
 import LoadingScreen from '../screens/Loading';
+import AddCalendarTrackerScreen from '../screens/AddCalendarTracker';
+import AddTimedTrackerScreen from '../screens/AddTimedTracker';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
   Drawer: NavigatorScreenParams<AppDrawerParamList>;
-  AddGddCard: undefined;
-  AddLocationCard: {onGoBack: (locName: string) => void} | undefined;
-  ViewGddCard: {gddCard: GddTracker};
-  ViewLocationCard: {location: Location};
+  AddGddTracker: undefined;
+  AddCalendarTracker: undefined;
+  AddTimedTracker: undefined;
+  AddLocationCard: { onGoBack: (locName: string) => void } | undefined;
+  ViewGddCard: { gddCard: GddTracker };
+  ViewLocationCard: { location: Location };
 };
 
 export type AppDrawerParamList = {
@@ -71,8 +75,8 @@ export type HomeLocationsTabScreenProps<
 >;
 
 export function LoadableApp() {
-  const {status: settingsStatus} = useContext(SettingsContext);
-  const {status: appStatus} = useContext(SettingsContext);
+  const { status: settingsStatus } = useContext(SettingsContext);
+  const { status: appStatus } = useContext(SettingsContext);
 
   // TODO: Handle initialising also.
   return settingsStatus !== 'Loaded' || appStatus !== 'Loaded' ? (
@@ -95,27 +99,37 @@ function AppRootStackNavigator() {
         <Stack.Screen
           name="Drawer"
           component={AppDrawerNavigator}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="AddGddCard"
-          component={AddGddCardScreen}
-          options={{title: 'Add GDD Tracker'}}
+          name="AddGddTracker"
+          component={AddGddTrackerScreen}
+          options={{ title: 'Add GDD Tracker' }}
+        />
+        <Stack.Screen
+          name="AddCalendarTracker"
+          component={AddCalendarTrackerScreen}
+          options={{ title: 'Add Calendar Tracker' }}
+        />
+        <Stack.Screen
+          name="AddTimedTracker"
+          component={AddTimedTrackerScreen}
+          options={{ title: 'Add Timed Tracker' }}
         />
         <Stack.Screen
           name="ViewGddCard"
           component={ViewGddCardScreen}
-          options={{title: 'View Card'}}
+          options={{ title: 'View Card' }}
         />
         <Stack.Screen
           name="ViewLocationCard"
           component={ViewLocationCardScreen}
-          options={{title: 'View Location'}}
+          options={{ title: 'View Location' }}
         />
         <Stack.Screen
           name="AddLocationCard"
           component={AddLocationCardScreen}
-          options={{title: 'Add Location'}}
+          options={{ title: 'Add Location' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

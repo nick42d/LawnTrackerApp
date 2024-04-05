@@ -1,7 +1,7 @@
 // Module intended to contain state management logic for app.
 
-import {GddTracker} from '../Types';
-import {Weather} from '../api/Types';
+import { GddTracker, Tracker } from '../Types';
+import { Weather } from '../api/Types';
 
 export type SettingsState = {
   settings: Settings;
@@ -60,13 +60,13 @@ export enum BaseTemp {
 
 export type StateManager = {
   locations: Location[];
-  gddTrackers: GddTracker[];
+  trackers: Tracker[];
   status: ContextStatus;
   refreshWeather: () => void;
   addLocation: (loc: Location) => void;
   deleteLocationName: (locName: string) => void;
-  addGddTracker: (tracker: GddTracker) => void;
-  deleteGddTrackerName: (trackerName: string) => void;
+  addTracker: (tracker: Tracker) => void;
+  deleteTrackerName: (trackerName: string) => void;
   resetGddTrackerName: (trackerName: string) => void;
 };
 

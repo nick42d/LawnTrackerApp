@@ -1,51 +1,51 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
 import {ContextStatus, Location} from '../../state/State';
-import {GddTracker} from '../../Types';
+import {GddTracker, Tracker} from '../../Types';
 import {initBackgroundFetch} from './BackgroundFetch';
 
-// On load, load up state and then refresh weather.
-export function OnLoad(
-  setStatus: (status: ContextStatus) => void,
-  setGddTrackers: (gddTrackers: GddTracker[]) => void,
-  setLocations: (locations: Location[]) => void,
-) {
-  console.log('App state context loaded');
-  setStatus('Loading');
-  AsyncStorage.multiGet([LOCATIONS_STORAGE_KEY, GDD_TRACKERS_STORAGE_KEY])
-    .then(x => {
-      const containsLoc = x.find(y => y[0] === LOCATIONS_STORAGE_KEY);
-      const containsGddTrackers = x.find(
-        y => y[0] === GDD_TRACKERS_STORAGE_KEY,
-      );
-      if (
-        containsLoc !== undefined &&
-        containsLoc[1] !== null &&
-        containsGddTrackers !== undefined &&
-        containsGddTrackers[1] !== null
-      ) {
-        console.log('Loading app state from device');
+type StoredState = {
+  trackers: Tracker[];
+  locations: Location[];
+};
+
+export async function GetStoredState(): Promise<StoredState | undefined> {
+  return AsyncStorage.multiGet([
+    LOCATIONS_STORAGE_KEY,
+    GDD_TRACKERS_STORAGE_KEY,
+  ]).then(x => {
+    const containsLoc = x.find(y => y[0] === LOCATIONS_STORAGE_KEY);
+    const containsGddTrackers = x.find(y => y[0] === GDD_TRACKERS_STORAGE_KEY);
+    if (
+      containsLoc !== undefined &&
+      containsLoc[1] !== null &&
+      containsGddTrackers !== undefined &&
+      containsGddTrackers[1] !== null
+    ) {
+      console.log('Loading app state from device');
+      return (
         // NOTE: Parse could fail if someone else writes to these keys!
-        setGddTrackers(JSON.parse(containsGddTrackers[1]));
-        setLocations(JSON.parse(containsLoc[1]));
-        console.log('Loaded app state from device');
-      } else console.log('Missing some App state on device - using defaults');
-      setStatus('Loaded');
-    })
-    .catch(() => console.log('Error getting app state'));
-  // Initialize BackgroundFetch only once when component mounts.
-  initBackgroundFetch();
+        {
+          trackers: JSON.parse(containsGddTrackers[1]),
+          locations: JSON.parse(containsLoc[1]),
+        }
+      );
+    } else {
+      console.warn('Missing some App state on device - using defaults');
+      return undefined;
+    }
+  });
 }
 
 export function onChangeGddTrackers(
   status: ContextStatus,
-  gddTrackers: GddTracker[],
+  trackers: Tracker[],
 ) {
   let active = true;
   console.log('App state changed - trackers');
   if (status === 'Loaded') {
     console.log('Setting app state - trackers');
-    AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(gddTrackers))
+    AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(trackers))
       .then(() =>
         !active
           ? console.error(

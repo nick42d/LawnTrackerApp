@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -10,25 +10,25 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import {ScrollView, TouchableHighlight, View} from 'react-native';
-import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from '../Knowledge';
-import {newGddTracker} from '../Types';
-import {AppScreenProps} from '../navigation/Root';
-import {MAX_HISTORY_DAYS} from '../Consts';
+import { ScrollView, TouchableHighlight, View } from 'react-native';
+import { DatePickerInput } from 'react-native-paper-dates';
+import { BASE_TEMPS_C } from '../Knowledge';
+import { newGddTracker } from '../Types';
+import { AppScreenProps } from '../navigation/Root';
+import { MAX_HISTORY_DAYS } from '../Consts';
 import SaveButton from '../components/SaveButton';
-import {StateContext} from '../providers/StateContext';
+import { StateContext } from '../providers/StateContext';
 
-export default function AddGddCardScreen({
+export default function AddGddTrackerScreen({
   navigation,
-}: AppScreenProps<'AddGddCard'>) {
+}: AppScreenProps<'AddGddTracker'>) {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [target, setTarget] = useState('');
   const [toggle, setToggle] = useState('0');
   const [startDate, setStartDate] = useState(new Date());
-  const {locations, addGddTracker} = useContext(StateContext);
-  // TODO: default location
+  const { locations, addTracker: addGddTracker } = useContext(StateContext);
+  // TODO: Handle no locations
   const [location, setLocation] = useState(locations[0].name);
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
@@ -75,8 +75,12 @@ export default function AddGddCardScreen({
     if (!locationSelected()) {
       return false;
     }
+    // TODO: Put this as part of dateInRange if its required
     if (startDate === new Date()) {
       return false;
+    }
+    if (!dateInRange) {
+      return false
     }
     if (!targetEntered()) {
       return false;
