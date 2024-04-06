@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
-import {ContextStatus, Location} from '../../state/State';
-import {GddTracker, Tracker} from '../../Types';
+import { ContextStatus } from '../Types';
+import { Location } from './Locations';
+import { GddTracker, Tracker } from './Trackers';
 import {initBackgroundFetch} from './BackgroundFetch';
 
 type StoredState = {

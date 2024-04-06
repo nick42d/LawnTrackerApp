@@ -1,16 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { GddTracker, Tracker } from '../Types';
-import { MAX_FORECAST_DAYS, MAX_HISTORY_DAYS } from '../Consts';
-import { ContextStatus, Location, StateManager } from '../state/State';
-import { defaultStateManager, mockTrackers, mockLocations } from '../Mock';
-import { addWeatherToLocation, fetchWeather } from '../Api';
+import React, {useEffect, useState} from 'react';
+import {GddTracker, Tracker} from './statecontext/Trackers';
+import {
+  DEFAULT_UNIT_OF_MEASURE,
+  MAX_FORECAST_DAYS,
+  MAX_HISTORY_DAYS,
+} from '../Consts';
+import {ContextStatus} from './Types';
+import {StateManager} from './statecontext/Types';
+import {Location} from './statecontext/Locations';
+import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
+import {addWeatherToLocation, fetchWeather} from '../Api';
 import {
   onChangeGddTrackers as OnChangeGddTrackers,
   OnChangeLocations,
   GetStoredState,
 } from './statecontext/EffectHandlers';
-import { StateContextError } from './statecontext/Error';
-import { initBackgroundFetch } from './statecontext/BackgroundFetch';
+import {StateContextError} from './statecontext/Error';
+import {initBackgroundFetch} from './statecontext/BackgroundFetch';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -36,10 +42,10 @@ export function StateContextProvider({
         }
         setTrackers(s.trackers);
         setLocations(s.locations);
-        setStatus('Loaded');
         console.log('Loaded app state from device');
       })
-      .catch(() => console.log('Error getting app state'));
+      .then(_ => setStatus('Loading'))
+      .catch(() => console.warn('Error getting app state'));
     // Initialize BackgroundFetch only once when component mounts.
     initBackgroundFetch();
   }, []);
@@ -62,6 +68,7 @@ export function StateContextProvider({
           location.longitude,
           MAX_HISTORY_DAYS,
           MAX_FORECAST_DAYS,
+          DEFAULT_UNIT_OF_MEASURE,
         );
         return addWeatherToLocation(location, weatherFuture);
       }),
@@ -78,7 +85,7 @@ export function StateContextProvider({
     console.log(`Resetting GDD tracker name ${name}`);
     const new_state = trackers.map(element =>
       element.name === name
-        ? { ...element, start_date_unix_ms: Date.now() }
+        ? {...element, start_date_unix_ms: Date.now()}
         : element,
     );
     setTrackers(new_state);

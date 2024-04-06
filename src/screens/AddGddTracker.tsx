@@ -13,7 +13,7 @@ import {
 import { ScrollView, TouchableHighlight, View } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { BASE_TEMPS_C } from '../Knowledge';
-import { newGddTracker } from '../Types';
+import { newGddTracker } from '../providers/statecontext/Trackers';
 import { AppScreenProps } from '../navigation/Root';
 import { MAX_HISTORY_DAYS } from '../Consts';
 import SaveButton from '../components/SaveButton';

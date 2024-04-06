@@ -1,6 +1,7 @@
 import {createContext, useEffect, useState} from 'react';
 import {defaultSettings as defaultSettings} from '../Mock';
-import {ContextStatus, SettingsState} from '../state/State';
+import { SettingsState } from './settingscontext/Types';
+import { ContextStatus } from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SETTINGS_STORAGE_KEY = 'SETTINGS';

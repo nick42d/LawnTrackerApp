@@ -1,6 +1,6 @@
 /// Module intended to contain app business logic
 
-import {GDDAlgorithm} from './state/State';
+import { GDDAlgorithm } from './providers/settingscontext/Types';
 
 export const BASE_TEMPS_C = [0, 10];
 

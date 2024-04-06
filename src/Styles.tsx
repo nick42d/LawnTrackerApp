@@ -21,6 +21,10 @@ const styles = StyleSheet.create({
     width: 40,
     alignContent: 'center',
     justifyContent: 'center',
+  },
+  trackerCardLeftCalloutText: {
+    textAlign: 'center',
+    textAlignVertical: 'center'
   }
 });
 export default styles;

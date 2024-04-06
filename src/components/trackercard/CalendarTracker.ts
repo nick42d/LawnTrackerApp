@@ -1,4 +1,4 @@
-import { CalendarTracker } from '../../Types';
+import { CalendarTracker } from '../../providers/statecontext/Trackers';
 import { HomeLocationsTabScreenProps } from '../../navigation/Root';
 import { TrackerCardProps } from './Types';
 
@@ -7,11 +7,12 @@ export function ToCalendarTrackerCardProps(
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
   onDelete: () => void
 ): TrackerCardProps {
+  const daysRem = 30;
   return {
     heading: calendarTracker.name,
     subheading: calendarTracker.description,
-    leftcallout: new Date().toDateString(),
-    righticon: 'calendar-clock',
+    leftCallout: `T-${daysRem}`,
+    rightIcon: 'calendar-clock',
     lines: [
       {
         icon: 'calendar-end',

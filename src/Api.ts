@@ -1,5 +1,5 @@
 // File to contain functions that call weather api and process weather api
-import {Location} from './state/State';
+import {Location} from './providers/statecontext/Locations';
 import {
   API_LOCATIONS_LANGUAGE,
   API_LOCATIONS_URL,
@@ -14,9 +14,12 @@ import {
   WeatherApiLocations,
   WeatherAppDay,
   apiLocationsToAppLocations,
+  ApiTemperatureUnit as ApiTemperatureUnit,
   apiWeatherToAppWeather,
+  appUnitOfMeasureToApiTemperatureUnit,
 } from './api/Types';
 import {celsiustoFarenheit, farenheitToCelsius} from './Knowledge';
+import {UnitOfMeasure} from './providers/settingscontext/Types';
 
 export async function fetchLocations(locName: string, results: number) {
   const response = await fetch(
@@ -36,15 +39,17 @@ export async function fetchWeather(
   longitude: number,
   past_days: number,
   forecast_days: number,
+  unitOfMeasure: UnitOfMeasure,
 ): Promise<void | Weather> {
+  const temperature_unit = appUnitOfMeasureToApiTemperatureUnit(unitOfMeasure);
   const response = await fetch(
-    `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=${API_TIMEZONE}&past_days=${past_days}&forecast_days=${forecast_days}&format=json`,
+    `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=${API_TIMEZONE}&past_days=${past_days}&forecast_days=${forecast_days}&temperature_unit=${temperature_unit}&format=json`,
   )
     .then(r => {
       return r.json() as Promise<WeatherApiForecast>;
     })
     .then(w => {
-      return apiWeatherToAppWeather(w);
+      return apiWeatherToAppWeather(w, unitOfMeasure);
     })
     .catch(e => console.log('Error', e));
   return response;
@@ -66,19 +71,15 @@ export function addWeatherToLocation(
 export function convertWeatherUnits(
   weather: WeatherAppDay,
   // NOTE: Assumes you checked that unit was different!
-  newUnit: 'Celsius' | 'Farenheit',
+  newUnit: UnitOfMeasure,
 ): WeatherAppDay {
+  const Converter =
+    newUnit === 'Metric' ? farenheitToCelsius : celsiustoFarenheit;
   const newWeather = {
     date_unix: weather.date_unix,
     weather_type: weather.weather_type,
-    mintemp:
-      newUnit === 'Celsius'
-        ? farenheitToCelsius(weather.mintemp)
-        : celsiustoFarenheit(weather.mintemp),
-    maxtemp:
-      newUnit === 'Celsius'
-        ? farenheitToCelsius(weather.maxtemp)
-        : celsiustoFarenheit(weather.maxtemp),
+    mintemp: Converter(weather.mintemp),
+    maxtemp: Converter(weather.maxtemp),
   };
   return newWeather;
 }

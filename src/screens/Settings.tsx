@@ -4,21 +4,17 @@ import {SettingsContext} from '../providers/SettingsContext';
 import {
   BaseTemp,
   GDDAlgorithm,
+  UNITS_OF_MEASURE,
   UnitOfMeasure,
   gddAlgorithmToText,
-  unitOfMeasureToText,
-} from '../state/State';
-import {
-  AppDrawerScreenProps,
-  BasicAppDrawerScreenProps,
-} from '../navigation/Root';
+  isUnitOfMeasure,
+} from '../providers/settingscontext/Types';
 import {ScrollView, View} from 'react-native';
 import GenericSelectionDialog, {
   SliderSelectionDialog,
 } from '../components/SelectionDialog';
 
 const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
-const UNITS_OF_MEASURE = [UnitOfMeasure.Imperial, UnitOfMeasure.Metric];
 const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
 
 export default function SettingsScreen() {
@@ -75,7 +71,7 @@ export default function SettingsScreen() {
         <List.Item
           onPress={ShowUnitOfMeasureDialog}
           title="Unit of measure"
-          description={unitOfMeasureToText(settings.unit_of_measure)}
+          description={settings.unit_of_measure}
         />
         <List.Item
           onPress={() => {}}
@@ -157,10 +153,18 @@ export default function SettingsScreen() {
           }}
           curValue={settings.unit_of_measure}
           setCurValue={(set: string) => {
-            setUnitOfMeasure(Number(set));
+            // Handle invariant from dialog
+            if (isUnitOfMeasure(set)) {
+              setUnitOfMeasure(set);
+            } else {
+              // Should be unreachable.
+              throw new Error(
+                'Unhandled invariant - tried to set unit of measure to a generic string',
+              );
+            }
           }}
           values={UNITS_OF_MEASURE.map(x => ({
-            label: UnitOfMeasure[x],
+            label: x,
             value: x,
           }))}
         />

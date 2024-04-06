@@ -1,16 +1,16 @@
-import {Image, StyleSheet, View} from 'react-native';
-import {Button, Card, Icon, Text} from 'react-native-paper';
-import {CARD_TITLE_VARIANT} from '../Components';
+import { Image, StyleSheet, View } from 'react-native';
+import { Button, Card, Icon, Text } from 'react-native-paper';
+import { CARD_TITLE_VARIANT } from '../Components';
 import * as central_styles from '../Styles';
-import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {Location} from '../state/State';
-import {useContext} from 'react';
+import { HomeLocationsTabScreenProps } from '../navigation/Root';
+import { Location } from '../providers/statecontext/Locations';
+import { useContext } from 'react';
 import {
   WEATHER_IMAGES,
   WeatherImagesObject,
 } from '../../assets/weather_icons/WeatherImages';
-import {StateContext, StateContextError} from '../providers/StateContext';
-import {WeatherAppCondition} from '../api/Types';
+import { StateContext } from '../providers/StateContext';
+import { WeatherAppCondition } from '../api/Types';
 
 type LocationsCardProps = {
   location: Location;
@@ -28,9 +28,9 @@ export function LocationsCard({
     const weatherImageSrc = WEATHER_IMAGES.find(x => x.code === condition.code);
     if (weatherImageSrc === undefined) return undefined;
     if (condition.isDay) {
-      return {img: weatherImageSrc.daySrc, desc: weatherImageSrc.descDay};
+      return { img: weatherImageSrc.daySrc, desc: weatherImageSrc.descDay };
     } else {
-      return {img: weatherImageSrc.nightSrc, desc: weatherImageSrc.descNight};
+      return { img: weatherImageSrc.nightSrc, desc: weatherImageSrc.descNight };
     }
   }
   const weatherImages = location.weather
@@ -42,7 +42,7 @@ export function LocationsCard({
       style={central_styles.default.listCard}
       onPress={() => {
         console.log('Pressed location card');
-        navigation.navigate('ViewLocationCard', {location});
+        navigation.navigate('ViewLocationCard', { location });
       }}>
       <Card.Title
         title={location.name}

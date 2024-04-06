@@ -1,11 +1,12 @@
-import { ColorValue, StyleSheet, View } from 'react-native';
-import { Button, Card, Icon, Text } from 'react-native-paper';
-import { CARD_TITLE_VARIANT } from '../Components';
+import {ColorValue, StyleSheet, View} from 'react-native';
+import {Button, Card, Icon, Text} from 'react-native-paper';
+import {CARD_TITLE_VARIANT} from '../Components';
 import styles from '../Styles';
-import { Tracker } from '../Types';
-import { HomeLocationsTabScreenProps } from '../navigation/Root';
-import { RotateInUpLeft } from 'react-native-reanimated';
-import { TrackerPropsToCardProps } from './trackercard/Types.ts';
+import {Tracker} from '../providers/statecontext/Trackers.ts';
+import {HomeLocationsTabScreenProps} from '../navigation/Root';
+import {RotateInUpLeft} from 'react-native-reanimated';
+import {TrackerPropsToCardProps} from './trackercard/Types.ts';
+import {LeftCallout} from './trackercard/LeftCallout.tsx';
 
 const CARD_TEXT_ICON_SIZE = 20;
 
@@ -36,23 +37,17 @@ export function TrackerCard({
         subtitle={props.subheading}
         titleVariant={CARD_TITLE_VARIANT}
         left={() => (
-          <View
-            style={StyleSheet.compose(
-              {
-                backgroundColor: props.leftcalloutcolour
-              },
-              styles.trackerCardLeftCallout,
-            )}>
-            <Text
-              style={{ textAlign: 'center', textAlignVertical: 'center' }}
-              variant="bodyLarge">
-              {props.leftcallout}
-            </Text>
-          </View>
+          <LeftCallout
+            params={{
+              refreshing: props.leftCalloutRefreshing,
+              text: props.leftCallout,
+              backgroundColor: props.leftCalloutColour,
+            }}
+          />
         )}
         right={() => (
           <View>
-            <Icon source={props.righticon} size={CARD_TEXT_ICON_SIZE * 2} />
+            <Icon source={props.rightIcon} size={CARD_TEXT_ICON_SIZE * 2} />
           </View>
         )}
       />
@@ -75,4 +70,3 @@ export function TrackerCard({
     </Card>
   );
 }
-

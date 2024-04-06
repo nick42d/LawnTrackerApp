@@ -1,7 +1,17 @@
-import {API_TEMPERATURE_UNIT} from '../Consts';
+import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
+import {UnitOfMeasure} from '../providers/settingscontext/Types';
+
+export const API_TEMPERATURE_UNITS = ['celsius', 'farenheit'] as const;
+export type ApiTemperatureUnit = (typeof API_TEMPERATURE_UNITS)[number];
+export function appUnitOfMeasureToApiTemperatureUnit(
+  unit: UnitOfMeasure,
+): ApiTemperatureUnit {
+  return unit === 'Metric' ? 'celsius' : 'farenheit';
+}
 
 export function apiWeatherToAppWeather(
   apiWeather: WeatherApiForecast,
+  unitOfMeasure: UnitOfMeasure,
 ): Weather {
   const weather_array: WeatherAppDay[] = apiWeather.daily.time.map((t, i) => ({
     date_unix: t,
@@ -16,7 +26,7 @@ export function apiWeatherToAppWeather(
       temp: apiWeather.current.temperature_2m,
     },
     weather_array,
-    temperature_unit: API_TEMPERATURE_UNIT,
+    temperature_unit: unitOfMeasure,
   };
 }
 
@@ -38,11 +48,63 @@ function apiLocationToAppLocation(
   };
 }
 
+/// Check that Weather satisfies following invariants:
+/// Must be sorted by date asc
+/// Must not miss any dates between largest date and smallest date
+/// Must contain no duplicate dates
+export function checkWeatherInvariants(weather: Weather) {
+  weather.weather_array.reduce<WeatherInvariantCheck>(
+    (acc, e) => {
+      if (acc.status === 'Failed')
+        return {
+          status: 'Failed',
+          lastDate: acc.lastDate,
+        };
+      if (acc.status === 'Initial' || acc.lastDate === undefined)
+        return {status: 'Ok', lastDate: e.date_unix};
+      const prevDate = new Date(acc.lastDate);
+      const nextDate = new Date(e.date_unix);
+      prevDate.setHours(0, 0, 0, 0);
+      nextDate.setHours(0, 0, 0, 0);
+      if (nextDate > prevDate) {
+        return {status: 'Ok', lastDate: prevDate.valueOf()};
+      } else {
+        return {status: 'Failed', lastDate: prevDate.valueOf()};
+      }
+    },
+    {status: 'Initial', lastDate: undefined},
+  );
+}
+type WeatherInvariantCheck = {
+  status: 'Initial' | 'Ok' | 'Failed';
+  lastDate: number | undefined;
+};
+
+export function convertUnits(
+  weather: Weather,
+  newUnit: UnitOfMeasure,
+): Weather {
+  if (weather.temperature_unit === newUnit) return weather;
+  const Converter =
+    newUnit === 'Imperial' ? celsiustoFarenheit : farenheitToCelsius;
+  const newWeatherArray: WeatherAppDay[] = weather.weather_array.map(w => ({
+    maxtemp: Converter(w.maxtemp),
+    mintemp: Converter(w.mintemp),
+    weather_type: w.weather_type,
+    date_unix: w.date_unix,
+  }));
+  return {
+    current_condition: weather.current_condition,
+    weather_array: [], // TODO
+    temperature_unit: newUnit,
+  };
+}
+
 // TODO: Add unit
 export type Weather = {
   current_condition: WeatherAppCondition;
   weather_array: WeatherAppDay[];
-  temperature_unit: 'Celsius' | 'Farenheit';
+  temperature_unit: UnitOfMeasure;
 };
 
 export type WeatherAppCondition = {

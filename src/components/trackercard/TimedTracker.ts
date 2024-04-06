@@ -1,4 +1,4 @@
-import { TimedTracker } from '../../Types';
+import { TimedTracker } from '../../providers/statecontext/Trackers';
 import { HomeLocationsTabScreenProps } from '../../navigation/Root';
 import { TrackerCardProps } from './Types';
 import { AddDays } from '../../Utils';
@@ -14,8 +14,8 @@ export function ToTimedTrackerCardProps(
   return {
     heading: timedTracker.name,
     subheading: timedTracker.description,
-    leftcallout: `T-${daysRem}`,
-    righticon: 'clock-start',
+    leftCallout: `T-${daysRem}`,
+    rightIcon: 'clock-start',
     lines: [
       {
         icon: 'calendar-start',

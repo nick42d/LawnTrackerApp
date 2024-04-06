@@ -4,7 +4,7 @@ import {
   NavigatorScreenParams,
   Theme,
 } from '@react-navigation/native';
-import { GddTracker } from '../Types';
+import { GddTracker } from '../providers/statecontext/Trackers';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
@@ -22,7 +22,7 @@ import AddGddTrackerScreen from '../screens/AddGddTracker';
 import ViewGddCardScreen from '../screens/ViewGddCard';
 import { AppDrawerNavigator } from './Drawer';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { AddLocation, Location } from '../state/State';
+import { AddLocation, Location } from '../providers/statecontext/Locations';
 import AddLocationCardScreen from '../screens/AddLocationCard';
 import ViewLocationCardScreen from '../screens/ViewLocationCard';
 import { useContext } from 'react';

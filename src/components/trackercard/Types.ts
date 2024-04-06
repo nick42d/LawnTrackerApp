@@ -1,4 +1,4 @@
-import { Tracker } from '../../Types';
+import { Tracker } from '../../providers/statecontext/Trackers';
 import { HomeLocationsTabScreenProps } from '../../navigation/Root';
 import { ToCalendarTrackerCardProps } from './CalendarTracker';
 import { ToGddTrackerCardProps } from './GddTracker';
@@ -20,9 +20,10 @@ type TrackerCardActionProps = {
 export type TrackerCardProps = {
     heading: string;
     subheading: string;
-    leftcallout?: string;
-    leftcalloutcolour?: 'red' | 'orange';
-    righticon: string;
+    leftCallout?: string;
+    leftCalloutColour?: 'red' | 'orange';
+    leftCalloutRefreshing?: boolean;
+    rightIcon: string;
     lines: TrackerCardLineProps[];
     actions: TrackerCardActionProps[];
     onPress: () => void;
