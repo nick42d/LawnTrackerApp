@@ -9,6 +9,7 @@ import {StateContext} from '../../providers/StateContext';
 import {TrackerCardProps} from './Types';
 import styles from '../../Styles';
 import {LocationError} from '../../providers/statecontext/Locations';
+import {LeftCalloutProps} from './LeftCallout';
 
 export function ToGddTrackerCardProps(
   gddTracker: GddTracker,
@@ -36,12 +37,15 @@ export function ToGddTrackerCardProps(
     actual_gdd as number,
     gddTracker.target_gdd,
   );
+  const leftCalloutProps: LeftCalloutProps = {
+    text: actual_gdd.toString(),
+    status: leftCalloutRefreshing ? 'Refreshing' : undefined,
+    backgroundColor: leftcalloutcolour,
+  };
   return {
     heading: gddTracker.name,
     subheading: gddTracker.description,
-    leftCallout: actual_gdd?.toString(),
-    leftCalloutColour: leftcalloutcolour,
-    leftCalloutRefreshing,
+    leftCalloutProps,
     rightIcon: 'weather-cloudy-clock',
     lines: [
       {

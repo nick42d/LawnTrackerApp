@@ -8,7 +8,7 @@ import {RotateInUpLeft} from 'react-native-reanimated';
 import {TrackerPropsToCardProps} from './trackercard/Types.ts';
 import {LeftCallout} from './trackercard/LeftCallout.tsx';
 
-const CARD_TEXT_ICON_SIZE = 20;
+export const CARD_TEXT_ICON_SIZE = 20;
 
 type CardPropsParamList = {
   item: Tracker;
@@ -36,15 +36,17 @@ export function TrackerCard({
         title={props.heading}
         subtitle={props.subheading}
         titleVariant={CARD_TITLE_VARIANT}
-        left={() => (
-          <LeftCallout
-            params={{
-              refreshing: props.leftCalloutRefreshing,
-              text: props.leftCallout,
-              backgroundColor: props.leftCalloutColour,
-            }}
-          />
-        )}
+        left={() => {
+          if (props.leftCalloutProps) {
+            return (
+              <LeftCallout
+                status={props.leftCalloutProps?.status}
+                text={props.leftCalloutProps?.text}
+                backgroundColor={props.leftCalloutProps?.backgroundColor}
+              />
+            );
+          }
+        }}
         right={() => (
           <View>
             <Icon source={props.rightIcon} size={CARD_TEXT_ICON_SIZE * 2} />
