@@ -52,9 +52,11 @@ export function defaultStateManager(): StateManager {
     deleteLocationName: _ => {
       LogErrorCallbackNotSet('deleteLocationName');
     },
-    addTracker: _ => LogErrorCallbackNotSet('addGddTracker'),
-    deleteTrackerName: _ => LogErrorCallbackNotSet('deleteGddTrackerName'),
-    resetGddTrackerName: _ => LogErrorCallbackNotSet('resetGddTrackerName'),
+    addTracker: _ => LogErrorCallbackNotSet('addTracker'),
+    deleteTrackerName: _ => LogErrorCallbackNotSet('deleteTrackerName'),
+    resetTrackerName: _ => LogErrorCallbackNotSet('resetTrackerName'),
+    stopTrackerName: _ => LogErrorCallbackNotSet('stopTrackerName'),
+    resumeTrackerName: _ => LogErrorCallbackNotSet('resumeTrackerName'),
   };
 }
 

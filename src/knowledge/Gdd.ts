@@ -3,7 +3,7 @@ import {GddTracker} from '../providers/statecontext/Trackers';
 import {GDDAlgorithm} from '../providers/settingscontext/Types';
 import {Location, LocationError} from '../providers/statecontext/Locations';
 
-export function calc_gdd_total(
+export function calcGddTotal(
   item: GddTracker,
   locations: Location[],
   algorithm: GDDAlgorithm,
@@ -23,4 +23,24 @@ export function calc_gdd_total(
     calcGdd(item_2.mintemp, item_2.maxtemp, item.base_temp, algorithm),
   );
   return Math.round(daily_gdds_arr.reduce((res, cur) => res + cur, 0));
+}
+
+export function isWeatherRefreshing(
+  item: GddTracker,
+  locations: Location[],
+): boolean | LocationError {
+  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  if (itemsLocation === undefined)
+    return {kind: 'MissingLocation', message: 'Location not found'};
+  return itemsLocation.weatherStatus.status === 'Refreshing';
+}
+
+export function isWeatherInitialized(
+  item: GddTracker,
+  locations: Location[],
+): boolean | LocationError {
+  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  if (itemsLocation === undefined)
+    return {kind: 'MissingLocation', message: 'Location not found'};
+  return itemsLocation.weatherStatus.status === 'Initialised';
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Button,
   Dialog,
@@ -10,19 +10,24 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import { ScrollView, TouchableHighlight, View } from 'react-native';
-import { DatePickerInput } from 'react-native-paper-dates';
-import { BASE_TEMPS_C } from '../Knowledge';
-import { newCalendarTracker, newGddTracker, newTimedTracker } from '../providers/statecontext/Trackers';
-import { AppScreenProps } from '../navigation/Root';
-import { MAX_HISTORY_DAYS } from '../Consts';
+import {ScrollView, TouchableHighlight, View} from 'react-native';
+import {DatePickerInput} from 'react-native-paper-dates';
+import {BASE_TEMPS_C} from '../Knowledge';
+import {
+  newCalendarTracker,
+  newGddTracker,
+  newTimedTracker,
+} from '../providers/statecontext/Trackers';
+import {AppScreenProps} from '../navigation/Root';
+import {MAX_HISTORY_DAYS} from '../Consts';
 import SaveButton from '../components/SaveButton';
-import { StateContext } from '../providers/StateContext';
+import {StateContext} from '../providers/StateContext';
+import {DATE_PICKER_LOCALE} from '../Consts';
 
 export default function AddTimedTrackerScreen({
   navigation,
 }: AppScreenProps<'AddTimedTracker'>) {
-  const { addTracker } = useContext(StateContext);
+  const {addTracker} = useContext(StateContext);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [startDate, setStartDate] = useState(new Date());
@@ -93,7 +98,7 @@ export default function AddTimedTrackerScreen({
         />
         <Divider />
         <DatePickerInput
-          locale="en-GB"
+          locale={DATE_PICKER_LOCALE}
           label="Start date"
           value={startDate}
           onChange={d => setStartDate(d as Date)}

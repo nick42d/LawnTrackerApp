@@ -4,8 +4,10 @@ import {ActivityIndicator, Icon, Text} from 'react-native-paper';
 import {CARD_TEXT_ICON_SIZE} from '../TrackerCard';
 
 const LEFT_CALLOUT_TEXT_VARIANT = 'bodyLarge';
+const LEFT_CALLOUT_ICON_SIZE = 40;
+
 export type LeftCalloutProps = {
-  status?: 'Refreshing' | 'Stopped' | 'Initialized';
+  status?: 'Refreshing' | 'Stopped' | 'Initialised';
   text?: string;
   backgroundColor?: string;
 };
@@ -18,7 +20,7 @@ export function LeftCallout({status, text, backgroundColor}: LeftCalloutProps) {
       </View>
     );
   }
-  if (status === 'Initialized') {
+  if (status === 'Initialised') {
     return (
       <View style={styles.trackerCardLeftCallout}>
         <ActivityIndicator animating={false} />
@@ -28,7 +30,7 @@ export function LeftCallout({status, text, backgroundColor}: LeftCalloutProps) {
   if (status === 'Stopped') {
     return (
       <View style={styles.trackerCardLeftCallout}>
-        <Icon source="stop" size={CARD_TEXT_ICON_SIZE} />{' '}
+        <Icon source="stop" size={LEFT_CALLOUT_ICON_SIZE} />
       </View>
     );
   }

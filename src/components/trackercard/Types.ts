@@ -29,6 +29,10 @@ export type TrackerCardProps = {
 };
 export function TrackerPropsToCardProps(
   tracker: Tracker,
+  onDelete: () => void,
+  onReset: () => void,
+  onStop: () => void,
+  onResume: () => void,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
 ): TrackerCardProps | undefined {
   switch (tracker.kind) {
@@ -36,19 +40,29 @@ export function TrackerPropsToCardProps(
       return ToGddTrackerCardProps(
         tracker,
         navigation,
-        () => {},
-        () => {},
+        onDelete,
+        onReset,
+        onStop,
+        onResume,
       );
     }
     case 'calendar': {
-      return ToCalendarTrackerCardProps(tracker, navigation, () => {});
+      return ToCalendarTrackerCardProps(
+        tracker,
+        navigation,
+        onDelete,
+        onStop,
+        onResume,
+      );
     }
     case 'timed': {
       return ToTimedTrackerCardProps(
         tracker,
         navigation,
-        () => {},
-        () => {},
+        onDelete,
+        onReset,
+        onStop,
+        onResume,
       );
     }
     // TODO: Better error handling

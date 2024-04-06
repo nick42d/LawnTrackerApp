@@ -60,7 +60,22 @@ export function StateContextProvider({
     OnChangeLocations(status, locations);
   }, [locations]);
 
+  function setLocationsWeatherRefreshing() {
+    const newLocations: Location[] = locations.map(l => ({
+      ...l,
+      weatherStatus: {...l.weatherStatus, status: 'Refreshing'},
+    }));
+    setLocations(newLocations);
+  }
+  function setLocationsWeatherLoaded(timeUnixMs: number) {
+    const newLocations: Location[] = locations.map(l => ({
+      ...l,
+      weatherStatus: {lastRefreshedUnixMs: timeUnixMs, status: 'Loaded'},
+    }));
+    setLocations(newLocations);
+  }
   function refreshWeather() {
+    setLocationsWeatherRefreshing();
     Promise.all(
       locations.map(async location => {
         const weatherFuture = await fetchWeather(
@@ -75,13 +90,14 @@ export function StateContextProvider({
     ).then(newLocations => {
       console.log('Received response, setting locations');
       setLocations(newLocations);
+      setLocationsWeatherLoaded(new Date().valueOf());
     });
   }
   function addTracker(tracker: Tracker) {
     setTrackers([...trackers, tracker]);
   }
   // Note - not all trackers can be reset, but more than just GDD trackers.
-  function resetGddTrackerName(name: string) {
+  function resetTrackerName(name: string) {
     console.log(`Resetting GDD tracker name ${name}`);
     const new_state = trackers.map(element =>
       element.name === name
@@ -93,6 +109,24 @@ export function StateContextProvider({
   function deleteTrackerName(trackerName: string) {
     console.log(`Deleting tracker name ${trackerName}`);
     const newTrackers = trackers.filter(item => item.name !== trackerName);
+    setTrackers(newTrackers);
+  }
+  function stopTrackerName(trackerName: string) {
+    console.log(`Stopping tracker name ${trackerName}`);
+    const newTrackers = trackers.map(element =>
+      element.name === trackerName
+        ? ({...element, trackerStatus: 'Stopped'} satisfies Tracker)
+        : element,
+    );
+    setTrackers(newTrackers);
+  }
+  function resumeTrackerName(trackerName: string) {
+    console.log(`Resuming tracker name ${trackerName}`);
+    const newTrackers = trackers.map(element =>
+      element.name === trackerName
+        ? ({...element, trackerStatus: 'Running'} satisfies Tracker)
+        : element,
+    );
     setTrackers(newTrackers);
   }
   function addLocation(location: Location) {
@@ -126,7 +160,9 @@ export function StateContextProvider({
         deleteLocationName,
         addTracker,
         deleteTrackerName,
-        resetGddTrackerName,
+        resetTrackerName,
+        stopTrackerName,
+        resumeTrackerName,
       }}>
       {children}
     </StateContext.Provider>

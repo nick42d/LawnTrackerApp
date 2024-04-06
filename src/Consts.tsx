@@ -26,3 +26,4 @@ export const API_LOCATIONS_LANGUAGE = 'en';
 export const BACKGROUND_REFRESH_INTERVAL = 15;
 
 export const DEFAULT_UNIT_OF_MEASURE = 'Metric';
+export const DATE_PICKER_LOCALE = 'en-GB';

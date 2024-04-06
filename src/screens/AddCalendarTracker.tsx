@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Button,
   Dialog,
@@ -10,19 +10,22 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import { ScrollView, TouchableHighlight, View } from 'react-native';
-import { DatePickerInput } from 'react-native-paper-dates';
-import { BASE_TEMPS_C } from '../Knowledge';
-import { newCalendarTracker, newGddTracker } from '../providers/statecontext/Trackers';
-import { AppScreenProps } from '../navigation/Root';
-import { MAX_HISTORY_DAYS } from '../Consts';
+import {ScrollView, TouchableHighlight, View} from 'react-native';
+import {DatePickerInput} from 'react-native-paper-dates';
+import {BASE_TEMPS_C} from '../Knowledge';
+import {
+  newCalendarTracker,
+  newGddTracker,
+} from '../providers/statecontext/Trackers';
+import {AppScreenProps} from '../navigation/Root';
+import {DATE_PICKER_LOCALE, MAX_HISTORY_DAYS} from '../Consts';
 import SaveButton from '../components/SaveButton';
-import { StateContext } from '../providers/StateContext';
+import {StateContext} from '../providers/StateContext';
 
 export default function AddCalendarTrackerScreen({
   navigation,
 }: AppScreenProps<'AddCalendarTracker'>) {
-  const { addTracker } = useContext(StateContext);
+  const {addTracker} = useContext(StateContext);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [targetDate, setTargetDate] = useState(new Date());
@@ -32,13 +35,7 @@ export default function AddCalendarTrackerScreen({
       headerRight: () =>
         SaveButton(!validateInput(), () => {
           // Assume all fields are valid, as you can't click the button otherwise.
-          addTracker(
-            newCalendarTracker(
-              name,
-              desc,
-              targetDate,
-            ),
-          );
+          addTracker(newCalendarTracker(name, desc, targetDate));
           navigation.goBack();
         }),
     });
@@ -84,7 +81,7 @@ export default function AddCalendarTrackerScreen({
         />
         <Divider />
         <DatePickerInput
-          locale="en-GB"
+          locale={DATE_PICKER_LOCALE}
           label="Start date"
           value={targetDate}
           onChange={d => setTargetDate(d as Date)}

@@ -15,14 +15,25 @@ type CardPropsParamList = {
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'];
   onDelete: () => void;
   onReset: () => void;
+  onStop: () => void;
+  onResume: () => void;
 };
 export function TrackerCard({
   item,
   onReset,
   onDelete,
+  onStop,
+  onResume,
   navigation,
 }: CardPropsParamList) {
-  const props = TrackerPropsToCardProps(item, navigation);
+  const props = TrackerPropsToCardProps(
+    item,
+    onDelete,
+    onReset,
+    onStop,
+    onResume,
+    navigation,
+  );
   if (props === undefined) return;
   return (
     <Card

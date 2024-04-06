@@ -1,20 +1,33 @@
-import { TimedTracker } from '../../providers/statecontext/Trackers';
-import { HomeLocationsTabScreenProps } from '../../navigation/Root';
-import { TrackerCardProps } from './Types';
-import { AddDays } from '../../Utils';
+import {TimedTracker} from '../../providers/statecontext/Trackers';
+import {HomeLocationsTabScreenProps} from '../../navigation/Root';
+import {TrackerCardProps} from './Types';
+import {AddDays} from '../../Utils';
 
 export function ToTimedTrackerCardProps(
   timedTracker: TimedTracker,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
   onDelete: () => void,
-  onReset: () => void
+  onReset: () => void,
+  onStop: () => void,
+  onResume: () => void,
 ): TrackerCardProps {
   // Temp!
   const daysRem = 5;
+  const leftCalloutStatus =
+    timedTracker.trackerStatus === 'Stopped' ? 'Stopped' : undefined;
+  const actions = [{icon: 'delete', name: 'Delete', callback: onDelete}];
+  if (timedTracker.trackerStatus === 'Stopped') {
+    actions.push({icon: 'play', name: 'Resume', callback: onResume});
+  } else {
+    actions.push(
+      {icon: 'rotate-left', name: 'Reset', callback: onReset},
+      {icon: 'stop', name: 'Stop', callback: onStop},
+    );
+  }
   return {
     heading: timedTracker.name,
     subheading: timedTracker.description,
-    leftCallout: `T-${daysRem}`,
+    leftCalloutProps: {text: `T-${daysRem}`, status: leftCalloutStatus},
     rightIcon: 'clock-start',
     lines: [
       {
@@ -30,14 +43,13 @@ export function ToTimedTrackerCardProps(
       {
         icon: 'calendar-end',
         title: 'End date',
-        text: AddDays(new Date(timedTracker.start_date_unix_ms), timedTracker.duration_days).toDateString(),
+        text: AddDays(
+          new Date(timedTracker.start_date_unix_ms),
+          timedTracker.duration_days,
+        ).toDateString(),
       },
     ],
-    actions: [
-      { icon: 'rotate-left', name: 'Reset', callback: onReset },
-      { icon: 'stop', name: 'Stop', callback: () => { } },
-      { icon: 'delete', name: 'Delete', callback: onDelete },
-    ],
-    onPress: () => { },
+    actions,
+    onPress: () => {},
   };
 }

@@ -46,6 +46,10 @@ export default function AddLocationCardScreen({
             latitude: coordinate[1],
             longitude: coordinate[0],
             weather: undefined,
+            weatherStatus: {
+              status: 'Initialised',
+              lastRefreshedUnixMs: undefined,
+            },
           });
           navigation.goBack();
           route.params?.onGoBack(locName);

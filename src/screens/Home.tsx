@@ -7,12 +7,12 @@ import {
   Portal,
   Text,
 } from 'react-native-paper';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
-import { TrackerCard } from '../components/TrackerCard';
-import { HomeLocationsTabScreenProps } from '../navigation/Root';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
+import {TrackerCard} from '../components/TrackerCard';
+import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import styles from '../Styles';
-import { StateContext } from '../providers/StateContext';
+import {StateContext} from '../providers/StateContext';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 export default function HomeScreen({
@@ -22,16 +22,18 @@ export default function HomeScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   // Required to use a higher order function due to type signature of useState.
-  const [dialogCallback, setDialogCallback] = useState(() => () => { });
+  const [dialogCallback, setDialogCallback] = useState(() => () => {});
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
   const [showDialog, setShowDialog] = useState(false);
 
   const {
-    trackers: gddTrackers,
+    trackers,
     refreshWeather,
-    deleteTrackerName: deleteGddTrackerName,
-    resetGddTrackerName,
+    deleteTrackerName,
+    resetTrackerName,
+    stopTrackerName,
+    resumeTrackerName,
   } = React.useContext(StateContext);
 
   const onRefresh = React.useCallback(() => {
@@ -48,7 +50,7 @@ export default function HomeScreen({
   function onDelete(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
-      deleteGddTrackerName(name);
+      deleteTrackerName(name);
       setShowDialog(false);
     });
     setDialogTitle('Confirm deletion');
@@ -58,27 +60,39 @@ export default function HomeScreen({
   function onReset(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
-      resetGddTrackerName(name);
+      resetTrackerName(name);
       setShowDialog(false);
     });
     setDialogTitle('Confirm reset');
     setDialogMessage('Are you sure you want to reset?');
     setShowDialog(true);
   }
-
+  function onStop(name: string) {
+    // Required to use a higher order function due to type signature of useState.
+    setDialogCallback(() => () => {
+      stopTrackerName(name);
+      setShowDialog(false);
+    });
+    setDialogTitle('Confirm stop');
+    setDialogMessage('Are you sure you want to stop?');
+    setShowDialog(true);
+  }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <FlatList
-        data={gddTrackers}
+        data={trackers}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <TrackerCard
             item={item}
             navigation={navigation}
             onDelete={() => onDelete(item.name)}
             onReset={() => onReset(item.name)}
+            onStop={() => onStop(item.name)}
+            // This case doesn't need validation, no ill effects can occur.
+            onResume={() => resumeTrackerName(item.name)}
           />
         )}
       />
@@ -112,7 +126,7 @@ export default function HomeScreen({
             },
           },
         ]}
-        onStateChange={({ open }) => setFabOpen(open)}
+        onStateChange={({open}) => setFabOpen(open)}
         onPress={() => {
           console.log('Pressed add button on home screen a second time');
         }}

@@ -1,17 +1,21 @@
-import { CalendarTracker } from '../../providers/statecontext/Trackers';
-import { HomeLocationsTabScreenProps } from '../../navigation/Root';
-import { TrackerCardProps } from './Types';
+import {CalendarTracker} from '../../providers/statecontext/Trackers';
+import {HomeLocationsTabScreenProps} from '../../navigation/Root';
+import {TrackerCardProps} from './Types';
 
 export function ToCalendarTrackerCardProps(
   calendarTracker: CalendarTracker,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
-  onDelete: () => void
+  onDelete: () => void,
+  onStop: () => void,
+  onResume: () => void,
 ): TrackerCardProps {
   const daysRem = 30;
+  const leftCalloutStatus =
+    calendarTracker.trackerStatus === 'Stopped' ? 'Stopped' : undefined;
   return {
     heading: calendarTracker.name,
     subheading: calendarTracker.description,
-    leftCallout: `T-${daysRem}`,
+    leftCalloutProps: {text: `T-${daysRem}`, status: leftCalloutStatus},
     rightIcon: 'calendar-clock',
     lines: [
       {
@@ -21,9 +25,9 @@ export function ToCalendarTrackerCardProps(
       },
     ],
     actions: [
-      { icon: 'stop', name: 'Stop', callback: () => { } },
-      { icon: 'delete', name: 'Delete', callback: onDelete },
+      {icon: 'delete', name: 'Delete', callback: onDelete},
+      {icon: 'stop', name: 'Stop', callback: onStop},
     ],
-    onPress: () => { },
+    onPress: () => {},
   };
 }

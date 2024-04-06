@@ -1,7 +1,11 @@
 import {useContext} from 'react';
 import {GddTracker} from '../../providers/statecontext/Trackers';
 import {ReplaceUndefinedString} from '../../Utils';
-import {calc_gdd_total} from '../../knowledge/Gdd';
+import {
+  calcGddTotal as calcGddTotal,
+  isWeatherInitialized as isWeatherInitialised,
+  isWeatherRefreshing,
+} from '../../knowledge/Gdd';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
 import {getGddEstimate, getGraphPlot, WeatherSource} from '../../plot/Gdd';
 import {SettingsContext} from '../../providers/SettingsContext';
@@ -16,10 +20,14 @@ export function ToGddTrackerCardProps(
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
   onDelete: () => void,
   onReset: () => void,
+  onStop: () => void,
+  onResume: () => void,
 ): TrackerCardProps {
   const {settings} = useContext(SettingsContext);
   const {locations} = useContext(StateContext);
-  const actual_gdd = calc_gdd_total(gddTracker, locations, settings.algorithm);
+  const actual_gdd = calcGddTotal(gddTracker, locations, settings.algorithm);
+  const weatherIsRefreshing = isWeatherRefreshing(gddTracker, locations);
+  const weatherIsInitialised = isWeatherInitialised(gddTracker, locations);
   console.log(JSON.stringify(actual_gdd));
   const leftCalloutRefreshing = typeof actual_gdd !== 'number' ? true : false;
   // TODO: Fix undefined case
@@ -32,6 +40,14 @@ export function ToGddTrackerCardProps(
       ? undefined
       : new Date(estimateTemp.estimateDateUnixMs).toDateString(),
   );
+  const leftCalloutStatus =
+    gddTracker.trackerStatus === 'Stopped'
+      ? 'Stopped'
+      : weatherIsRefreshing === true
+        ? 'Refreshing'
+        : weatherIsInitialised === true
+          ? 'Initialised'
+          : undefined;
   const leftcalloutcolour = GetGddTrackerCalloutColor(
     settings.warning_threshold_perc,
     actual_gdd as number,
@@ -39,7 +55,7 @@ export function ToGddTrackerCardProps(
   );
   const leftCalloutProps: LeftCalloutProps = {
     text: actual_gdd.toString(),
-    status: leftCalloutRefreshing ? 'Refreshing' : undefined,
+    status: leftCalloutStatus,
     backgroundColor: leftcalloutcolour,
   };
   return {
@@ -75,9 +91,9 @@ export function ToGddTrackerCardProps(
       },
     ],
     actions: [
-      {icon: 'rotate-left', name: 'Reset', callback: onReset},
-      {icon: 'stop', name: 'Stop', callback: () => {}},
       {icon: 'delete', name: 'Delete', callback: onDelete},
+      {icon: 'rotate-left', name: 'Reset', callback: onReset},
+      {icon: 'stop', name: 'Stop', callback: onStop},
     ],
     onPress: () =>
       navigation.navigate('ViewGddCard', {
