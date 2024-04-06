@@ -21,11 +21,7 @@ export function LeftCallout({status, text, backgroundColor}: LeftCalloutProps) {
     );
   }
   if (status === 'Initialised') {
-    return (
-      <View style={styles.trackerCardLeftCallout}>
-        <ActivityIndicator animating={false} />
-      </View>
-    );
+    return <View style={styles.trackerCardLeftCallout}></View>;
   }
   if (status === 'Stopped') {
     return (

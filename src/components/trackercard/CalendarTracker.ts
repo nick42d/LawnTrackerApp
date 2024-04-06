@@ -12,6 +12,12 @@ export function ToCalendarTrackerCardProps(
   const daysRem = 30;
   const leftCalloutStatus =
     calendarTracker.trackerStatus === 'Stopped' ? 'Stopped' : undefined;
+  const actions = [{icon: 'delete', name: 'Delete', callback: onDelete}];
+  if (calendarTracker.trackerStatus === 'Stopped') {
+    actions.push({icon: 'play', name: 'Resume', callback: onResume});
+  } else {
+    actions.push({icon: 'stop', name: 'Stop', callback: onStop});
+  }
   return {
     heading: calendarTracker.name,
     subheading: calendarTracker.description,
@@ -24,10 +30,7 @@ export function ToCalendarTrackerCardProps(
         text: new Date(calendarTracker.target_date_unix_ms).toDateString(),
       },
     ],
-    actions: [
-      {icon: 'delete', name: 'Delete', callback: onDelete},
-      {icon: 'stop', name: 'Stop', callback: onStop},
-    ],
+    actions,
     onPress: () => {},
   };
 }

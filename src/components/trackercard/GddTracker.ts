@@ -58,6 +58,15 @@ export function ToGddTrackerCardProps(
     status: leftCalloutStatus,
     backgroundColor: leftcalloutcolour,
   };
+  const actions = [{icon: 'delete', name: 'Delete', callback: onDelete}];
+  if (gddTracker.trackerStatus === 'Stopped') {
+    actions.push({icon: 'play', name: 'Resume', callback: onResume});
+  } else {
+    actions.push(
+      {icon: 'rotate-left', name: 'Reset', callback: onReset},
+      {icon: 'stop', name: 'Stop', callback: onStop},
+    );
+  }
   return {
     heading: gddTracker.name,
     subheading: gddTracker.description,
@@ -90,11 +99,7 @@ export function ToGddTrackerCardProps(
         text: estimateTemp ? WeatherSource[estimateTemp?.estimateType] : '',
       },
     ],
-    actions: [
-      {icon: 'delete', name: 'Delete', callback: onDelete},
-      {icon: 'rotate-left', name: 'Reset', callback: onReset},
-      {icon: 'stop', name: 'Stop', callback: onStop},
-    ],
+    actions,
     onPress: () =>
       navigation.navigate('ViewGddCard', {
         gddCard: gddTracker,
