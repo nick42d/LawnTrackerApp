@@ -24,7 +24,6 @@ import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {AddLocation, Location} from '../providers/statecontext/Locations';
 import AddLocationCardScreen from '../screens/AddLocationCard';
-import ViewLocationCardScreen from '../screens/ViewLocationCard';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import {View} from 'react-native';
@@ -120,11 +119,6 @@ function AppRootStackNavigator() {
           name="ViewTracker"
           component={ViewTrackerScreen}
           options={{title: 'View Tracker'}}
-        />
-        <Stack.Screen
-          name="ViewLocationCard"
-          component={ViewLocationCardScreen}
-          options={{title: 'View Location'}}
         />
         <Stack.Screen
           name="AddLocationCard"

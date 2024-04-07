@@ -48,8 +48,9 @@ export function LocationsCard({
       mode="elevated"
       style={central_styles.default.listCard}
       onPress={() => {
+        // Do nothing for now
         console.log('Pressed location card');
-        navigation.navigate('ViewLocationCard', {location});
+        // navigation.navigate('ViewLocationCard', {location});
       }}>
       <Card.Title
         title={location.name}
