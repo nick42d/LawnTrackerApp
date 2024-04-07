@@ -38,6 +38,19 @@ export type UnitOfMeasure = (typeof UNITS_OF_MEASURE)[number];
 export function isUnitOfMeasure(s: string): s is UnitOfMeasure {
   return UNITS_OF_MEASURE.find(u => u === s) !== undefined;
 }
+export function unitOfMeasureAbbreviate(u: UnitOfMeasure): string {
+  switch (u) {
+    case 'Imperial': {
+      return 'F';
+    }
+    case 'Metric': {
+      return 'C';
+    }
+    default: {
+      throw 'Unhandled unit of measure';
+    }
+  }
+}
 export enum BaseTemp {
   Zero = 0,
   Ten = 10,

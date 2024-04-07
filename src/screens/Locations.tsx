@@ -68,8 +68,7 @@ export default function LocationsScreen({
       />
       <Portal>
         <Snackbar
-          // Unsure if duration does anything
-          duration={6000}
+          duration={60}
           visible={showAlert}
           action={{label: 'Dismiss', onPress: () => setShowAlert(false)}}
           onDismiss={() => setShowAlert(false)}>
