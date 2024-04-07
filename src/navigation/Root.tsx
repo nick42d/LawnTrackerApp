@@ -4,7 +4,7 @@ import {
   NavigatorScreenParams,
   Theme,
 } from '@react-navigation/native';
-import {GddTracker} from '../providers/statecontext/Trackers';
+import {GddTracker, Tracker} from '../providers/statecontext/Trackers';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
@@ -40,7 +40,7 @@ export type RootStackParamList = {
   AddCalendarTracker: undefined;
   AddTimedTracker: undefined;
   AddLocationCard: {onGoBack: (locName: string) => void} | undefined;
-  ViewGddCard: {gddCard: GddTracker};
+  ViewTracker: {tracker: Tracker};
   ViewLocationCard: {location: Location};
 };
 
@@ -117,9 +117,9 @@ function AppRootStackNavigator() {
           options={{title: 'Add Timed Tracker'}}
         />
         <Stack.Screen
-          name="ViewGddCard"
+          name="ViewTracker"
           component={ViewTrackerScreen}
-          options={{title: 'View Card'}}
+          options={{title: 'View Tracker'}}
         />
         <Stack.Screen
           name="ViewLocationCard"

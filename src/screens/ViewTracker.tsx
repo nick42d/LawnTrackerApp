@@ -10,14 +10,18 @@ import {Location} from '../providers/statecontext/Locations';
 import {getGraphPlot} from '../plot/Gdd';
 import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
+import {TrackerProps} from '../components/TrackerProps';
 
 export default function ViewTrackerScreen({
   route,
-}: AppScreenProps<'ViewGddCard'>) {
+}: AppScreenProps<'ViewTracker'>) {
   const {locations} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
-  const item = route.params.gddCard;
-  const plot = getGraphPlot(item, locations, settings.algorithm);
+  const item = route.params.tracker;
+  const plot =
+    item.kind === 'gdd'
+      ? getGraphPlot(item, locations, settings.algorithm)
+      : undefined;
   const forecast_start = plot?.forecast_start as number;
   const estimate_start = plot?.estimate_start as number;
   const segments = [
@@ -35,33 +39,34 @@ export default function ViewTrackerScreen({
   const data = plot ? plot.items : [];
   return (
     <View>
-      <Text variant="displaySmall">{item.name}</Text>
-      <Text>{item.description}</Text>
-      <View>
-        <LineChart
-          data={data}
-          lineSegments={segments}
-          width={GRAPH_WIDTH}
-          showReferenceLine1
-          referenceLine1Config={{
-            thickness: 3,
-            color: 'red',
-            dashWidth: 10,
-            dashGap: -10,
-          }}
-          referenceLine1Position={item.target_gdd}
-          isAnimated
-          curved
-          rotateLabel
-          xAxisIndicesWidth={60}
-          spacing={60}
-          thickness={3}
-          showScrollIndicator
-          color="green"
-          dataPointsColor="green"
-          hideDataPoints
-        />
-      </View>
+      <TrackerProps tracker={item} />
+      {item.kind === 'gdd' && plot !== undefined ? (
+        <View>
+          <LineChart
+            data={data}
+            lineSegments={segments}
+            width={GRAPH_WIDTH}
+            showReferenceLine1
+            referenceLine1Config={{
+              thickness: 3,
+              color: 'red',
+              dashWidth: 10,
+              dashGap: -10,
+            }}
+            referenceLine1Position={item.target_gdd}
+            isAnimated
+            curved
+            rotateLabel
+            xAxisIndicesWidth={60}
+            spacing={60}
+            thickness={3}
+            showScrollIndicator
+            color="green"
+            dataPointsColor="green"
+            hideDataPoints
+          />
+        </View>
+      ) : undefined}
     </View>
   );
 }

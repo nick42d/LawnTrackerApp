@@ -31,6 +31,9 @@ export function ToCalendarTrackerCardProps(
       },
     ],
     actions,
-    onPress: () => {},
+    onPress: () =>
+      navigation.navigate('ViewTracker', {
+        tracker: calendarTracker,
+      }),
   };
 }

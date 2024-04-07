@@ -101,8 +101,8 @@ export function ToGddTrackerCardProps(
     ],
     actions,
     onPress: () =>
-      navigation.navigate('ViewGddCard', {
-        gddCard: gddTracker,
+      navigation.navigate('ViewTracker', {
+        tracker: gddTracker,
       }),
   };
 }

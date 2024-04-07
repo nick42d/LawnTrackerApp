@@ -50,6 +50,9 @@ export function ToTimedTrackerCardProps(
       },
     ],
     actions,
-    onPress: () => {},
+    onPress: () =>
+      navigation.navigate('ViewTracker', {
+        tracker: timedTracker,
+      }),
   };
 }
