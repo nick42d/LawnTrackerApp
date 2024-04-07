@@ -1,3 +1,4 @@
+import {calcGdd} from '../../Knowledge';
 
 export function newGddTracker(
   name: string,
@@ -5,7 +6,7 @@ export function newGddTracker(
   location_name: string,
   target_gdd: number,
   base_temp: number,
-  start_date: Date
+  start_date: Date,
 ): GddTracker {
   return {
     kind: 'gdd',
@@ -23,7 +24,7 @@ export function newGddTracker(
 export function newCalendarTracker(
   name: string,
   description: string,
-  target_date: Date
+  target_date: Date,
 ): CalendarTracker {
   return {
     kind: 'calendar',
@@ -39,7 +40,7 @@ export function newTimedTracker(
   name: string,
   description: string,
   start_date: Date,
-  duration_days: number
+  duration_days: number,
 ): TimedTracker {
   return {
     kind: 'timed',
@@ -60,10 +61,10 @@ function newNotificationStatus(): NotificationStatus {
 }
 
 export type Tracker = GddTracker | TimedTracker | CalendarTracker;
-export type TrackerStatus = "Stopped" | "Running";
+export type TrackerStatus = 'Stopped' | 'Running';
 export type GddTrackerStatus = TrackerStatus | TrackerError;
 export type TrackerError = {
-  ErrorType: "MissedDays";
+  ErrorType: 'MissedDays';
   ErrorMessage: String;
 };
 export type NotificationStatus = {
@@ -99,3 +100,9 @@ export type GddTracker = {
   trackerStatus: GddTrackerStatus;
   notificationStatus: NotificationStatus;
 };
+
+/// Resets tracker - note copy on write behaviour
+export function resetTracker(tracker: Tracker): Tracker {
+  if (tracker.kind === 'calendar') return tracker;
+  return {...tracker, start_date_unix_ms: Date.now()};
+}

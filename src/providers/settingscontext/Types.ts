@@ -46,9 +46,6 @@ export function unitOfMeasureAbbreviate(u: UnitOfMeasure): string {
     case 'Metric': {
       return 'C';
     }
-    default: {
-      throw 'Unhandled unit of measure';
-    }
   }
 }
 export enum BaseTemp {

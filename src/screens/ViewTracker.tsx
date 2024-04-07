@@ -5,13 +5,13 @@ import {View} from 'react-native';
 import {calcGdd} from '../Knowledge';
 import {GRAPH_WIDTH} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
-import { GddTracker } from '../providers/statecontext/Trackers';
-import { Location } from '../providers/statecontext/Locations';
+import {GddTracker} from '../providers/statecontext/Trackers';
+import {Location} from '../providers/statecontext/Locations';
 import {getGraphPlot} from '../plot/Gdd';
 import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
 
-export default function ViewGddCardScreen({
+export default function ViewTrackerScreen({
   route,
 }: AppScreenProps<'ViewGddCard'>) {
   const {locations} = useContext(StateContext);
