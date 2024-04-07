@@ -21,7 +21,7 @@ export function ToTimedTrackerCardProps(
   } else {
     actions.push(
       {icon: 'rotate-left', name: 'Reset', callback: onReset},
-      {icon: 'stop', name: 'Stop', callback: onStop},
+      {icon: 'stop', name: '', callback: onStop},
     );
   }
   return {
