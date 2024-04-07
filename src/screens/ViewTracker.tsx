@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Text} from 'react-native-paper';
+import {Text, useTheme} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
 import {calcGdd} from '../Knowledge';
@@ -11,12 +11,19 @@ import {getGraphPlot} from '../plot/Gdd';
 import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
 import {TrackerProps} from '../components/TrackerProps';
+import {PlotLegend} from '../components/PlotLegend';
+
+const HISTORICAL_COLOR = 'green';
+const FORECASTED_COLOR = 'yellowgreen';
+const ESTIMATED_COLOR = 'skyblue';
+const TARGET_COLOR = 'orangered';
 
 export default function ViewTrackerScreen({
   route,
 }: AppScreenProps<'ViewTracker'>) {
   const {locations} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
+  const theme = useTheme();
   const item = route.params.tracker;
   const plot =
     item.kind === 'gdd'
@@ -28,12 +35,14 @@ export default function ViewTrackerScreen({
     {
       startIndex: forecast_start - 1,
       endIndex: estimate_start - 1,
-      strokeDashArray: [5, 5],
+      strokeDashArray: [6, 4],
+      color: FORECASTED_COLOR,
     },
     {
       startIndex: estimate_start - 1,
       endIndex: plot?.items.length as number,
-      strokeDashArray: [2, 6],
+      strokeDashArray: [6, 4],
+      color: ESTIMATED_COLOR,
     },
   ];
   const data = plot ? plot.items : [];
@@ -41,29 +50,41 @@ export default function ViewTrackerScreen({
     <View>
       <TrackerProps tracker={item} />
       {item.kind === 'gdd' && plot !== undefined ? (
-        <View>
+        <View style={{rowGap: 30}}>
+          <PlotLegend
+            points={[
+              {name: 'historical', color: HISTORICAL_COLOR},
+              {name: 'forecasted', color: FORECASTED_COLOR},
+              {name: 'estimated', color: ESTIMATED_COLOR},
+              {name: 'target', color: TARGET_COLOR},
+            ]}
+          />
           <LineChart
-            data={data}
+            data={data.map((d, i) => ({
+              value: d.value,
+            }))}
             lineSegments={segments}
             width={GRAPH_WIDTH}
             showReferenceLine1
             referenceLine1Config={{
-              thickness: 3,
-              color: 'red',
+              thickness: 2,
+              color: TARGET_COLOR,
               dashWidth: 10,
-              dashGap: -10,
+              dashGap: 10,
             }}
             referenceLine1Position={item.target_gdd}
             isAnimated
             curved
-            rotateLabel
+            yAxisTextStyle={{color: theme.colors.onSurface}}
+            yAxisColor={theme.colors.onSurface}
+            xAxisColor={theme.colors.onSurface}
             xAxisIndicesWidth={60}
-            spacing={60}
+            spacing={20}
             thickness={3}
             showScrollIndicator
-            color="green"
-            dataPointsColor="green"
+            color={HISTORICAL_COLOR}
             hideDataPoints
+            showVerticalLines
           />
         </View>
       ) : undefined}

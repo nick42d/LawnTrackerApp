@@ -15,7 +15,9 @@ export async function onDisplayNotification() {
   await notifee.displayNotification({
     title: 'Notification Title',
     body: 'Main body content of the notification',
+    // TODO: iOS config
     android: {
+      smallIcon: 'ic_launcher',
       channelId,
       // pressAction is needed if you want the notification to open the app when pressed
       pressAction: {

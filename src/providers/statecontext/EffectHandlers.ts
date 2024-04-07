@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
-import { ContextStatus } from '../Types';
-import { Location } from './Locations';
-import { GddTracker, Tracker } from './Trackers';
+import {ContextStatus} from '../Types';
+import {Location} from './Locations';
+import {GddTracker, Tracker} from './Trackers';
 import {initBackgroundFetch} from './BackgroundFetch';
 
 type StoredState = {
@@ -16,23 +16,25 @@ export async function GetStoredState(): Promise<StoredState | undefined> {
     GDD_TRACKERS_STORAGE_KEY,
   ]).then(x => {
     const containsLoc = x.find(y => y[0] === LOCATIONS_STORAGE_KEY);
-    const containsGddTrackers = x.find(y => y[0] === GDD_TRACKERS_STORAGE_KEY);
+    const containsTrackers = x.find(y => y[0] === GDD_TRACKERS_STORAGE_KEY);
     if (
       containsLoc !== undefined &&
       containsLoc[1] !== null &&
-      containsGddTrackers !== undefined &&
-      containsGddTrackers[1] !== null
+      containsTrackers !== undefined &&
+      containsTrackers[1] !== null
     ) {
       console.log('Loading app state from device');
       return (
         // NOTE: Parse could fail if someone else writes to these keys!
         {
-          trackers: JSON.parse(containsGddTrackers[1]),
+          trackers: JSON.parse(containsTrackers[1]),
           locations: JSON.parse(containsLoc[1]),
         }
       );
     } else {
       console.warn('Missing some App state on device - using defaults');
+      console.log('ContainsLoc: ' + JSON.stringify(containsLoc));
+      console.log('ContainsTrackers: ' + JSON.stringify(containsTrackers));
       return undefined;
     }
   });

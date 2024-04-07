@@ -1,9 +1,9 @@
 import {ESTIMATED_DAYS} from '../Consts';
 import {calcGdd} from '../Knowledge';
-import { GddTracker } from '../providers/statecontext/Trackers';
+import {GddTracker} from '../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../api/Types';
-import { GDDAlgorithm } from '../providers/settingscontext/Types';
-import { Location } from '../providers/statecontext/Locations';
+import {GDDAlgorithm} from '../providers/settingscontext/Types';
+import {Location} from '../providers/statecontext/Locations';
 
 export enum WeatherSource {
   Historical,

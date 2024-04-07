@@ -53,7 +53,7 @@ export default function HomeScreen({
       deleteTrackerName(name);
       setShowDialog(false);
     });
-    setDialogTitle('Confirm deletion');
+    setDialogTitle('Confirm delete tracker');
     setDialogMessage('Are you sure you want to delete?');
     setShowDialog(true);
   }
@@ -63,8 +63,10 @@ export default function HomeScreen({
       resetTrackerName(name);
       setShowDialog(false);
     });
-    setDialogTitle('Confirm reset');
-    setDialogMessage('Are you sure you want to reset?');
+    setDialogTitle('Confirm reset tracker');
+    setDialogMessage(
+      'Are you sure you want to reset? Tracker start date will be set to today',
+    );
     setShowDialog(true);
   }
   function onStop(name: string) {
@@ -73,7 +75,7 @@ export default function HomeScreen({
       stopTrackerName(name);
       setShowDialog(false);
     });
-    setDialogTitle('Confirm stop');
+    setDialogTitle('Confirm stop tracker');
     setDialogMessage('Are you sure you want to stop?');
     setShowDialog(true);
   }

@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {GddTracker, Tracker} from './statecontext/Trackers';
+import {
+  GddTracker,
+  Tracker,
+  resetTracker,
+  resumeTracker,
+  stopTracker,
+} from './statecontext/Trackers';
 import {
   DEFAULT_UNIT_OF_MEASURE,
   MAX_FORECAST_DAYS,
@@ -44,7 +50,7 @@ export function StateContextProvider({
         setLocations(s.locations);
         console.log('Loaded app state from device');
       })
-      .then(_ => setStatus('Loading'))
+      .then(_ => setStatus('Loaded'))
       .catch(() => console.warn('Error getting app state'));
     // Initialize BackgroundFetch only once when component mounts.
     initBackgroundFetch();
@@ -99,10 +105,8 @@ export function StateContextProvider({
   // Note - not all trackers can be reset, but more than just GDD trackers.
   function resetTrackerName(name: string) {
     console.log(`Resetting GDD tracker name ${name}`);
-    const new_state = trackers.map(element =>
-      element.name === name
-        ? {...element, start_date_unix_ms: Date.now()}
-        : element,
+    const new_state = trackers.map(t =>
+      t.name === name ? resetTracker(t) : t,
     );
     setTrackers(new_state);
   }
@@ -113,19 +117,15 @@ export function StateContextProvider({
   }
   function stopTrackerName(trackerName: string) {
     console.log(`Stopping tracker name ${trackerName}`);
-    const newTrackers = trackers.map(element =>
-      element.name === trackerName
-        ? ({...element, trackerStatus: 'Stopped'} satisfies Tracker)
-        : element,
+    const newTrackers = trackers.map(t =>
+      t.name === trackerName ? stopTracker(t) : t,
     );
     setTrackers(newTrackers);
   }
   function resumeTrackerName(trackerName: string) {
     console.log(`Resuming tracker name ${trackerName}`);
-    const newTrackers = trackers.map(element =>
-      element.name === trackerName
-        ? ({...element, trackerStatus: 'Running'} satisfies Tracker)
-        : element,
+    const newTrackers = trackers.map(t =>
+      t.name === trackerName ? resumeTracker(t) : t,
     );
     setTrackers(newTrackers);
   }

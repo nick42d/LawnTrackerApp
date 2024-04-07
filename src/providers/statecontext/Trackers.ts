@@ -62,11 +62,6 @@ function newNotificationStatus(): NotificationStatus {
 
 export type Tracker = GddTracker | TimedTracker | CalendarTracker;
 export type TrackerStatus = 'Stopped' | 'Running';
-export type GddTrackerStatus = TrackerStatus | TrackerError;
-export type TrackerError = {
-  ErrorType: 'MissedDays';
-  ErrorMessage: String;
-};
 export type NotificationStatus = {
   lastCheckedUnixMs: number | undefined;
   lastNotificationId: number | undefined;
@@ -97,7 +92,7 @@ export type GddTracker = {
   base_temp: number;
   start_date_unix_ms: number;
   location_name: string;
-  trackerStatus: GddTrackerStatus;
+  trackerStatus: TrackerStatus;
   notificationStatus: NotificationStatus;
 };
 
@@ -105,4 +100,14 @@ export type GddTracker = {
 export function resetTracker(tracker: Tracker): Tracker {
   if (tracker.kind === 'calendar') return tracker;
   return {...tracker, start_date_unix_ms: Date.now()};
+}
+
+/// Stops tracker
+export function stopTracker(tracker: Tracker): Tracker {
+  return {...tracker, trackerStatus: 'Stopped'};
+}
+
+/// Resumes tracker and resets it if resettable.
+export function resumeTracker(tracker: Tracker): Tracker {
+  return {...resetTracker(tracker), trackerStatus: 'Running'};
 }
