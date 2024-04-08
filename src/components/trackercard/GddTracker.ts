@@ -7,12 +7,10 @@ import {
   isWeatherRefreshing,
 } from '../../knowledge/Gdd';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
-import {getGddEstimate, getGraphPlot, WeatherSource} from '../../plot/Gdd';
+import {getGddEstimate, getGraphPlot} from '../../plot/Gdd';
 import {SettingsContext} from '../../providers/SettingsContext';
 import {StateContext} from '../../providers/StateContext';
 import {TrackerCardProps} from './Types';
-import styles from '../../Styles';
-import {LocationError} from '../../providers/statecontext/Locations';
 import {LeftCalloutProps} from './LeftCallout';
 
 export function ToGddTrackerCardProps(
@@ -96,7 +94,7 @@ export function ToGddTrackerCardProps(
       {
         icon: 'chart-timeline',
         title: 'Projection type',
-        text: estimateTemp ? WeatherSource[estimateTemp?.estimateType] : '',
+        text: estimateTemp ? estimateTemp.estimateType : '',
       },
     ],
     actions,

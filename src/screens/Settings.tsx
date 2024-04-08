@@ -64,17 +64,20 @@ export default function SettingsScreen() {
     <ScrollView>
       <List.Section>
         <List.Item
-          onPress={ShowAlgorithmDialog}
-          title="Algorithm"
-          description={gddAlgorithmToText(settings.algorithm)}
+          onPress={ShowThresholdDialog}
+          title="Warning threshold percentage"
+          description="Percentage completion to trigger amber status"
+          right={() => (
+            <Text>{(settings.warning_threshold_perc * 100).toFixed(0)}%</Text>
+          )}
         />
         <List.Item
           onPress={ShowUnitOfMeasureDialog}
-          title="Unit of measure"
-          description={settings.unit_of_measure}
+          title="Unit of measure - weather"
+          description="Unit of measure for Locations page. Note, will not affect Growing Degree Days (Metric only)."
+          right={() => <Text>{settings.unit_of_measure}</Text>}
         />
         <List.Item
-          onPress={() => {}}
           title="Dark mode"
           description={'Will not turn off automatically'}
           right={() => (
@@ -89,7 +92,6 @@ export default function SettingsScreen() {
           )}
         />
         <List.Item
-          onPress={() => {}}
           title="Auto dark mode"
           description={
             'Whether system settings will automatically put app into dark mode'
@@ -105,19 +107,18 @@ export default function SettingsScreen() {
             />
           )}
         />
+        <List.Subheader>Growing Degree Days Settings</List.Subheader>
+        <List.Item
+          onPress={ShowAlgorithmDialog}
+          title="GDD Algorithm"
+          description="Unit of measure used to calculate GDD. See help page for more details."
+          right={() => <Text>{gddAlgorithmToText(settings.algorithm)}</Text>}
+        />
         <List.Item
           onPress={ShowBaseTempDialog}
           title="Default base temp"
           description="Default base temp to use when adding GDD trackers"
           right={() => <Text>{settings.default_base_temp}</Text>}
-        />
-        <List.Item
-          onPress={ShowThresholdDialog}
-          title="Warning threshold percentage"
-          description="Percentage completion to trigger amber status"
-          right={() => (
-            <Text>{(settings.warning_threshold_perc * 100).toFixed(0)}%</Text>
-          )}
         />
       </List.Section>
       <Portal>

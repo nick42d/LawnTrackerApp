@@ -16,7 +16,7 @@ import {
 } from './providers/settingscontext/Types';
 import {StateManager} from './providers/statecontext/Types';
 import {Location, newWeatherStatus} from './providers/statecontext/Locations';
-import {DEFAULT_UNIT_OF_MEASURE} from './Consts';
+import {API_UNIT_OF_MEASURE} from './Consts';
 
 const PERTH_LAT = -32.0494;
 const PERTH_LONG = 115.9122;
@@ -27,7 +27,7 @@ export function defaultSettings(): Settings {
   return {
     algorithm: GDDAlgorithm.VariantA,
     warning_threshold_perc: 0.8,
-    unit_of_measure: DEFAULT_UNIT_OF_MEASURE,
+    unit_of_measure: API_UNIT_OF_MEASURE,
     auto_dark_mode: true,
     dark_mode_enabled: false,
     api_key: undefined,

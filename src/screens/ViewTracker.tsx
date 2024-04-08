@@ -7,11 +7,12 @@ import {GRAPH_WIDTH} from '../Consts';
 import {AppScreenProps} from '../navigation/Root';
 import {GddTracker} from '../providers/statecontext/Trackers';
 import {Location} from '../providers/statecontext/Locations';
-import {getGraphPlot} from '../plot/Gdd';
+import {getGraphPlot, trimGraphPlotLabels} from '../plot/Gdd';
 import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
 import {TrackerProps} from '../components/TrackerProps';
 import {PlotLegend} from '../components/PlotLegend';
+import {checkWeatherInvariants} from '../api/Types';
 
 const HISTORICAL_COLOR = 'green';
 const FORECASTED_COLOR = 'yellowgreen';
@@ -25,6 +26,15 @@ export default function ViewTrackerScreen({
   const {settings} = useContext(SettingsContext);
   const theme = useTheme();
   const item = route.params.tracker;
+  // Temp check for invariants
+  locations.map(l => {
+    console.log('Checking invariant weather at ' + l.name);
+    if (l.weather === undefined) {
+      console.log('Weather undefined');
+      return;
+    }
+    console.log(JSON.stringify(checkWeatherInvariants(l.weather)));
+  });
   const plot =
     item.kind === 'gdd'
       ? getGraphPlot(item, locations, settings.algorithm)
@@ -45,7 +55,7 @@ export default function ViewTrackerScreen({
       color: ESTIMATED_COLOR,
     },
   ];
-  const data = plot ? plot.items : [];
+  const data = plot ? trimGraphPlotLabels(plot.items) : [];
   return (
     <View>
       <TrackerProps tracker={item} />
@@ -60,9 +70,7 @@ export default function ViewTrackerScreen({
             ]}
           />
           <LineChart
-            data={data.map((d, i) => ({
-              value: d.value,
-            }))}
+            data={data}
             lineSegments={segments}
             width={GRAPH_WIDTH}
             showReferenceLine1
@@ -78,6 +86,7 @@ export default function ViewTrackerScreen({
             yAxisTextStyle={{color: theme.colors.onSurface}}
             yAxisColor={theme.colors.onSurface}
             xAxisColor={theme.colors.onSurface}
+            xAxisLabelTextStyle={{width: 80, color: theme.colors.onSurface}}
             xAxisIndicesWidth={60}
             spacing={20}
             thickness={3}

@@ -1,3 +1,4 @@
+import {format} from 'date-fns';
 import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
 import {UnitOfMeasure} from '../providers/settingscontext/Types';
 
@@ -52,32 +53,35 @@ function apiLocationToAppLocation(
 /// Must be sorted by date asc
 /// Must not miss any dates between largest date and smallest date
 /// Must contain no duplicate dates
-export function checkWeatherInvariants(weather: Weather) {
-  weather.weather_array.reduce<WeatherInvariantCheck>(
+export function checkWeatherInvariants(
+  weather: Weather,
+): WeatherInvariantCheck {
+  const scanner = weather.weather_array.reduce<WeatherInvariantCheck>(
     (acc, e) => {
       if (acc.status === 'Failed')
         return {
           status: 'Failed',
-          lastDate: acc.lastDate,
+          lastDateUnixMs: acc.lastDateUnixMs,
         };
-      if (acc.status === 'Initial' || acc.lastDate === undefined)
-        return {status: 'Ok', lastDate: e.date_unix};
-      const prevDate = new Date(acc.lastDate);
-      const nextDate = new Date(e.date_unix);
+      if (acc.status === 'Initial' || acc.lastDateUnixMs === undefined)
+        return {status: 'Ok', lastDateUnixMs: e.date_unix * 1000};
+      const prevDate = new Date(acc.lastDateUnixMs);
+      const nextDate = new Date(e.date_unix * 1000);
       prevDate.setHours(0, 0, 0, 0);
       nextDate.setHours(0, 0, 0, 0);
       if (nextDate > prevDate) {
-        return {status: 'Ok', lastDate: prevDate.valueOf()};
+        return {status: 'Ok', lastDateUnixMs: nextDate.valueOf()};
       } else {
-        return {status: 'Failed', lastDate: prevDate.valueOf()};
+        return {status: 'Failed', lastDateUnixMs: nextDate.valueOf()};
       }
     },
-    {status: 'Initial', lastDate: undefined},
+    {status: 'Initial', lastDateUnixMs: undefined},
   );
+  return scanner;
 }
 type WeatherInvariantCheck = {
   status: 'Initial' | 'Ok' | 'Failed';
-  lastDate: number | undefined;
+  lastDateUnixMs: number | undefined;
 };
 
 export function convertUnits(

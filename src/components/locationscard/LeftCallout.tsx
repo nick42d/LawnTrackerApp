@@ -11,13 +11,13 @@ const LEFT_CALLOUT_TEXT_VARIANT = 'bodyMedium';
 
 export type WeatherLeftCalloutProps = {
   status?: 'Refreshing' | 'Initialised';
-  text?: string;
+  temperature?: number;
   unitOfMeasure?: UnitOfMeasure;
 };
 
 export function WeatherLeftCallout({
   status,
-  text,
+  temperature,
   unitOfMeasure,
 }: WeatherLeftCalloutProps) {
   if (status === 'Refreshing') {
@@ -35,7 +35,7 @@ export function WeatherLeftCallout({
       <Text
         style={styles.trackerCardLeftCalloutText}
         variant={LEFT_CALLOUT_TEXT_VARIANT}>
-        {text}
+        {temperature?.toFixed(1)}
         {'\n'}°{unitOfMeasure ? unitOfMeasureAbbreviate(unitOfMeasure) : ''}
       </Text>
     </View>

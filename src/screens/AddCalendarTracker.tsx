@@ -32,12 +32,16 @@ export default function AddCalendarTrackerScreen({
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        SaveButton(!validateInput(), () => {
-          // Assume all fields are valid, as you can't click the button otherwise.
-          addTracker(newCalendarTracker(name, desc, targetDate));
-          navigation.goBack();
-        }),
+      headerRight: () => (
+        <SaveButton
+          disabled={!validateInput()}
+          onPress={() => {
+            // Assume all fields are valid, as you can't click the button otherwise.
+            addTracker(newCalendarTracker(name, desc, targetDate));
+            navigation.goBack();
+          }}
+        />
+      ),
     });
   }, [name, targetDate, desc]);
 

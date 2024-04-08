@@ -25,7 +25,11 @@ function navigate<T extends keyof HomeLocationsTabParamList>(
   });
 }
 
-export default function SaveButton(disabled: boolean, onPress: () => void) {
+type SaveButtonParams = {
+  disabled: boolean;
+  onPress: () => void;
+};
+export default function SaveButton({disabled, onPress}: SaveButtonParams) {
   return (
     <Appbar.Action
       onPress={() => {

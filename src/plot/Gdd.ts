@@ -1,19 +1,22 @@
-import {ESTIMATED_DAYS} from '../Consts';
+import {DATE_PICKER_LOCALE, ESTIMATED_DAYS} from '../Consts';
 import {calcGdd} from '../Knowledge';
 import {GddTracker} from '../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../api/Types';
 import {GDDAlgorithm} from '../providers/settingscontext/Types';
 import {Location} from '../providers/statecontext/Locations';
+import {format} from 'date-fns';
 
-export enum WeatherSource {
-  Historical,
-  Forecast,
-  Estimated,
-  // TODO: Remove
-  Unimplemented,
-}
+// TODO: Remove unimplemented
+const PLOT_WEATHER_TYPES = [
+  'Historical',
+  'Forecasted',
+  'Estimated',
+  'Unimplemented',
+] as const;
+export type PlotWeatherType = (typeof PLOT_WEATHER_TYPES)[number];
+
 export type GddEstimate = {
-  estimateType: WeatherSource;
+  estimateType: PlotWeatherType;
   estimateDateUnixMs: number;
 };
 export type GraphPlotItem = {value: number; label: string};
@@ -24,12 +27,26 @@ export type GddGraphPlot = {
   estimate_start: number;
 };
 
+export function trimGraphPlotLabels(plot: GraphPlotItem[]): {
+  value: number;
+  label?: string;
+}[] {
+  return plot.map((item, idx) => {
+    if (idx % 7 === 0)
+      return {
+        value: item.value,
+        // TODO: Better date formatting
+        label: format(new Date(item.label), 'EEEEEE dd/MM'),
+      };
+    return {value: item.value};
+  });
+}
 function listAverage(list: number[]): number {
   if (list.length === 0) return 0;
   return list.reduce((sum, acc) => acc + sum, 0) / list.length;
 }
 function weatherDaysToGddArr(
-  forecasts: WeatherAppDay[] | undefined,
+  forecasts: WeatherAppDay[],
   startDateUnix: number,
   tBase: number,
   algorithm: GDDAlgorithm,
@@ -112,6 +129,6 @@ export function getGddEstimate(
   const estimatedDay = new Date(estimatedDayItem.label);
   return {
     estimateDateUnixMs: estimatedDay.getTime(),
-    estimateType: WeatherSource.Unimplemented,
+    estimateType: 'Unimplemented',
   };
 }

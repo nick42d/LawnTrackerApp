@@ -35,10 +35,10 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
   Drawer: NavigatorScreenParams<AppDrawerParamList>;
-  AddGddTracker: undefined;
+  AddGddTracker: {fromAddLocationName: string} | undefined;
   AddCalendarTracker: undefined;
   AddTimedTracker: undefined;
-  AddLocationCard: {onGoBack: (locName: string) => void} | undefined;
+  AddLocationCard: {fromAddGddTracker: boolean} | undefined;
   ViewTracker: {tracker: Tracker};
   ViewLocationCard: {location: Location};
 };

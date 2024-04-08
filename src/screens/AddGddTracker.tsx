@@ -20,6 +20,7 @@ import SaveButton from '../components/SaveButton';
 import {StateContext} from '../providers/StateContext';
 
 export default function AddGddTrackerScreen({
+  route,
   navigation,
 }: AppScreenProps<'AddGddTracker'>) {
   const [name, setName] = useState('');
@@ -32,23 +33,36 @@ export default function AddGddTrackerScreen({
   const [location, setLocation] = useState(locations[0].name);
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
+  // If we navigated here from Add Locations Screen, make sure the dialog is shown
+  // and set the added location as selected.
+  useEffect(() => {
+    if (route.params) {
+      setTempDialogShown(true);
+      // TODO: Safety checks
+      setLocation(route.params.fromAddLocationName);
+    }
+  }, [route.params?.fromAddLocationName]);
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        SaveButton(!validateInput(), () => {
-          // Assume all fields are valid, as you can't click the button otherwise.
-          addGddTracker(
-            newGddTracker(
-              name,
-              desc,
-              location,
-              Number(target),
-              Number(toggle),
-              startDate,
-            ),
-          );
-          navigation.goBack();
-        }),
+      headerRight: () => (
+        <SaveButton
+          disabled={!validateInput()}
+          onPress={() => {
+            // Assume all fields are valid, as you can't click the button otherwise.
+            addGddTracker(
+              newGddTracker(
+                name,
+                desc,
+                location,
+                Number(target),
+                Number(toggle),
+                startDate,
+              ),
+            );
+            navigation.goBack();
+          }}
+        />
+      ),
     });
   }, [name, location, startDate, target, desc, toggle]);
 
@@ -182,11 +196,7 @@ export default function AddGddTrackerScreen({
               onPress={_ => {
                 setTempDialogShown(false);
                 navigation.navigate('AddLocationCard', {
-                  onGoBack: locName => {
-                    setTempDialogShown(true);
-                    // TODO: Safety checks
-                    setLocation(locName);
-                  },
+                  fromAddGddTracker: true,
                 });
               }}>
               Add location

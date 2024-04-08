@@ -21,9 +21,12 @@ export const API_TIMEZONE = 'auto';
 export const API_WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
 export const API_LOCATIONS_URL =
   'https://geocoding-api.open-meteo.com/v1/search';
+// Currently hardcoded.
 export const API_LOCATIONS_LANGUAGE = 'en';
+// Currently API will only fetch in metric as the only place this may need to be converted is the locatiosn card (single conversion per location).
+export const API_UNIT_OF_MEASURE = 'Metric';
 // How often to run react-native-background-fetch - could differ between dev and prod
 export const BACKGROUND_REFRESH_INTERVAL = 15;
 
-export const DEFAULT_UNIT_OF_MEASURE = 'Metric';
+// Currently harcoded
 export const DATE_PICKER_LOCALE = 'en-GB';

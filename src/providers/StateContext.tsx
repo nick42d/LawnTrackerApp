@@ -7,7 +7,7 @@ import {
   stopTracker,
 } from './statecontext/Trackers';
 import {
-  DEFAULT_UNIT_OF_MEASURE,
+  API_UNIT_OF_MEASURE,
   MAX_FORECAST_DAYS,
   MAX_HISTORY_DAYS,
 } from '../Consts';
@@ -89,7 +89,7 @@ export function StateContextProvider({
           location.longitude,
           MAX_HISTORY_DAYS,
           MAX_FORECAST_DAYS,
-          DEFAULT_UNIT_OF_MEASURE,
+          API_UNIT_OF_MEASURE,
         );
         return addWeatherToLocation(location, weatherFuture);
       }),

@@ -39,21 +39,30 @@ export default function AddLocationCardScreen({
 
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        SaveButton(locUndefined, () => {
-          addLocation({
-            name: locName,
-            latitude: coordinate[1],
-            longitude: coordinate[0],
-            weather: undefined,
-            weatherStatus: {
-              status: 'Initialised',
-              lastRefreshedUnixMs: undefined,
-            },
-          });
-          navigation.goBack();
-          route.params?.onGoBack(locName);
-        }),
+      headerRight: () => (
+        <SaveButton
+          disabled={locUndefined}
+          onPress={() => {
+            addLocation({
+              name: locName,
+              latitude: coordinate[1],
+              longitude: coordinate[0],
+              weather: undefined,
+              weatherStatus: {
+                status: 'Initialised',
+                lastRefreshedUnixMs: undefined,
+              },
+            });
+            if (route.params?.fromAddGddTracker) {
+              navigation.navigate('AddGddTracker', {
+                fromAddLocationName: locName,
+              });
+            } else {
+              navigation.goBack();
+            }
+          }}
+        />
+      ),
     });
   }, [coordinate, locName, locUndefined]);
 

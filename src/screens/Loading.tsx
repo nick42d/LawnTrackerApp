@@ -1,6 +1,5 @@
 import {Image, StyleSheet, View} from 'react-native';
 import {ActivityIndicator, Text} from 'react-native-paper';
-import ViewLocationCardScreen from './ViewLocationCard';
 
 export default function LoadingScreen() {
   return (

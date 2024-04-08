@@ -35,20 +35,24 @@ export default function AddTimedTrackerScreen({
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        SaveButton(!validateInput(), () => {
-          // Assume all fields are valid, as you can't click the button otherwise.
-          addTracker(
-            newTimedTracker(
-              name,
-              desc,
-              startDate,
-              // Safe as input is checked
-              Number(durationDays),
-            ),
-          );
-          navigation.goBack();
-        }),
+      headerRight: () => (
+        <SaveButton
+          disabled={!validateInput()}
+          onPress={() => {
+            // Assume all fields are valid, as you can't click the button otherwise.
+            addTracker(
+              newTimedTracker(
+                name,
+                desc,
+                startDate,
+                // Safe as input is checked
+                Number(durationDays),
+              ),
+            );
+            navigation.goBack();
+          }}
+        />
+      ),
     });
   }, [name, startDate, desc, durationDays]);
 
