@@ -33,8 +33,9 @@ export const StateContext = React.createContext<StateManager>(
 export function StateContextProvider({
   children,
 }: React.PropsWithChildren): React.JSX.Element {
-  const [locations, setLocations] = useState(mockLocations());
-  const [trackers, setTrackers] = useState(mockTrackers());
+  // Note, pass defaults functions to useState to avoid calling on every render.
+  const [locations, setLocations] = useState(mockLocations);
+  const [trackers, setTrackers] = useState(mockTrackers);
   const [status, setStatus] = useState<ContextStatus>('Initialised');
   // On load, load up state and then refresh weather.
   useEffect(() => {
@@ -51,6 +52,7 @@ export function StateContextProvider({
         console.log('Loaded app state from device');
       })
       .then(_ => setStatus('Loaded'))
+      .then(_ => refreshWeather())
       .catch(() => console.warn('Error getting app state'));
     // Initialize BackgroundFetch only once when component mounts.
     initBackgroundFetch();
@@ -58,11 +60,16 @@ export function StateContextProvider({
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
+    console.log('App state changed - trackers');
     OnChangeGddTrackers(status, trackers);
   }, [trackers]);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
+    console.log('App state changed - locations');
+    locations.map(l => {
+      console.log(l.name, 'status: ', l.weatherStatus);
+    });
     OnChangeLocations(status, locations);
   }, [locations]);
 
@@ -80,8 +87,13 @@ export function StateContextProvider({
     }));
     setLocations(newLocations);
   }
+  // Should this be async?
   function refreshWeather() {
+    // Note - this triggers three location changes and thus writes to DB
+    // Should be a better way??
+    console.log('Refreshing weather');
     setLocationsWeatherRefreshing();
+    // Note - promise is executed with location prior to the change we made above.
     Promise.all(
       locations.map(async location => {
         const weatherFuture = await fetchWeather(

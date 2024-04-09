@@ -44,50 +44,29 @@ export function onChangeGddTrackers(
   status: ContextStatus,
   trackers: Tracker[],
 ) {
-  let active = true;
-  console.log('App state changed - trackers');
+  console.log('App context status is: ' + status);
   if (status === 'Loaded') {
     console.log('Setting app state - trackers');
     AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(trackers))
-      .then(() =>
-        !active
-          ? console.error(
-              'Destructor called on effect before write trackers finished',
-            )
-          : console.log('Trackers set'),
-      )
+      .then(() => console.log('Trackers set'))
       .catch(() => console.log('Error setting trackers'));
   } else {
     console.log('Not syncing app state as not Loaded - trackers');
   }
-  return () => {
-    active = false;
-    console.log('Cleaning up app state effect - trackers');
-  };
 }
 
 export function OnChangeLocations(
   status: ContextStatus,
   locations: Location[],
 ) {
+  console.log('App context status is: ' + status);
   let active = true;
-  console.log('App state changed - locations');
   if (status === 'Loaded') {
     console.log('Setting app state - locations');
     AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
-      .then(() =>
-        !active
-          ? console.error(
-              'Destructor called on effect before write locations finished',
-            )
-          : console.log('Locations set'),
-      )
+      .then(() => console.log('Locations set'))
       .catch(() => console.log('Error setting locations'));
   } else {
     console.log('Not syncing app state as not Loaded - locations');
   }
-  return () => {
-    active = false;
-    console.log('Cleaning up app state effect - locations');
-  };
 }

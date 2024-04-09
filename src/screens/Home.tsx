@@ -39,11 +39,8 @@ export default function HomeScreen({
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing Home screen');
     setRefreshing(true);
-    if (refreshWeather !== undefined) {
-      refreshWeather();
-    } else {
-      console.log('Refresh callback not set, doing nothing');
-    }
+    // Consider awaiting refreshWeather before setRefreshing(false);
+    refreshWeather();
     setRefreshing(false);
   }, [refreshWeather]);
 

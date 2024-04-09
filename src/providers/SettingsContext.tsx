@@ -1,7 +1,7 @@
 import {createContext, useEffect, useState} from 'react';
 import {defaultSettings as defaultSettings} from '../Mock';
-import { SettingsState } from './settingscontext/Types';
-import { ContextStatus } from './Types';
+import {SettingsState} from './settingscontext/Types';
+import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SETTINGS_STORAGE_KEY = 'SETTINGS';
@@ -12,7 +12,8 @@ export const SettingsContext = createContext<SettingsState>({
 });
 
 export function SettingsContextProvider({children}: React.PropsWithChildren) {
-  const [settings, setSettings] = useState(defaultSettings());
+  // Note, pass defaults function to useState to avoid calling on every render.
+  const [settings, setSettings] = useState(defaultSettings);
   const [status, setStatus] = useState<ContextStatus>('Initialised');
 
   // On load, load up settings if stored locally.

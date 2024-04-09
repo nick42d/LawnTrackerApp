@@ -26,7 +26,6 @@ export function ToGddTrackerCardProps(
   const actual_gdd = calcGddTotal(gddTracker, locations, settings.algorithm);
   const weatherIsRefreshing = isWeatherRefreshing(gddTracker, locations);
   const weatherIsInitialised = isWeatherInitialised(gddTracker, locations);
-  console.log(JSON.stringify(actual_gdd));
   const leftCalloutRefreshing = typeof actual_gdd !== 'number' ? true : false;
   // TODO: Fix undefined case
   const estimateTemp = getGddEstimate(

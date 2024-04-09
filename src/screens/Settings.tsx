@@ -13,6 +13,7 @@ import {ScrollView, View} from 'react-native';
 import GenericSelectionDialog, {
   SliderSelectionDialog,
 } from '../components/SelectionDialog';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
 const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
@@ -24,7 +25,13 @@ export default function SettingsScreen() {
     useState(false);
   const [algorithmDialogVisible, setAlgorithmDialogVisible] = useState(false);
   const [thresholdDialogVisible, setThresholdDialogVisible] = useState(false);
-
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+  function ClearAllDialogCallback() {
+    console.warn("Clear all dialog OK's but it's currently unhandled.");
+  }
+  function ShowClearAllDialog() {
+    setShowClearAllDialog(true);
+  }
   function ShowAlgorithmDialog() {
     setAlgorithmDialogVisible(true);
   }
@@ -107,6 +114,11 @@ export default function SettingsScreen() {
             />
           )}
         />
+        <List.Item
+          onPress={ShowClearAllDialog}
+          title="Clear all"
+          description="Clear all trackers and locations."
+        />
         <List.Subheader>Growing Degree Days Settings</List.Subheader>
         <List.Item
           onPress={ShowAlgorithmDialog}
@@ -175,6 +187,15 @@ export default function SettingsScreen() {
           setVisible={setThresholdDialogVisible}
           visible={thresholdDialogVisible}
           curValue={settings.warning_threshold_perc}
+        />
+        <ConfirmationDialog
+          title={'Confirm clear all'}
+          message={
+            'Are you sure you want to clear all? All trackers and locations will be cleared.'
+          }
+          visible={showClearAllDialog}
+          setVisible={setShowClearAllDialog}
+          onOk={ClearAllDialogCallback}
         />
       </Portal>
     </ScrollView>
