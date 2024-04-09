@@ -11,7 +11,7 @@ export default function LocationsScreen({
   route,
   navigation,
 }: HomeLocationsTabScreenProps<'Locations'>): React.JSX.Element {
-  const {locations, refreshWeather, deleteLocationName} =
+  const {locations, refreshWeather, deleteLocationId} =
     useContext(StateContext);
   const [refreshing, setRefreshing] = useState(false);
   const [alert, setAlert] = useState('');
@@ -25,18 +25,15 @@ export default function LocationsScreen({
       .catch(e => setRefreshing(false));
   }, [refreshWeather]);
 
-  function onDelete(name: string) {
-    // TODO: Check that no GddCards use this location
-    if (deleteLocationName !== undefined) {
-      try {
-        deleteLocationName(name);
-      } catch (e) {
-        if (e instanceof StateContextError) {
-          setAlert(e.message);
-          setShowAlert(true);
-        } else {
-          throw e;
-        }
+  function onDelete(id: number) {
+    try {
+      deleteLocationId(id);
+    } catch (e) {
+      if (e instanceof StateContextError) {
+        setAlert(e.message);
+        setShowAlert(true);
+      } else {
+        throw e;
       }
     }
   }
@@ -49,7 +46,7 @@ export default function LocationsScreen({
         }
         renderItem={({item}) => (
           <LocationsCard
-            onDelete={() => onDelete(item.name)}
+            onDelete={() => onDelete(item.apiId)}
             location={item}
             navigation={navigation}
           />

@@ -38,9 +38,9 @@ type StateActionAddLocation = {
   kind: 'AddLocation';
   location: Location;
 };
-type StateActionDeleteLocationName = {
-  kind: 'DeleteLocationName';
-  name: string;
+type StateActionDeleteLocationId = {
+  kind: 'DeleteLocationId';
+  id: number;
 };
 type StateActionReplaceTrackers = {
   kind: 'ReplaceTrackers';
@@ -72,7 +72,7 @@ export type StateAction =
   | StateActionSetWeatherRefreshing
   | StateActionSetWeatherLoaded
   | StateActionClearAll
-  | StateActionDeleteLocationName
+  | StateActionDeleteLocationId
   | StateActionReplaceLocations
   | StateActionAddLocation
   | StateActionReplaceTrackers
@@ -118,23 +118,10 @@ export function reducer(
       return {...state, locations: [...state.locations, action.location]};
     case 'ReplaceLocations':
       return {...state, locations: action.locations};
-    case 'DeleteLocationName': {
-      console.log(`Attempting to delete location name ${action.name}`);
-      // Can't delete a location if it's used in a GDD Tracker.
-      if (
-        state.trackers.find(t => {
-          t.kind === 'gdd' && t.location_name === action.name;
-        }) !== undefined
-      ) {
-        console.log(`Unable to delete location as used in an existing tracker`);
-        throw new StateContextError({
-          name: 'DELETE_LOCATIONS_ERROR',
-          message: 'Error deleting location as is used in a current tracker',
-        });
-      }
+    case 'DeleteLocationId': {
       return {
         ...state,
-        locations: state.locations.filter(item => item.name !== action.name),
+        locations: state.locations.filter(item => item.apiId !== action.id),
       };
     }
     case 'ReplaceTrackers':

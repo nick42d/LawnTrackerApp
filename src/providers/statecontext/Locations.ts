@@ -4,6 +4,10 @@ export type AddLocation = Omit<Location, 'weather' | 'weatherStatus'>;
 
 export type Location = {
   name: string;
+  apiId: number;
+  country: string;
+  /// Top level administrative division - e.g Western Australia
+  admin1: string;
   latitude: number;
   longitude: number;
   weather: Weather | undefined;
@@ -44,3 +48,5 @@ export type MissingWeatherLocationError = {
   kind: 'MissingWeather';
   message: string;
 };
+
+export function addWeatherToLocations(locations: Location[]) {}

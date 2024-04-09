@@ -40,6 +40,7 @@ function apiLocationToAppLocation(
   apiLocation: WeatherApiLocation,
 ): WeatherAppLocation {
   return {
+    apiId: apiLocation.id,
     admin1: apiLocation.admin1,
     country: apiLocation.country,
     latitude: apiLocation.latitude,
@@ -135,6 +136,8 @@ export type WeatherAppLocations = {
 // Trimmed version of API Location type
 export type WeatherAppLocation = {
   name: string;
+  /// Unique ID for this location from API.
+  apiId: number;
   latitude: number;
   longitude: number;
   timezone: string;

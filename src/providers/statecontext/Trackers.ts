@@ -3,14 +3,14 @@ import {calcGdd} from '../../Knowledge';
 export function newGddTracker(
   name: string,
   description: string,
-  location_name: string,
+  locationId: number,
   target_gdd: number,
   base_temp: number,
   start_date: Date,
 ): GddTracker {
   return {
     kind: 'gdd',
-    location_name,
+    locationId,
     description,
     name,
     target_gdd,
@@ -91,7 +91,7 @@ export type GddTracker = {
   target_gdd: number;
   base_temp: number;
   start_date_unix_ms: number;
-  location_name: string;
+  locationId: number;
   trackerStatus: TrackerStatus;
   notificationStatus: NotificationStatus;
 };

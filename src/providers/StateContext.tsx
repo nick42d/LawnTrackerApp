@@ -17,6 +17,7 @@ import {
 import {initBackgroundFetch} from './statecontext/BackgroundFetch';
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
+import {StateContextError} from './statecontext/Error';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -83,8 +84,21 @@ export function StateContextProvider({
   function addLocation(location: Location) {
     dispatch({kind: 'AddLocation', location});
   }
-  function deleteLocationName(name: string) {
-    dispatch({kind: 'DeleteLocationName', name});
+  function deleteLocationId(id: number) {
+    console.log(`Attempting to delete location id ${id}`);
+    // Can't delete a location if it's used in a GDD Tracker.
+    if (
+      state.trackers.find(t => {
+        t.kind === 'gdd' && t.locationId === id;
+      }) !== undefined
+    ) {
+      console.log(`Unable to delete location as used in an existing tracker`);
+      throw new StateContextError({
+        name: 'DELETE_LOCATIONS_ERROR',
+        message: 'Error deleting location as is used in a current tracker',
+      });
+    }
+    dispatch({kind: 'DeleteLocationId', id});
   }
   function addTracker(tracker: Tracker) {
     dispatch({kind: 'AddTracker', tracker});
@@ -110,7 +124,7 @@ export function StateContextProvider({
         clearAll,
         refreshWeather,
         addLocation,
-        deleteLocationName,
+        deleteLocationId,
         addTracker,
         deleteTrackerName,
         resetTrackerName,

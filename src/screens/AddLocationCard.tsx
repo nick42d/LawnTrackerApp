@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {Icon, List, Searchbar, Text} from 'react-native-paper';
+import {Icon, List, Searchbar, Text, useTheme} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 import SaveButton from '../components/SaveButton';
@@ -21,41 +21,51 @@ const mapstyles = StyleSheet.create({
     alignSelf: 'stretch',
   },
 });
-
+type AddLocationCardState = {
+  name: string;
+  apiId: number;
+  latitude: number;
+  longitude: number;
+  admin1: string;
+  country: string;
+};
 export default function AddLocationCardScreen({
   route,
   navigation,
 }: AppScreenProps<'AddLocationCard'>): React.JSX.Element {
   const {addLocation} = useContext(StateContext);
-  const [coordinate, setCoordinate] = useState([0.5, 0.5]);
-  const [locName, setLocName] = useState('');
-  const [locUndefined, setLocUndefined] = useState(true);
+  const [state, setState] = useState<AddLocationCardState | undefined>();
   const [searchState, setSearchState] = useState({
     query: '',
     showSuggestions: false,
   });
   const [searchResults, setSearchResults] = useState<WeatherAppLocation[]>([]);
   const [searchResultsShown, setSearchResultsShown] = useState(false);
+  const theme = useTheme();
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <SaveButton
-          disabled={locUndefined}
+          disabled={state === undefined}
           onPress={() => {
-            addLocation({
-              name: locName,
-              latitude: coordinate[1],
-              longitude: coordinate[0],
-              weather: undefined,
-              weatherStatus: {
-                status: 'Initialised',
-                lastRefreshedUnixMs: undefined,
-              },
-            });
-            if (route.params?.fromAddGddTracker) {
+            if (state)
+              addLocation({
+                name: state.name,
+                latitude: state.latitude,
+                longitude: state.longitude,
+                country: state.country,
+                admin1: state.admin1,
+                apiId: state.apiId,
+                weather: undefined,
+                weatherStatus: {
+                  status: 'Initialised',
+                  lastRefreshedUnixMs: undefined,
+                },
+              });
+            if (route.params?.fromAddGddTracker && state !== undefined) {
               navigation.navigate('AddGddTracker', {
-                fromAddLocationName: locName,
+                fromAddLocationId: state?.apiId,
               });
             } else {
               navigation.goBack();
@@ -64,7 +74,7 @@ export default function AddLocationCardScreen({
         />
       ),
     });
-  }, [coordinate, locName, locUndefined]);
+  }, [state]);
 
   // Handle state updates to provide search suggestions whilst handling race conditions.
   React.useEffect(() => {
@@ -91,8 +101,11 @@ export default function AddLocationCardScreen({
   }, [searchState]);
 
   function prettyLocTooltip(): string {
-    if (locName.length === 0) return '';
-    return `${locName} ${coordinate[1].toFixed(4)}, ${coordinate[0].toFixed(4)}`;
+    if (state === undefined) return '';
+    return `${state.name} ${state.latitude.toFixed(4)}, ${state.longitude.toFixed(4)}`;
+  }
+  function latLongArray(): number[] {
+    return state ? [state.longitude, state.latitude] : [0, 0];
   }
 
   return (
@@ -108,13 +121,13 @@ export default function AddLocationCardScreen({
             )
           }
         />
-        <MapLibreGL.Camera centerCoordinate={coordinate} />
-        {!locUndefined ? (
+        <MapLibreGL.Camera centerCoordinate={latLongArray()} />
+        {state ? (
           // NOTE: Icon looks shit in light mode - greyed out when selected and black when not.
           <MapLibreGL.PointAnnotation
             id="pt-ann"
             key="pt-ann"
-            coordinate={coordinate}
+            coordinate={latLongArray()}
             anchor={{x: 0.5, y: 1}}
             title="Location">
             <Icon source="map-marker" size={40} />
@@ -136,7 +149,11 @@ export default function AddLocationCardScreen({
         {searchResultsShown ? (
           <List.Section
             // Style doesn't work very well on Light Mode
-            style={{borderRadius: 10, backgroundColor: 'black', opacity: 0.8}}>
+            style={{
+              borderRadius: 10,
+              backgroundColor: theme.colors.backdrop,
+              opacity: 0.8,
+            }}>
             {searchResults.map((s, i) => {
               return (
                 <List.Item
@@ -145,9 +162,14 @@ export default function AddLocationCardScreen({
                   description={s.admin1 + ', ' + s.country}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
-                    setLocUndefined(false);
-                    setLocName(s.name);
-                    setCoordinate([s.longitude, s.latitude]);
+                    setState({
+                      latitude: s.latitude,
+                      longitude: s.longitude,
+                      name: s.name,
+                      country: s.country,
+                      apiId: s.apiId,
+                      admin1: s.admin1,
+                    });
                     setSearchState({...searchState, showSuggestions: false});
                   }}
                 />

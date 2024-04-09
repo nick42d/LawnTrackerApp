@@ -52,8 +52,8 @@ export function defaultStateManager(): StateManager {
     clearAll: () => {
       LogErrorCallbackNotSet('clearAll');
     },
-    deleteLocationName: _ => {
-      LogErrorCallbackNotSet('deleteLocationName');
+    deleteLocationId: _ => {
+      LogErrorCallbackNotSet('deleteLocationID');
     },
     addTracker: _ => LogErrorCallbackNotSet('addTracker'),
     deleteTrackerName: _ => LogErrorCallbackNotSet('deleteTrackerName'),
@@ -69,6 +69,9 @@ export function mockLocations(): Location[] {
       latitude: PERTH_LAT,
       longitude: PERTH_LONG,
       name: 'Perth',
+      apiId: -1,
+      country: 'Australia',
+      admin1: 'Western Australia',
       weather: undefined,
       weatherStatus: newWeatherStatus(),
     },
@@ -76,6 +79,9 @@ export function mockLocations(): Location[] {
       latitude: SYDNEY_LAT,
       longitude: SYDNEY_LONG,
       name: 'Sydney',
+      apiId: -2,
+      country: 'Australia',
+      admin1: 'New South Wales',
       weather: undefined,
       weatherStatus: newWeatherStatus(),
     },
@@ -87,7 +93,7 @@ export function mockTrackers(): Tracker[] {
     newGddTracker(
       'Astro 120',
       'Back Lawn',
-      'Perth',
+      -1,
       250,
       0,
       AddDays(new Date(), -7),

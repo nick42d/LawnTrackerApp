@@ -79,7 +79,7 @@ export function getGraphPlot(
 ): GddGraphPlot | undefined {
   const startDateUnix = item.start_date_unix_ms / 1000;
   const tBase = item.base_temp;
-  const itemLocation = locations.find(loc => loc.name === item.location_name);
+  const itemLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemLocation === undefined) return undefined;
   if (itemLocation.weather === undefined) return undefined;
   const history_gdd_arr = weatherDaysToGddArr(

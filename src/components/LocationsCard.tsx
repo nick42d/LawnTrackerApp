@@ -83,7 +83,7 @@ export function LocationsCard({
         console.log(JSON.stringify(debugPrintLocation, null, ' '));
       }}>
       <Card.Title
-        title={location.name}
+        title={location.name + ', ' + location.country}
         subtitle={weatherImages?.desc}
         titleVariant={CARD_TITLE_VARIANT}
         left={() => (

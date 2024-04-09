@@ -29,8 +29,7 @@ export default function AddGddTrackerScreen({
   const [toggle, setToggle] = useState('0');
   const [startDate, setStartDate] = useState(new Date());
   const {locations, addTracker: addGddTracker} = useContext(StateContext);
-  // TODO: Handle no locations
-  const [location, setLocation] = useState(locations.at(0)?.name);
+  const [locationId, setLocationId] = useState(locations.at(0)?.apiId);
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
   // If we navigated here from Add Locations Screen, make sure the dialog is shown
@@ -39,9 +38,9 @@ export default function AddGddTrackerScreen({
     if (route.params) {
       setTempDialogShown(true);
       // TODO: Safety checks
-      setLocation(route.params.fromAddLocationName);
+      setLocationId(route.params.fromAddLocationId);
     }
-  }, [route.params?.fromAddLocationName]);
+  }, [route.params?.fromAddLocationId]);
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -54,7 +53,7 @@ export default function AddGddTrackerScreen({
                 name,
                 desc,
                 // Asserting non-null
-                location!,
+                locationId!,
                 Number(target),
                 Number(toggle),
                 startDate,
@@ -65,8 +64,15 @@ export default function AddGddTrackerScreen({
         />
       ),
     });
-  }, [name, location, startDate, target, desc, toggle]);
+  }, [name, locationId, startDate, target, desc, toggle]);
 
+  function selectedLocationPrettyName(): string {
+    return locationId ? locationPrettyName(locationId) : '';
+  }
+  function locationPrettyName(apiId: number): string {
+    const foundLoc = locations.find(l => l.apiId === apiId);
+    return foundLoc ? `${foundLoc.name}, ${foundLoc.country}` : '';
+  }
   function dateInRange(): boolean {
     const firstAcceptableDate = new Date();
     // TODO set to midnight
@@ -74,8 +80,8 @@ export default function AddGddTrackerScreen({
     return startDate >= firstAcceptableDate;
   }
   function locationSelected(): boolean {
-    if (location === undefined) return false;
-    return location.length !== 0;
+    if (locationId === undefined) return false;
+    return true;
   }
   function nameEntered(): boolean {
     return name.length !== 0;
@@ -139,7 +145,7 @@ export default function AddGddTrackerScreen({
         <TouchableHighlight onPress={_ => setTempDialogShown(true)}>
           <TextInput
             label="Select Location"
-            value={location}
+            value={selectedLocationPrettyName()}
             error={!locationSelected()}
             right={
               <TextInput.Icon
@@ -182,19 +188,23 @@ export default function AddGddTrackerScreen({
           onDismiss={() => setTempDialogShown(false)}>
           <Dialog.Title>Select Location</Dialog.Title>
           <Dialog.Content>
-            {location !== undefined ? (
+            {locationId !== undefined ? (
               <RadioButton.Group
                 // All types in JavaSCript can be converted to a string, so this is safe.
-                value={location}
+                value={locationId.toString()}
                 onValueChange={val => {
-                  setLocation(val);
+                  // Hoping that this string -> number -> string conversion is safe.
+                  setLocationId(Number(val));
                   return console.log(
                     `Radio button pressed, ${JSON.stringify(val)}`,
                   );
                 }}>
-                {locations.map((l, i) => {
+                {locations.map(l => {
                   return (
-                    <RadioButton.Item key={i} label={l.name} value={l.name} />
+                    <RadioButton.Item
+                      label={l.name + ', ' + l.country}
+                      value={l.apiId.toString()}
+                    />
                   );
                 })}
               </RadioButton.Group>
