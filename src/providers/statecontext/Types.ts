@@ -6,7 +6,7 @@ export type StateManager = {
   locations: Location[];
   trackers: Tracker[];
   status: ContextStatus;
-  refreshWeather: () => void;
+  refreshWeather: () => Promise<void>;
   addLocation: (loc: Location) => void;
   deleteLocationName: (locName: string) => void;
   addTracker: (tracker: Tracker) => void;

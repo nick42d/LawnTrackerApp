@@ -88,13 +88,13 @@ export function StateContextProvider({
     setLocations(newLocations);
   }
   // Should this be async?
-  function refreshWeather() {
+  async function refreshWeather() {
     // Note - this triggers three location changes and thus writes to DB
     // Should be a better way??
     console.log('Refreshing weather');
     setLocationsWeatherRefreshing();
     // Note - promise is executed with location prior to the change we made above.
-    Promise.all(
+    await Promise.all(
       locations.map(async location => {
         const weatherFuture = await fetchWeather(
           location.latitude,

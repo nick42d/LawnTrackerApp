@@ -37,11 +37,12 @@ export default function HomeScreen({
   } = React.useContext(StateContext);
 
   const onRefresh = React.useCallback(() => {
+    // TODO: Consider double refresh
     console.log('Refreshing Home screen');
     setRefreshing(true);
-    // Consider awaiting refreshWeather before setRefreshing(false);
-    refreshWeather();
-    setRefreshing(false);
+    refreshWeather()
+      .then(_ => setRefreshing(false))
+      .catch(e => setRefreshing(false));
   }, [refreshWeather]);
 
   function onDelete(name: string) {

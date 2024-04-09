@@ -43,7 +43,7 @@ export function defaultStateManager(): StateManager {
     locations: [],
     trackers: [],
     status: 'Initialised',
-    refreshWeather: () => {
+    refreshWeather: async () => {
       LogErrorCallbackNotSet('refreshWeather');
     },
     addLocation: _ => {

@@ -20,9 +20,9 @@ export default function LocationsScreen({
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing on Locations screen');
     setRefreshing(true);
-    // Consider awaiting refreshWeather before setRefreshing(false);
-    refreshWeather();
-    setRefreshing(false);
+    refreshWeather()
+      .then(_ => setRefreshing(false))
+      .catch(e => setRefreshing(false));
   }, [refreshWeather]);
 
   function onDelete(name: string) {
