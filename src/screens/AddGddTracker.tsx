@@ -30,7 +30,7 @@ export default function AddGddTrackerScreen({
   const [startDate, setStartDate] = useState(new Date());
   const {locations, addTracker: addGddTracker} = useContext(StateContext);
   // TODO: Handle no locations
-  const [location, setLocation] = useState(locations[0].name);
+  const [location, setLocation] = useState(locations.at(0)?.name);
   const [tempDialogShown, setTempDialogShown] = useState(false);
 
   // If we navigated here from Add Locations Screen, make sure the dialog is shown
@@ -53,7 +53,8 @@ export default function AddGddTrackerScreen({
               newGddTracker(
                 name,
                 desc,
-                location,
+                // Asserting non-null
+                location!,
                 Number(target),
                 Number(toggle),
                 startDate,
@@ -73,6 +74,7 @@ export default function AddGddTrackerScreen({
     return startDate >= firstAcceptableDate;
   }
   function locationSelected(): boolean {
+    if (location === undefined) return false;
     return location.length !== 0;
   }
   function nameEntered(): boolean {
@@ -109,6 +111,7 @@ export default function AddGddTrackerScreen({
         <TextInput
           label="Name"
           value={name}
+          error={!nameEntered()}
           onChangeText={name => setName(name)}
         />
         <HelperText type="error" visible={!nameEntered()}>
@@ -125,6 +128,7 @@ export default function AddGddTrackerScreen({
         <DatePickerInput
           locale={DATE_PICKER_LOCALE}
           label="Start date"
+          hasError={!dateInRange()}
           value={startDate}
           onChange={d => setStartDate(d as Date)}
           inputMode="start"
@@ -136,6 +140,7 @@ export default function AddGddTrackerScreen({
           <TextInput
             label="Select Location"
             value={location}
+            error={!locationSelected()}
             right={
               <TextInput.Icon
                 icon="map-marker"
@@ -154,6 +159,7 @@ export default function AddGddTrackerScreen({
         <TextInput
           label="Target"
           value={target}
+          error={!targetEntered()}
           onChangeText={target => setTarget(target)}
           left={<TextInput.Icon icon="target" />}
         />
@@ -176,21 +182,23 @@ export default function AddGddTrackerScreen({
           onDismiss={() => setTempDialogShown(false)}>
           <Dialog.Title>Select Location</Dialog.Title>
           <Dialog.Content>
-            <RadioButton.Group
-              // All types in JavaSCript can be converted to a string, so this is safe.
-              value={location}
-              onValueChange={val => {
-                setLocation(val);
-                return console.log(
-                  `Radio button pressed, ${JSON.stringify(val)}`,
-                );
-              }}>
-              {locations.map((l, i) => {
-                return (
-                  <RadioButton.Item key={i} label={l.name} value={l.name} />
-                );
-              })}
-            </RadioButton.Group>
+            {location !== undefined ? (
+              <RadioButton.Group
+                // All types in JavaSCript can be converted to a string, so this is safe.
+                value={location}
+                onValueChange={val => {
+                  setLocation(val);
+                  return console.log(
+                    `Radio button pressed, ${JSON.stringify(val)}`,
+                  );
+                }}>
+                {locations.map((l, i) => {
+                  return (
+                    <RadioButton.Item key={i} label={l.name} value={l.name} />
+                  );
+                })}
+              </RadioButton.Group>
+            ) : undefined}
             <Button
               icon="plus"
               onPress={_ => {

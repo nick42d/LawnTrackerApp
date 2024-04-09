@@ -73,6 +73,9 @@ export function StateContextProvider({
     OnChangeLocations(status, locations);
   }, [locations]);
 
+  function clearAll() {
+    console.warn('Unimplemented clearAll function called');
+  }
   function setLocationsWeatherRefreshing() {
     const newLocations: Location[] = locations.map(l => ({
       ...l,
@@ -167,6 +170,7 @@ export function StateContextProvider({
         locations,
         trackers,
         status,
+        clearAll,
         refreshWeather,
         addLocation,
         deleteLocationName,

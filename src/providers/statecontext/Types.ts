@@ -14,4 +14,5 @@ export type StateManager = {
   resetTrackerName: (trackerName: string) => void;
   stopTrackerName: (trackerName: string) => void;
   resumeTrackerName: (trackerName: string) => void;
+  clearAll: () => void;
 };

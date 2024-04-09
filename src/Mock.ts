@@ -49,6 +49,9 @@ export function defaultStateManager(): StateManager {
     addLocation: _ => {
       LogErrorCallbackNotSet('addLocation');
     },
+    clearAll: () => {
+      LogErrorCallbackNotSet('clearAll');
+    },
     deleteLocationName: _ => {
       LogErrorCallbackNotSet('deleteLocationName');
     },

@@ -1,4 +1,5 @@
 import {VisibilityEnum} from '@maplibre/maplibre-react-native/javascript/utils/MaplibreStyles';
+import {useState} from 'react';
 import {Button, Dialog, Text} from 'react-native-paper';
 
 export default function ConfirmationDialog(props: {

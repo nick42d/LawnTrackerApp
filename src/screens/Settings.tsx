@@ -14,12 +14,14 @@ import GenericSelectionDialog, {
   SliderSelectionDialog,
 } from '../components/SelectionDialog';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import {StateContext} from '../providers/StateContext';
 
 const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
 const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
 
 export default function SettingsScreen() {
   const {settings, setSettings} = useContext(SettingsContext);
+  const {clearAll} = useContext(StateContext);
   const [baseTempDialogVisible, setBaseTempDialogVisible] = useState(false);
   const [unitOfMeasureDialogVisible, setUnitOfMeasureDialogVisible] =
     useState(false);
@@ -27,7 +29,8 @@ export default function SettingsScreen() {
   const [thresholdDialogVisible, setThresholdDialogVisible] = useState(false);
   const [showClearAllDialog, setShowClearAllDialog] = useState(false);
   function ClearAllDialogCallback() {
-    console.warn("Clear all dialog OK's but it's currently unhandled.");
+    clearAll();
+    setShowClearAllDialog(false);
   }
   function ShowClearAllDialog() {
     setShowClearAllDialog(true);
