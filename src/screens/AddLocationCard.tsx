@@ -118,6 +118,9 @@ export default function AddLocationCardScreen({
       <MapLibreGL.MapView
         style={mapstyles.map}
         logoEnabled={true}
+        scrollEnabled={false}
+        pitchEnabled={false}
+        rotateEnabled={false}
         styleURL="https://demotiles.maplibre.org/style.json">
         <MapLibreGL.UserLocation
           onUpdate={loc =>
@@ -126,7 +129,10 @@ export default function AddLocationCardScreen({
             )
           }
         />
-        <MapLibreGL.Camera centerCoordinate={latLongArray()} />
+        <MapLibreGL.Camera
+          zoomLevel={state ? 2 : 1}
+          centerCoordinate={latLongArray()}
+        />
         {state ? (
           // NOTE: Icon looks shit in light mode - greyed out when selected and black when not.
           <MapLibreGL.PointAnnotation
