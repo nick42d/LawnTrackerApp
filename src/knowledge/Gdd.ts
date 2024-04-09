@@ -8,7 +8,7 @@ export function calcGddTotal(
   locations: Location[],
   algorithm: GDDAlgorithm,
 ): number | LocationError {
-  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  let itemsLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemsLocation === undefined)
     return {kind: 'MissingLocation', message: 'Location not found'};
   if (itemsLocation.weather === undefined)
@@ -29,7 +29,7 @@ export function isWeatherRefreshing(
   item: GddTracker,
   locations: Location[],
 ): boolean | LocationError {
-  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  let itemsLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemsLocation === undefined)
     return {kind: 'MissingLocation', message: 'Location not found'};
   return itemsLocation.weatherStatus.status === 'Refreshing';
@@ -39,7 +39,7 @@ export function isWeatherInitialized(
   item: GddTracker,
   locations: Location[],
 ): boolean | LocationError {
-  let itemsLocation = locations.find(loc => loc.name === item.location_name);
+  let itemsLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemsLocation === undefined)
     return {kind: 'MissingLocation', message: 'Location not found'};
   return itemsLocation.weatherStatus.status === 'Initialised';

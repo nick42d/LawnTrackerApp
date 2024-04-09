@@ -57,21 +57,36 @@ export async function fetchWeather(
     .catch(e => console.log('Error', e));
   return response;
 }
-export async function refreshLocationsWeather(
+export async function fetchLocationsWeather(
   locations: Location[],
-): Promise<Location[]> {
+): Promise<{weather: void | Weather; locationId: number}[]> {
   return await Promise.all(
     locations.map(async location => {
-      const weatherFuture = await fetchWeather(
-        location.latitude,
-        location.longitude,
-        MAX_HISTORY_DAYS,
-        MAX_FORECAST_DAYS,
-        API_UNIT_OF_MEASURE,
-      );
-      return addWeatherToLocation(location, weatherFuture);
+      return {
+        weather: await fetchWeather(
+          location.latitude,
+          location.longitude,
+          MAX_HISTORY_DAYS,
+          MAX_FORECAST_DAYS,
+          API_UNIT_OF_MEASURE,
+        ),
+        locationId: location.apiId,
+      };
     }),
   );
+}
+export function addWeatherArrayToLocations(
+  locations: Location[],
+  weatherArray: {weather: Weather | void; locationId: number}[],
+): Location[] {
+  return locations.map(l => {
+    const weather = weatherArray.find(w => l.apiId === w.locationId);
+    if (weather) {
+      console.log('Found matching location for returned weather: ', l.name);
+      return addWeatherToLocation(l, weather.weather);
+    }
+    return l;
+  });
 }
 export function addWeatherToLocation(
   location: Location,

@@ -1,9 +1,14 @@
-import {fetchWeather, addWeatherToLocation} from '../../Api';
+import {
+  fetchWeather,
+  addWeatherToLocation,
+  addWeatherArrayToLocations,
+} from '../../Api';
 import {
   MAX_HISTORY_DAYS,
   MAX_FORECAST_DAYS,
   API_UNIT_OF_MEASURE,
 } from '../../Consts';
+import {Weather} from '../../api/Types';
 import {ContextStatus} from '../Types';
 import {StateContextError} from './Error';
 import {Location} from './Locations';
@@ -23,16 +28,17 @@ type StateActionSetLoaded = {
 type StateActionSetWeatherRefreshing = {
   kind: 'SetWeatherRefreshing';
 };
-type StateActionSetWeatherLoaded = {
-  kind: 'SetWeatherLoaded';
-  timeUnixMs: number;
-};
 type StateActionClearAll = {
   kind: 'ClearAll';
 };
 type StateActionReplaceLocations = {
   kind: 'ReplaceLocations';
   locations: Location[];
+};
+type StateActionAddRefreshedWeatherArray = {
+  kind: 'AddRefreshedWeatherArray';
+  weather: {weather: Weather | void; locationId: number}[];
+  timeUnixMs: number;
 };
 type StateActionAddLocation = {
   kind: 'AddLocation';
@@ -70,10 +76,10 @@ export type StateAction =
   | StateActionSetLoading
   | StateActionSetLoaded
   | StateActionSetWeatherRefreshing
-  | StateActionSetWeatherLoaded
   | StateActionClearAll
   | StateActionDeleteLocationId
   | StateActionReplaceLocations
+  | StateActionAddRefreshedWeatherArray
   | StateActionAddLocation
   | StateActionReplaceTrackers
   | StateActionAddTracker
@@ -100,10 +106,14 @@ export function reducer(
         })),
       };
     }
-    case 'SetWeatherLoaded': {
+    case 'AddRefreshedWeatherArray': {
+      const refreshedLocations = addWeatherArrayToLocations(
+        state.locations,
+        action.weather,
+      );
       return {
         ...state,
-        locations: state.locations.map(l => ({
+        locations: refreshedLocations.map(l => ({
           ...l,
           weatherStatus: {
             lastRefreshedUnixMs: action.timeUnixMs,

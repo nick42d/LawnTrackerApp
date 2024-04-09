@@ -64,6 +64,9 @@ export function ToGddTrackerCardProps(
       {icon: 'stop', name: '', callback: onStop},
     );
   }
+  const locationName = locations.find(
+    l => l.apiId === gddTracker.locationId,
+  )?.name;
   return {
     heading: gddTracker.name,
     subheading: gddTracker.description,
@@ -73,7 +76,7 @@ export function ToGddTrackerCardProps(
       {
         icon: 'map-marker',
         title: 'Location',
-        text: gddTracker.location_name,
+        text: locationName ? locationName : '',
       },
       {
         icon: 'target',

@@ -202,6 +202,7 @@ export default function AddGddTrackerScreen({
                 {locations.map(l => {
                   return (
                     <RadioButton.Item
+                      key={l.apiId}
                       label={l.name + ', ' + l.country}
                       value={l.apiId.toString()}
                     />

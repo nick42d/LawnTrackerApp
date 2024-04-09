@@ -48,5 +48,3 @@ export type MissingWeatherLocationError = {
   kind: 'MissingWeather';
   message: string;
 };
-
-export function addWeatherToLocations(locations: Location[]) {}

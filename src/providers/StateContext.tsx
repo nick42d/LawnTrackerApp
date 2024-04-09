@@ -18,6 +18,7 @@ import {initBackgroundFetch} from './statecontext/BackgroundFetch';
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
+import {fetchLocationsWeather} from '../Api';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -47,10 +48,9 @@ export function StateContextProvider({
         dispatch({kind: 'ReplaceTrackers', trackers: s.trackers});
         dispatch({kind: 'ReplaceLocations', locations: s.locations});
         console.log('Loaded app state from device');
+        dispatch({kind: 'SetLoaded'});
+        refreshWeatherLocations(s.locations);
       })
-      .then(_ => dispatch({kind: 'SetLoaded'}))
-      // This refreshes on the old weather state.
-      .then(_ => refreshWeather())
       .catch(() => console.warn('Error getting app state'));
     // Initialize BackgroundFetch only once when component mounts.
     initBackgroundFetch();
@@ -78,8 +78,14 @@ export function StateContextProvider({
   const locations = state.locations;
   const trackers = state.trackers;
   const status = state.status;
-  async function refreshWeather() {
-    console.warn('Refresh Weather not implemented');
+  async function refreshWeatherLocations(locations: Location[]) {
+    dispatch({kind: 'SetWeatherRefreshing'});
+    const fetchedWeatherArray = await fetchLocationsWeather(locations);
+    dispatch({
+      kind: 'AddRefreshedWeatherArray',
+      weather: fetchedWeatherArray,
+      timeUnixMs: new Date().valueOf(),
+    });
   }
   function addLocation(location: Location) {
     if (state.locations.find(l => l.apiId === location.apiId) !== undefined) {
@@ -95,9 +101,8 @@ export function StateContextProvider({
     console.log(`Attempting to delete location id ${id}`);
     // Can't delete a location if it's used in a GDD Tracker.
     if (
-      state.trackers.find(t => {
-        t.kind === 'gdd' && t.locationId === id;
-      }) !== undefined
+      state.trackers.find(t => t.kind === 'gdd' && t.locationId === id) !==
+      undefined
     ) {
       console.log(`Unable to delete location as used in an existing tracker`);
       throw new StateContextError({
@@ -129,7 +134,8 @@ export function StateContextProvider({
         trackers,
         status,
         clearAll,
-        refreshWeather,
+        // TODO: May need to be more clever about this.
+        refreshWeather: () => refreshWeatherLocations(state.locations),
         addLocation,
         deleteLocationId,
         addTracker,
