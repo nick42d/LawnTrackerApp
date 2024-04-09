@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Text, useTheme} from 'react-native-paper';
+import {DataTable, Text, useTheme} from 'react-native-paper';
 import {LineChart} from 'react-native-gifted-charts';
 import {View} from 'react-native';
 import {calcGdd} from '../Knowledge';
@@ -95,6 +95,20 @@ export default function ViewTrackerScreen({
             hideDataPoints
             showVerticalLines
           />
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Day</DataTable.Title>
+              <DataTable.Title>GDD</DataTable.Title>
+            </DataTable.Header>
+            {plot.items.map(i => (
+              <DataTable.Row>
+                <DataTable.Cell>{i.label}</DataTable.Cell>
+                <DataTable.Cell>
+                  {new Date(i.value).toLocaleDateString()}
+                </DataTable.Cell>
+              </DataTable.Row>
+            ))}
+          </DataTable>
         </View>
       ) : undefined}
     </View>
