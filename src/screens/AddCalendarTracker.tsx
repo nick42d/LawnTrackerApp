@@ -72,6 +72,7 @@ export default function AddCalendarTrackerScreen({
           label="Name"
           value={name}
           onChangeText={name => setName(name)}
+          error={!nameEntered()}
         />
         <HelperText type="error" visible={!nameEntered()}>
           Name must be entered
@@ -90,6 +91,7 @@ export default function AddCalendarTrackerScreen({
           value={targetDate}
           onChange={d => setTargetDate(d as Date)}
           inputMode="start"
+          hasError={!dateInRange()}
         />
         <HelperText type="error" visible={!dateInRange()}>
           Date must be in the future

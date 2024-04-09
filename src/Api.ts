@@ -4,9 +4,12 @@ import {
   API_LOCATIONS_LANGUAGE,
   API_LOCATIONS_URL,
   API_TIMEZONE,
+  API_UNIT_OF_MEASURE,
   API_WEATHER_CURRENT_PARAMS,
   API_WEATHER_DAILY_PARAMS,
   API_WEATHER_URL,
+  MAX_FORECAST_DAYS,
+  MAX_HISTORY_DAYS,
 } from './Consts';
 import {
   Weather,
@@ -54,7 +57,22 @@ export async function fetchWeather(
     .catch(e => console.log('Error', e));
   return response;
 }
-
+export async function refreshLocationsWeather(
+  locations: Location[],
+): Promise<Location[]> {
+  return await Promise.all(
+    locations.map(async location => {
+      const weatherFuture = await fetchWeather(
+        location.latitude,
+        location.longitude,
+        MAX_HISTORY_DAYS,
+        MAX_FORECAST_DAYS,
+        API_UNIT_OF_MEASURE,
+      );
+      return addWeatherToLocation(location, weatherFuture);
+    }),
+  );
+}
 export function addWeatherToLocation(
   location: Location,
   newWeather: Weather | void,

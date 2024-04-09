@@ -23,6 +23,7 @@ import {MAX_HISTORY_DAYS} from '../Consts';
 import SaveButton from '../components/SaveButton';
 import {StateContext} from '../providers/StateContext';
 import {DATE_PICKER_LOCALE} from '../Consts';
+import {differenceInCalendarWeeksWithOptions} from 'date-fns/fp/differenceInCalendarWeeksWithOptions';
 
 export default function AddTimedTrackerScreen({
   navigation,
@@ -89,6 +90,7 @@ export default function AddTimedTrackerScreen({
           label="Name"
           value={name}
           onChangeText={name => setName(name)}
+          error={!nameEntered()}
         />
         <HelperText type="error" visible={!nameEntered()}>
           Name must be entered
@@ -107,6 +109,7 @@ export default function AddTimedTrackerScreen({
           value={startDate}
           onChange={d => setStartDate(d as Date)}
           inputMode="start"
+          hasError={!dateInRange()}
         />
         <HelperText type="error" visible={!dateInRange()}>
           Start Date must be in the future
@@ -117,6 +120,7 @@ export default function AddTimedTrackerScreen({
           value={durationDays}
           onChangeText={d => setDurationDays(d)}
           left={<TextInput.Icon icon="target" />}
+          error={!durationEntered()}
         />
         <HelperText type="error" visible={!durationEntered()}>
           Number must be entered as a Target
