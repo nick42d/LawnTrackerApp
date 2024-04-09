@@ -82,6 +82,13 @@ export function StateContextProvider({
     console.warn('Refresh Weather not implemented');
   }
   function addLocation(location: Location) {
+    if (state.locations.find(l => l.apiId === location.apiId) !== undefined) {
+      console.log(`Unable to add location as it already exists`);
+      throw new StateContextError({
+        name: 'ADD_LOCATIONS_ERROR',
+        message: 'Error adding location as it already exists',
+      });
+    }
     dispatch({kind: 'AddLocation', location});
   }
   function deleteLocationId(id: number) {

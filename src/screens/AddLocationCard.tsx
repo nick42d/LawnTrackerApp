@@ -50,19 +50,24 @@ export default function AddLocationCardScreen({
           disabled={state === undefined}
           onPress={() => {
             if (state)
-              addLocation({
-                name: state.name,
-                latitude: state.latitude,
-                longitude: state.longitude,
-                country: state.country,
-                admin1: state.admin1,
-                apiId: state.apiId,
-                weather: undefined,
-                weatherStatus: {
-                  status: 'Initialised',
-                  lastRefreshedUnixMs: undefined,
-                },
-              });
+              try {
+                addLocation({
+                  name: state.name,
+                  latitude: state.latitude,
+                  longitude: state.longitude,
+                  country: state.country,
+                  admin1: state.admin1,
+                  apiId: state.apiId,
+                  weather: undefined,
+                  weatherStatus: {
+                    status: 'Initialised',
+                    lastRefreshedUnixMs: undefined,
+                  },
+                });
+              } catch (e) {
+                console.error('Unhandled error: ', e);
+              }
+
             if (route.params?.fromAddGddTracker && state !== undefined) {
               navigation.navigate('AddGddTracker', {
                 fromAddLocationId: state?.apiId,

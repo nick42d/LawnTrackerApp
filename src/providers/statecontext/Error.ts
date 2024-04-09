@@ -1,5 +1,5 @@
 export class StateContextError extends Error {
-  name: 'DELETE_LOCATIONS_ERROR';
+  name: 'DELETE_LOCATIONS_ERROR' | 'ADD_LOCATIONS_ERROR';
   message: string;
   cause: any;
   constructor({
@@ -7,7 +7,7 @@ export class StateContextError extends Error {
     message,
     cause,
   }: {
-    name: 'DELETE_LOCATIONS_ERROR';
+    name: 'DELETE_LOCATIONS_ERROR' | 'ADD_LOCATIONS_ERROR';
     message: string;
     cause?: any;
   }) {

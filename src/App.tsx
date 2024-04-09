@@ -20,7 +20,7 @@ import {
   SettingsContextProvider,
 } from './providers/SettingsContext';
 import React from 'react';
-import {StateContextProvider} from './providers/StateContext';
+import {StateContext, StateContextProvider} from './providers/StateContext';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -30,19 +30,25 @@ const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
 const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
 
 export default function App(): React.JSX.Element {
-  const {settings} = useContext(SettingsContext);
   const systemDarkMode = useColorScheme() === 'dark';
-  const appDarkMode =
-    settings.dark_mode_enabled || (settings.auto_dark_mode && systemDarkMode);
   return (
     // TODO: Safe Area
     <SettingsContextProvider>
-      <PaperProvider
-        theme={appDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
-        <StateContextProvider>
-          <LoadableApp />
-        </StateContextProvider>
-      </PaperProvider>
+      <SettingsContext.Consumer>
+        {({settings}) => {
+          const appDarkMode =
+            settings.dark_mode_enabled ||
+            (settings.auto_dark_mode && systemDarkMode);
+          return (
+            <PaperProvider
+              theme={appDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
+              <StateContextProvider>
+                <LoadableApp />
+              </StateContextProvider>
+            </PaperProvider>
+          );
+        }}
+      </SettingsContext.Consumer>
     </SettingsContextProvider>
   );
 }
