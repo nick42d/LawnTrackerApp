@@ -16,7 +16,9 @@ export function calcGddTotal(
   const daily_gdds_filter = itemsLocation.weather.weather_array.filter(
     this_item =>
       // Locations has unix seconds time but item has unix ms
-      this_item.date_unix >= item.start_date_unix_ms / 1000,
+      this_item.date_unix >= item.start_date_unix_ms / 1000 &&
+      // Currently, the key distinction for including GDD is if it's historical, but we could also / instead look at date.
+      this_item.weather_type === 'Historical',
   );
   // TODO: Handle when base_temp may be F or C.
   const daily_gdds_arr = daily_gdds_filter.map(item_2 =>

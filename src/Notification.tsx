@@ -1,10 +1,6 @@
 import notifee, {Event} from '@notifee/react-native';
 
 export async function onDisplayNotification() {
-  // Request permissions (required for iOS)
-  // TODO: Don't do this every time. It doesn't work when app is in background.
-  // await notifee.requestPermission();
-
   console.log('Called onDisplayNotification');
   // Create a channel (required for Android)
   const channelId = await notifee.createChannel({

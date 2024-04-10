@@ -5,6 +5,7 @@
 import BackgroundFetch from 'react-native-background-fetch';
 import {onDisplayNotification} from '../../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../../Consts';
+import {GetStoredState} from './EffectHandlers';
 
 /// Initiate background event handler.
 // Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
@@ -17,7 +18,9 @@ export async function initBackgroundFetch() {
     // Perform an example HTTP request.
     // Important:  await asychronous tasks when using HeadlessJS.
     await onDisplayNotification();
+    const bgFetch = await GetStoredState();
     console.log('[BackgroundFetch] executed');
+    console.log(JSON.stringify(bgFetch));
     // IMPORTANT:  You must signal to the OS that your task is complete.
     BackgroundFetch.finish(taskId);
   };

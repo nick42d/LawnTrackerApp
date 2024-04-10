@@ -120,10 +120,8 @@ export function convertWeatherUnits(
 export function addWeather(weather: Weather, newWeather: Weather): Weather {
   const isUnitChange = weather.temperature_unit !== newWeather.temperature_unit;
   const newMinDay: number = newWeather.weather_array.reduce<number>(
-    (acc: number, cur: WeatherAppDay) => {
-      return acc < cur.date_unix ? acc : cur.date_unix;
-    },
-    Date.now(),
+    (acc: number, cur: WeatherAppDay) => Math.min(acc, cur.date_unix),
+    Number.MAX_SAFE_INTEGER,
   );
   // Filter old weather array to remove old values and then convert temperature units if needed.
   const filteredDays = weather.weather_array

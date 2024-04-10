@@ -21,6 +21,7 @@ import {
 } from './providers/SettingsContext';
 import React from 'react';
 import {StateContext, StateContextProvider} from './providers/StateContext';
+import notifee from '@notifee/react-native';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -31,6 +32,10 @@ const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
 
 export default function App(): React.JSX.Element {
   const systemDarkMode = useColorScheme() === 'dark';
+  // Request notification permissions
+  // TODO: Manage this in settings.
+  notifee.requestPermission();
+
   return (
     // TODO: Safe Area
     <SettingsContextProvider>

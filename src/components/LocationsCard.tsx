@@ -64,23 +64,7 @@ export function LocationsCard({
       style={central_styles.default.listCard}
       onPress={() => {
         console.log('Pressed location card');
-        // For debugging purposes
-        const debugPrintLocation = {
-          ...location,
-          weather: {
-            ...location.weather,
-            weather_array: location.weather?.weather_array.map(w => ({
-              date: format(
-                new Date(w.date_unix * 1000),
-                'dd/MM/yy HH:mm:ss.SSS',
-              ),
-              weather_type: w.weather_type,
-              maxtemp: w.maxtemp,
-              mintemp: w.mintemp,
-            })),
-          },
-        };
-        console.log(JSON.stringify(debugPrintLocation, null, ' '));
+        navigation.navigate('ViewLocation', {location});
       }}>
       <Card.Title
         title={location.name + ', ' + location.country}

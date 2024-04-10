@@ -7,6 +7,8 @@ import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import {StateContext} from '../providers/StateContext';
 import {StateContextError} from '../providers/statecontext/Error';
 
+const WARNING_SNACKBAR_DURATION_MS = 10000;
+
 export default function LocationsScreen({
   route,
   navigation,
@@ -63,7 +65,7 @@ export default function LocationsScreen({
       <Portal>
         <Snackbar
           // 10 seconds
-          duration={10000}
+          duration={WARNING_SNACKBAR_DURATION_MS}
           visible={showAlert}
           action={{label: 'Dismiss', onPress: () => setShowAlert(false)}}
           onDismiss={() => setShowAlert(false)}>

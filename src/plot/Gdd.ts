@@ -3,44 +3,36 @@ import {calcGdd} from '../Knowledge';
 import {GddTracker} from '../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../api/Types';
 import {GDDAlgorithm} from '../providers/settingscontext/Types';
-import {Location} from '../providers/statecontext/Locations';
+import {Location, WeatherStatus} from '../providers/statecontext/Locations';
 import {format} from 'date-fns';
+import {AddDays} from '../Utils';
+import {addDays} from 'date-fns/addDays';
 
 // TODO: Remove unimplemented
-const PLOT_WEATHER_TYPES = [
-  'Historical',
-  'Forecasted',
-  'Estimated',
-  'Unimplemented',
-] as const;
+const PLOT_WEATHER_TYPES = ['Historical', 'Forecasted', 'Estimated'] as const;
 export type PlotWeatherType = (typeof PLOT_WEATHER_TYPES)[number];
 
 export type GddEstimate = {
   estimateType: PlotWeatherType;
   estimateDateUnixMs: number;
 };
-export type GraphPlotItem = {value: number; label: string};
-export type DailyGdd = {gdd: number; dateUnix: number};
-export type GddGraphPlot = {
-  items: GraphPlotItem[];
-  forecast_start: number;
-  estimate_start: number;
-};
-
-export function trimGraphPlotLabels(plot: GraphPlotItem[]): {
+export type GraphPlotItem = {
   value: number;
   label?: string;
-}[] {
-  return plot.map((item, idx) => {
-    if (idx % 7 === 0)
-      return {
-        value: item.value,
-        // TODO: Better date formatting
-        label: format(new Date(item.label), 'EEEEEE dd/MM'),
-      };
-    return {value: item.value};
-  });
-}
+  dataPointText: string;
+};
+export type DailyGdd = {
+  gdd: number;
+  dateUnix: number;
+  weatherType: PlotWeatherType;
+};
+export type DailyGddAcc = DailyGdd & {gddAcc: number};
+export type GddGraphPlot = {
+  items: GraphPlotItem[];
+  forecastStartIndex: number;
+  estimateStartIndex: number;
+};
+
 function listAverage(list: number[]): number {
   if (list.length === 0) return 0;
   return list.reduce((sum, acc) => acc + sum, 0) / list.length;
@@ -57,78 +49,92 @@ function weatherDaysToGddArr(
     .map(x => ({
       gdd: calcGdd(x.mintemp, x.maxtemp, tBase, algorithm),
       dateUnix: x.date_unix,
+      weatherType: x.weather_type,
     }));
 }
 function estimateToGddArr(
   estimate: number,
-  startDateUnix: number,
+  startDateUnixMs: number,
   numberDays: number,
 ): DailyGdd[] {
   return Array(numberDays)
     .fill(estimate)
     .map((x, i) => ({
       gdd: x,
-      // Manual calculation to add days
-      dateUnix: startDateUnix + (i + 1) * 60 * 60 * 24,
+      dateUnix: addDays(startDateUnixMs, i).valueOf() / 1000,
+      weatherType: 'Estimated',
     }));
 }
-export function getGraphPlot(
+/// This can return undefined, in the exception case that the tracker doesn't have a corresponding location.
+/// Or the location doesn't have corresponding weather.
+export function getTrackerGddArray(
   item: GddTracker,
   locations: Location[],
   algorithm: GDDAlgorithm,
-): GddGraphPlot | undefined {
+): DailyGddAcc[] | undefined {
   const startDateUnix = item.start_date_unix_ms / 1000;
   const tBase = item.base_temp;
+  // Consider creating this as a context method.
   const itemLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemLocation === undefined) return undefined;
   if (itemLocation.weather === undefined) return undefined;
-  const history_gdd_arr = weatherDaysToGddArr(
+  const historyAndForecastGddArray = weatherDaysToGddArr(
     itemLocation.weather.weather_array,
     startDateUnix,
     tBase,
     algorithm,
   );
-  const forecast_gdd_arr = weatherDaysToGddArr(
-    itemLocation.weather.weather_array,
-    startDateUnix,
-    tBase,
-    algorithm,
-  );
-  const average_gdd = listAverage(
-    history_gdd_arr.concat(forecast_gdd_arr).map(x => x.gdd),
-  );
-  // TODO bounds check
-  const lastForecastDateUnix =
-    forecast_gdd_arr[forecast_gdd_arr.length - 1]?.dateUnix;
-  const estimate_gdd_arr = estimateToGddArr(
+  // Estimate is based off average of history and forecast.
+  const average_gdd = listAverage(historyAndForecastGddArray.map(x => x.gdd));
+  // Weather array may be empty
+  const maybeLastNonEstimateDayUnix =
+    historyAndForecastGddArray.at(-1)?.dateUnix;
+  // If so, last non-estimate day is the day before start date.
+  const firstEstimateDayUnixMs = maybeLastNonEstimateDayUnix
+    ? addDays(new Date(maybeLastNonEstimateDayUnix * 1000), 1).valueOf()
+    : item.start_date_unix_ms;
+  const estimateGddArray = estimateToGddArr(
     average_gdd,
-    lastForecastDateUnix,
+    firstEstimateDayUnixMs,
     ESTIMATED_DAYS,
   );
-  const forecast_start = history_gdd_arr.length;
-  const estimate_start = forecast_start + forecast_gdd_arr.length;
   let sum = 0;
-  const items: GraphPlotItem[] = history_gdd_arr
-    .concat(forecast_gdd_arr)
-    .concat(estimate_gdd_arr)
-    .map(x => {
-      sum += x.gdd;
-      // TODO: Prevent crash if empty
-      // Need to convert from DateUnix to DateUnixMs...
-      return {value: sum, label: new Date(x.dateUnix * 1000).toDateString()};
-    });
-  return {items, forecast_start, estimate_start};
+  return historyAndForecastGddArray.concat(estimateGddArray).map(x => {
+    sum += x.gdd;
+    // TODO: Prevent crash if empty
+    return {...x, gddAcc: sum};
+  });
 }
+export function getGraphPlot(trackerGddArray: DailyGddAcc[]): GddGraphPlot {
+  const forecastStartIndex = trackerGddArray.findIndex(
+    x => x.weatherType === 'Forecasted',
+  );
+  const estimateStartIndex = trackerGddArray.findIndex(
+    x => x.weatherType === 'Estimated',
+  );
+  const items: GraphPlotItem[] = trackerGddArray.map((x, idx) => {
+    const dateString = format(new Date(x.dateUnix * 1000), 'EEEEEE dd/MM');
+    if (idx % 7 === 0) {
+      return {value: x.gddAcc, label: dateString, dataPointText: dateString};
+    }
+    return {value: x.gddAcc, dataPointText: dateString};
+  });
+  return {
+    items,
+    forecastStartIndex,
+    estimateStartIndex,
+  };
+}
+/// Returns undefined if not able to produce an estimate.
+/// TODO: Implement forward lookup if needed, estimate should always be possible.
 export function getGddEstimate(
-  temp: GddGraphPlot | undefined,
+  gddArray: DailyGddAcc[],
   targetGdd: number,
 ): GddEstimate | undefined {
-  if (temp === undefined) return undefined;
-  const estimatedDayItem = temp.items.find(x => x.value >= targetGdd);
+  const estimatedDayItem = gddArray.find(x => x.gddAcc >= targetGdd);
   if (estimatedDayItem === undefined) return undefined;
-  const estimatedDay = new Date(estimatedDayItem.label);
   return {
-    estimateDateUnixMs: estimatedDay.getTime(),
-    estimateType: 'Unimplemented',
+    estimateDateUnixMs: estimatedDayItem.dateUnix * 1000,
+    estimateType: estimatedDayItem.weatherType,
   };
 }

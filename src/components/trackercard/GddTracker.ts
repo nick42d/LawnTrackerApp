@@ -7,11 +7,12 @@ import {
   isWeatherRefreshing,
 } from '../../knowledge/Gdd';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
-import {getGddEstimate, getGraphPlot} from '../../plot/Gdd';
+import {getGddEstimate, getGraphPlot, getTrackerGddArray} from '../../plot/Gdd';
 import {SettingsContext} from '../../providers/SettingsContext';
 import {StateContext} from '../../providers/StateContext';
 import {TrackerCardProps} from './Types';
 import {LeftCalloutProps} from './LeftCallout';
+import {checkWeatherInvariants} from '../../api/Types';
 
 export function ToGddTrackerCardProps(
   gddTracker: GddTracker,
@@ -27,16 +28,18 @@ export function ToGddTrackerCardProps(
   const weatherIsRefreshing = isWeatherRefreshing(gddTracker, locations);
   const weatherIsInitialised = isWeatherInitialised(gddTracker, locations);
   const leftCalloutRefreshing = typeof actual_gdd !== 'number' ? true : false;
+  const gddTrackerArray = getTrackerGddArray(
+    gddTracker,
+    locations,
+    settings.algorithm,
+  );
   // TODO: Fix undefined case
-  const estimateTemp = getGddEstimate(
-    getGraphPlot(gddTracker, locations, settings.algorithm),
-    gddTracker.target_gdd,
-  );
-  const estimateTempString = ReplaceUndefinedString(
-    estimateTemp === undefined
-      ? undefined
-      : new Date(estimateTemp.estimateDateUnixMs).toDateString(),
-  );
+  const estimateTemp = gddTrackerArray
+    ? getGddEstimate(gddTrackerArray, gddTracker.target_gdd)
+    : undefined;
+  const estimateTempString = estimateTemp
+    ? new Date(estimateTemp.estimateDateUnixMs).toDateString()
+    : '';
   const leftCalloutStatus =
     gddTracker.trackerStatus === 'Stopped'
       ? 'Stopped'

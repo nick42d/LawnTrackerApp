@@ -30,6 +30,7 @@ import {View} from 'react-native';
 import LoadingScreen from '../screens/Loading';
 import AddCalendarTrackerScreen from '../screens/AddCalendarTracker';
 import AddTimedTrackerScreen from '../screens/AddTimedTracker';
+import ViewLocationScreen from '../screens/ViewLocation';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -40,7 +41,7 @@ export type RootStackParamList = {
   AddTimedTracker: undefined;
   AddLocationCard: {fromAddGddTracker: boolean} | undefined;
   ViewTracker: {tracker: Tracker};
-  ViewLocationCard: {location: Location};
+  ViewLocation: {location: Location};
 };
 
 export type AppDrawerParamList = {
@@ -124,6 +125,11 @@ function AppRootStackNavigator() {
           name="AddLocationCard"
           component={AddLocationCardScreen}
           options={{title: 'Add Location'}}
+        />
+        <Stack.Screen
+          name="ViewLocation"
+          component={ViewLocationScreen}
+          options={{title: 'View Location'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

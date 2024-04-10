@@ -15,8 +15,7 @@ export function PlotLegend({points}: PlotLegendParams) {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        marginTop: 24,
-        backgroundColor: 'yellow',
+        marginTop: 10,
       }}>
       {points.map((p, i) => (
         <View
