@@ -6,6 +6,8 @@ import BackgroundFetch from 'react-native-background-fetch';
 import {onDisplayNotification} from '../../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../../Consts';
 import {GetStoredState} from './EffectHandlers';
+import {trackerStatus} from './Trackers';
+import {GDDAlgorithm} from '../settingscontext/Types';
 
 /// Initiate background event handler.
 // Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
@@ -17,10 +19,8 @@ export async function initBackgroundFetch() {
     // Do your background work...
     // Perform an example HTTP request.
     // Important:  await asychronous tasks when using HeadlessJS.
-    await onDisplayNotification();
-    const bgFetch = await GetStoredState();
     console.log('[BackgroundFetch] executed');
-    console.log(JSON.stringify(bgFetch));
+    const notify = await onFetch();
     // IMPORTANT:  You must signal to the OS that your task is complete.
     BackgroundFetch.finish(taskId);
   };
@@ -46,4 +46,17 @@ export async function initBackgroundFetch() {
   );
 
   console.log('[BackgroundFetch] configure status: ', status);
+}
+
+export async function onFetch() {
+  const bgFetch = await GetStoredState();
+  const bgCheck = bgFetch?.trackers.map(t =>
+    trackerStatus(t, Date.now(), bgFetch.locations, GDDAlgorithm.VariantA),
+  );
+  console.log(JSON.stringify(bgCheck));
+  if (bgCheck)
+    await onDisplayNotification(
+      bgCheck[1].kind,
+      JSON.stringify(bgCheck[1].target),
+    );
 }

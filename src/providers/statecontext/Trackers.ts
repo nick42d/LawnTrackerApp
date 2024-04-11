@@ -1,4 +1,8 @@
+import {addDays} from 'date-fns';
 import {calcGdd} from '../../Knowledge';
+import {calcGddTotal} from '../../knowledge/Gdd';
+import {GDDAlgorithm} from '../settingscontext/Types';
+import {Location} from './Locations';
 
 export function newGddTracker(
   name: string,
@@ -110,4 +114,38 @@ export function stopTracker(tracker: Tracker): Tracker {
 /// Resumes tracker and resets it if resettable.
 export function resumeTracker(tracker: Tracker): Tracker {
   return {...resetTracker(tracker), trackerStatus: 'Running'};
+}
+
+export function trackerStatus(
+  tracker: Tracker,
+  curDateUnixMs: number,
+  locations: Location[],
+  algorithm: GDDAlgorithm,
+) {
+  if (tracker.trackerStatus === 'Stopped') return {kind: 'Stopped'};
+  switch (tracker.kind) {
+    case 'calendar': {
+      const target = tracker.target_date_unix_ms;
+      return target <= curDateUnixMs
+        ? {kind: 'TargetReached', target}
+        : {kind: 'Running', target};
+    }
+    case 'gdd': {
+      const actual_gdd = calcGddTotal(tracker, locations, algorithm);
+      if (typeof actual_gdd !== 'number') return {kind: 'ErrorCalculatingGdd'};
+      const target = tracker.target_gdd;
+      return target <= actual_gdd
+        ? {kind: 'TargetReached', target}
+        : {kind: 'Running', target};
+    }
+    case 'timed': {
+      const target = addDays(
+        tracker.start_date_unix_ms,
+        tracker.duration_days,
+      ).valueOf();
+      return target <= curDateUnixMs
+        ? {kind: 'TargetReached', target}
+        : {kind: 'Running', target};
+    }
+  }
 }

@@ -19,6 +19,8 @@ import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
 import {fetchLocationsWeather} from '../Api';
+import notifee from '@notifee/react-native';
+import {BackgroundEventCallback} from '../Notification';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -53,6 +55,8 @@ export function StateContextProvider({
       })
       .catch(() => console.warn('Error getting app state'));
     // Initialize BackgroundFetch only once when component mounts.
+    // Also init foreground event handler
+    notifee.onForegroundEvent(BackgroundEventCallback);
     initBackgroundFetch();
   }, []);
   // Keep state synced to AsyncStorage
@@ -65,7 +69,7 @@ export function StateContextProvider({
   // TODO: Better handle race conditions
   useEffect(() => {
     console.log('App state changed - locations');
-    state.locations.map(l => {
+    state.locations.forEach(l => {
       console.log(l.name, 'status: ', l.weatherStatus);
     });
     OnChangeLocations(state.status, state.locations);
