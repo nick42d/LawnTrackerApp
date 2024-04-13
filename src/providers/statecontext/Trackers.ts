@@ -116,27 +116,75 @@ export function resumeTracker(tracker: Tracker): Tracker {
   return {...resetTracker(tracker), trackerStatus: 'Running'};
 }
 
+export type TrackerStatusCheck =
+  | {
+      kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
+      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerName: string;
+    }
+  | {
+      kind: 'TargetReached' | 'Running';
+      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerName: string;
+      target: number;
+      actual: number;
+    };
+
 export function trackerStatus(
   tracker: Tracker,
   curDateUnixMs: number,
   locations: Location[],
   algorithm: GDDAlgorithm,
-) {
-  if (tracker.trackerStatus === 'Stopped') return {kind: 'Stopped'};
+): TrackerStatusCheck {
+  if (tracker.trackerStatus === 'Stopped')
+    return {
+      trackerKind: tracker.kind,
+      trackerName: tracker.name,
+      kind: 'Stopped',
+    };
   switch (tracker.kind) {
     case 'calendar': {
       const target = tracker.target_date_unix_ms;
       return target <= curDateUnixMs
-        ? {kind: 'TargetReached', target}
-        : {kind: 'Running', target};
+        ? {
+            actual: curDateUnixMs,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'TargetReached',
+            target,
+          }
+        : {
+            actual: curDateUnixMs,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'Running',
+            target,
+          };
     }
     case 'gdd': {
       const actual_gdd = calcGddTotal(tracker, locations, algorithm);
-      if (typeof actual_gdd !== 'number') return {kind: 'ErrorCalculatingGdd'};
+      if (typeof actual_gdd !== 'number')
+        return {
+          trackerKind: tracker.kind,
+          trackerName: tracker.name,
+          kind: 'ErrorCalculatingGdd',
+        };
       const target = tracker.target_gdd;
       return target <= actual_gdd
-        ? {kind: 'TargetReached', target}
-        : {kind: 'Running', target};
+        ? {
+            actual: actual_gdd,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'TargetReached',
+            target,
+          }
+        : {
+            actual: actual_gdd,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'Running',
+            target,
+          };
     }
     case 'timed': {
       const target = addDays(
@@ -144,8 +192,20 @@ export function trackerStatus(
         tracker.duration_days,
       ).valueOf();
       return target <= curDateUnixMs
-        ? {kind: 'TargetReached', target}
-        : {kind: 'Running', target};
+        ? {
+            actual: curDateUnixMs,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'TargetReached',
+            target,
+          }
+        : {
+            actual: curDateUnixMs,
+            trackerKind: tracker.kind,
+            trackerName: tracker.name,
+            kind: 'Running',
+            target,
+          };
     }
   }
 }

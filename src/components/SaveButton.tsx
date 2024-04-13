@@ -1,5 +1,4 @@
 import {Appbar} from 'react-native-paper';
-import {onDisplayNotification} from '../Notification';
 import {
   AppScreenNavigationProp,
   HomeLocationsTabParamList,
@@ -34,7 +33,6 @@ export default function SaveButton({disabled, onPress}: SaveButtonParams) {
     <Appbar.Action
       onPress={() => {
         console.log('Save button on screen pressed');
-        onDisplayNotification();
         onPress();
       }}
       disabled={disabled}

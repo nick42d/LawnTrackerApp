@@ -3,7 +3,11 @@
 // Issue notifications
 
 import BackgroundFetch from 'react-native-background-fetch';
-import {onDisplayNotification} from '../../Notification';
+import {
+  displayNotification,
+  displayNotificationAction,
+  displayTrackerNotification,
+} from '../../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../../Consts';
 import {GetStoredState} from './EffectHandlers';
 import {trackerStatus} from './Trackers';
@@ -12,6 +16,7 @@ import {GDDAlgorithm} from '../settingscontext/Types';
 /// Initiate background event handler.
 // Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
 // NOTE: the foreground/background event handler is here, but the headless event handler is in HeadlessCallback module and registered in index.
+// NOTE: This can update app state (from both foreground and background)
 export async function initBackgroundFetch() {
   // BackgroundFetch event handler.
   const onEvent = async (taskId: string) => {
@@ -54,9 +59,10 @@ export async function onFetch() {
     trackerStatus(t, Date.now(), bgFetch.locations, GDDAlgorithm.VariantA),
   );
   console.log(JSON.stringify(bgCheck));
-  if (bgCheck)
-    await onDisplayNotification(
-      bgCheck[1].kind,
-      JSON.stringify(bgCheck[1].target),
-    );
+  if (bgCheck) {
+    const p = bgCheck.map(async b => {
+      displayTrackerNotification(b);
+    });
+    await Promise.all(p);
+  }
 }

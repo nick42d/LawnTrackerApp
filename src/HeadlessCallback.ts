@@ -1,5 +1,4 @@
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
-import {onDisplayNotification} from './Notification';
 import {onFetch} from './providers/statecontext/BackgroundFetch';
 
 /// Task to be run by headless background fetch.

@@ -62,17 +62,37 @@ export function StateContextProvider({
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
+    let active = true;
     console.log('App state changed - trackers');
-    OnChangeGddTrackers(state.status, state.trackers);
+    // Debounce
+    setTimeout(() => {
+      if (active) {
+        OnChangeGddTrackers(state.status, state.trackers);
+      }
+    }, 50);
+    return () => {
+      active = false;
+      console.log('Closing trackers change effect');
+    };
   }, [state.status, state.trackers]);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
   useEffect(() => {
+    let active = true;
     console.log('App state changed - locations');
     state.locations.forEach(l => {
       console.log(l.name, 'status: ', l.weatherStatus);
     });
-    OnChangeLocations(state.status, state.locations);
+    // Debounce
+    setTimeout(() => {
+      if (active) {
+        OnChangeLocations(state.status, state.locations);
+      }
+    }, 50);
+    return () => {
+      active = false;
+      console.log('Closing locations change effect');
+    };
   }, [state.status, state.locations]);
 
   function clearAll() {
