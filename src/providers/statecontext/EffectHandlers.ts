@@ -3,8 +3,6 @@ import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
 import {ContextStatus} from '../Types';
 import {Location} from './Locations';
 import {GddTracker, Tracker} from './Trackers';
-import {initBackgroundFetch} from './BackgroundFetch';
-import {safeJsonParse} from '../../Utils';
 
 type StoredState = {
   trackers: Tracker[];
