@@ -14,13 +14,13 @@ import {
   OnChangeLocations,
   GetStoredState,
 } from './statecontext/EffectHandlers';
-import {initBackgroundFetch} from './statecontext/BackgroundFetch';
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
 import {fetchLocationsWeather} from '../Api';
 import notifee from '@notifee/react-native';
 import {BackgroundEventCallback} from '../Notification';
+import {BackgroundFetcher} from '../components/BackgroundFetcher';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -57,10 +57,9 @@ export function StateContextProvider({
         dispatch({kind: 'SetLoaded'});
         refreshWeatherLocations(l);
       });
-    // Initialize BackgroundFetch only once when component mounts.
-    // Also init foreground event handler
+    // Initialise notifee foreground event handler.
+    // Background event handler is in index.js.
     notifee.onForegroundEvent(BackgroundEventCallback);
-    initBackgroundFetch();
   }, []);
   // Keep state synced to AsyncStorage
   // TODO: Better handle race conditions
@@ -171,7 +170,10 @@ export function StateContextProvider({
         stopTrackerName,
         resumeTrackerName,
       }}>
-      {children}
+      <BackgroundFetcher
+        refreshWeatherCallback={() => refreshWeatherLocations(state.locations)}>
+        {children}
+      </BackgroundFetcher>
     </StateContext.Provider>
   );
 }

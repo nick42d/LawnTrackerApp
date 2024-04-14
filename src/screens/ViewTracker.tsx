@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {DataTable, Text, useTheme} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
-import {getGraphPlot, getTrackerGddArray} from '../plot/Gdd';
+import {getGraphPlot, getTrackerGddArray} from '../components/gddplot/Plot';
 import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
 import {TrackerProps} from '../components/TrackerProps';

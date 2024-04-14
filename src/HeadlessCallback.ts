@@ -1,5 +1,5 @@
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
-import {onFetch} from './providers/statecontext/BackgroundFetch';
+import {notifyFromStoredState} from './components/BackgroundFetcher';
 
 /// Task to be run by headless background fetch.
 // NOTE: Potential IOS incompatibility
@@ -17,7 +17,7 @@ export async function HeadlessCallback(event: HeadlessEvent) {
   console.log('[BackgroundFetch HeadlessTask] start: ', taskId);
 
   // Test Notifee
-  const notify = await onFetch();
+  const notify = await notifyFromStoredState();
   console.log('[BackgroundFetch HeadlessTask] executed');
 
   // Required:  Signal to native code that your task is complete.

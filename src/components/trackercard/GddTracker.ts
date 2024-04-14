@@ -7,7 +7,11 @@ import {
   isWeatherRefreshing,
 } from '../../knowledge/Gdd';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
-import {getGddEstimate, getGraphPlot, getTrackerGddArray} from '../../plot/Gdd';
+import {
+  getGddEstimate,
+  getGraphPlot,
+  getTrackerGddArray,
+} from '../gddplot/Plot';
 import {SettingsContext} from '../../providers/SettingsContext';
 import {StateContext} from '../../providers/StateContext';
 import {TrackerCardProps} from './Types';

@@ -1,5 +1,5 @@
 import {LineChart} from 'react-native-gifted-charts';
-import {GddGraphPlot, GraphPlotItem} from '../plot/Gdd';
+import {GddGraphPlot, GraphPlotItem} from './gddplot/Plot';
 import {useTheme} from 'react-native-paper';
 import {View} from 'react-native';
 import {PlotLegend} from './PlotLegend';
