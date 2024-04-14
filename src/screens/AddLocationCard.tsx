@@ -41,6 +41,7 @@ export default function AddLocationCardScreen({
   });
   const [searchResults, setSearchResults] = useState<WeatherAppLocation[]>([]);
   const [searchResultsShown, setSearchResultsShown] = useState(false);
+  const [markerSel, setMarkerSel] = useState(true);
   const theme = useTheme();
 
   React.useEffect(() => {
@@ -118,6 +119,7 @@ export default function AddLocationCardScreen({
       <MapLibreGL.MapView
         style={mapstyles.map}
         logoEnabled={true}
+        zoomEnabled={false}
         scrollEnabled={false}
         pitchEnabled={false}
         rotateEnabled={false}
@@ -139,6 +141,7 @@ export default function AddLocationCardScreen({
             id="pt-ann"
             key="pt-ann"
             coordinate={latLongArray()}
+            selected={markerSel}
             anchor={{x: 0.5, y: 1}}
             title="Location">
             <Icon source="map-marker" size={40} />
@@ -157,19 +160,18 @@ export default function AddLocationCardScreen({
           value={searchState.query}
           style={{width: 380}}
         />
-        {searchResultsShown ? (
+        {searchResultsShown && searchResults.length !== 0 ? (
           <List.Section
-            // Style doesn't work very well on Light Mode
             style={{
               borderRadius: 10,
-              backgroundColor: theme.colors.backdrop,
-              opacity: 0.8,
+              backgroundColor: theme.colors.background,
+              opacity: 0.85,
             }}>
-            {searchResults.map((s, i) => {
+            {searchResults.map(s => {
               return (
                 <List.Item
                   title={s.name}
-                  key={i}
+                  key={s.apiId}
                   description={s.admin1 + ', ' + s.country}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
@@ -181,15 +183,13 @@ export default function AddLocationCardScreen({
                       apiId: s.apiId,
                       admin1: s.admin1,
                     });
-                    setSearchState({...searchState, showSuggestions: false});
+                    setSearchState({query: '', showSuggestions: false});
                   }}
                 />
               );
             })}
           </List.Section>
-        ) : (
-          <View></View>
-        )}
+        ) : undefined}
       </View>
       <View style={{position: 'absolute', bottom: 0}}>
         <Text style={{color: 'black'}} variant="titleLarge">

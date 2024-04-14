@@ -1,4 +1,4 @@
-package com.gddapp
+package com.lawntracker
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

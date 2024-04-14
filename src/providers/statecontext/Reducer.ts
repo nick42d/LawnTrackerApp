@@ -92,6 +92,7 @@ export function reducer(
   state: FunctionlessStateContext,
   action: StateAction,
 ): FunctionlessStateContext {
+  console.log('State Context reducer call: ', action.kind);
   switch (action.kind) {
     case 'SetLoaded':
       return {...state, status: 'Loaded'};

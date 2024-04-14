@@ -6,7 +6,9 @@ export function ReplaceUndefinedString(s: string | undefined): string {
   return s;
 }
 
-/// Add a number of days to a date.
+/**
+ * @deprecated This has been deprecated - date-fns addDays should be used instead
+ */
 export function AddDays(day: Date, days: number): Date {
   let newDate = new Date(day);
   newDate.setDate(newDate.getDate() + days);

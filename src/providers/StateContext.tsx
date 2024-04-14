@@ -45,15 +45,18 @@ export function StateContextProvider({
       .then(s => {
         if (s === undefined) {
           console.info("App state wasn't on device, using defaults");
-          return;
+          return state.locations;
+        } else {
+          dispatch({kind: 'ReplaceTrackers', trackers: s.trackers});
+          dispatch({kind: 'ReplaceLocations', locations: s.locations});
+          console.log('Loaded app state from device');
+          return s.locations;
         }
-        dispatch({kind: 'ReplaceTrackers', trackers: s.trackers});
-        dispatch({kind: 'ReplaceLocations', locations: s.locations});
-        console.log('Loaded app state from device');
-        dispatch({kind: 'SetLoaded'});
-        refreshWeatherLocations(s.locations);
       })
-      .catch(() => console.warn('Error getting app state'));
+      .then(l => {
+        dispatch({kind: 'SetLoaded'});
+        refreshWeatherLocations(l);
+      });
     // Initialize BackgroundFetch only once when component mounts.
     // Also init foreground event handler
     notifee.onForegroundEvent(BackgroundEventCallback);

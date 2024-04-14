@@ -1,4 +1,4 @@
-package com.gddapp
+package com.lawntracker
 
 import android.app.Application
 import com.facebook.react.PackageList

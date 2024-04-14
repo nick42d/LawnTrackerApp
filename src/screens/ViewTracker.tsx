@@ -8,7 +8,7 @@ import {StateContext} from '../providers/StateContext';
 import {TrackerProps} from '../components/TrackerProps';
 import {checkWeatherInvariants} from '../api/Types';
 import {format} from 'date-fns';
-import {GddGraph} from '../components/GddGraph';
+import {GddPlot} from '../components/GddPlot';
 
 export default function ViewTrackerScreen({
   route,
@@ -36,7 +36,7 @@ export default function ViewTrackerScreen({
       <TrackerProps tracker={item} />
       {item.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
         <View style={{rowGap: 30}}>
-          <GddGraph data={data} targetGdd={item.target_gdd} />
+          <GddPlot data={data} targetGdd={item.target_gdd} />
           <DataTable>
             <DataTable.Header>
               <DataTable.Title>Day</DataTable.Title>

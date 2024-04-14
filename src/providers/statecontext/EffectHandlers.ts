@@ -4,6 +4,7 @@ import {ContextStatus} from '../Types';
 import {Location} from './Locations';
 import {GddTracker, Tracker} from './Trackers';
 import {initBackgroundFetch} from './BackgroundFetch';
+import {safeJsonParse} from '../../Utils';
 
 type StoredState = {
   trackers: Tracker[];
@@ -24,13 +25,18 @@ export async function GetStoredState(): Promise<StoredState | undefined> {
       containsTrackers[1] !== null
     ) {
       console.log('Loading app state from device');
-      return (
-        // NOTE: Parse could fail if someone else writes to these keys!
-        {
-          trackers: JSON.parse(containsTrackers[1]),
-          locations: JSON.parse(containsLoc[1]),
-        }
-      );
+      try {
+        // Assuming this is type safe
+        const trackers: Tracker[] = JSON.parse(containsTrackers[1]);
+        const locations: Location[] = JSON.parse(containsLoc[1]);
+        return {
+          trackers,
+          locations,
+        };
+      } catch (e) {
+        console.warn('Error parsing stored state: ', e);
+        return undefined;
+      }
     } else {
       console.warn('Missing some App state on device - using defaults');
       console.log('ContainsLoc: ' + JSON.stringify(containsLoc));
