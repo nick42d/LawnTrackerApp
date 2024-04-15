@@ -17,7 +17,7 @@ import {
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
-import {fetchLocationsWeather} from '../Api';
+import {WeatherUpdate, fetchLocationsWeather} from '../Api';
 import notifee from '@notifee/react-native';
 import {BackgroundEventCallback} from '../Notification';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
@@ -104,9 +104,16 @@ export function StateContextProvider({
   const locations = state.locations;
   const trackers = state.trackers;
   const status = state.status;
-  async function refreshWeatherLocations(locations: Location[]) {
+  function updateLocationsWeather(update: WeatherUpdate[]) {
+    dispatch({
+      kind: 'AddRefreshedWeatherArray',
+      weather: update,
+      timeUnixMs: new Date().valueOf(),
+    });
+  }
+  async function refreshWeatherLocations(locationsToRefresh: Location[]) {
     dispatch({kind: 'SetWeatherRefreshing'});
-    const fetchedWeatherArray = await fetchLocationsWeather(locations);
+    const fetchedWeatherArray = await fetchLocationsWeather(locationsToRefresh);
     dispatch({
       kind: 'AddRefreshedWeatherArray',
       weather: fetchedWeatherArray,
@@ -161,7 +168,7 @@ export function StateContextProvider({
         status,
         clearAll,
         // TODO: May need to be more clever about this.
-        refreshWeather: () => refreshWeatherLocations(state.locations),
+        refreshWeather: () => refreshWeatherLocations(locations),
         addLocation,
         deleteLocationId,
         addTracker,
@@ -170,8 +177,7 @@ export function StateContextProvider({
         stopTrackerName,
         resumeTrackerName,
       }}>
-      <BackgroundFetcher
-        refreshWeatherCallback={() => refreshWeatherLocations(state.locations)}>
+      <BackgroundFetcher refreshWeatherCallback={updateLocationsWeather}>
         {children}
       </BackgroundFetcher>
     </StateContext.Provider>

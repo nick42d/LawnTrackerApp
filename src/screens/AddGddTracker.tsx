@@ -165,6 +165,7 @@ export default function AddGddTrackerScreen({
         <TextInput
           label="Target"
           value={target}
+          inputMode="numeric"
           error={!targetEntered()}
           onChangeText={target => setTarget(target)}
           left={<TextInput.Icon icon="target" />}

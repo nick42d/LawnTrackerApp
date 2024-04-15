@@ -57,9 +57,13 @@ export async function fetchWeather(
     .catch(e => console.log('Error', e));
   return response;
 }
+export type WeatherUpdate = {
+  weather: void | Weather;
+  locationId: number;
+};
 export async function fetchLocationsWeather(
   locations: Location[],
-): Promise<{weather: void | Weather; locationId: number}[]> {
+): Promise<WeatherUpdate[]> {
   return await Promise.all(
     locations.map(async location => {
       return {

@@ -4,7 +4,7 @@ import {ContextStatus} from '../Types';
 import {Location} from './Locations';
 import {GddTracker, Tracker} from './Trackers';
 
-type StoredState = {
+export type StoredState = {
   trackers: Tracker[];
   locations: Location[];
 };

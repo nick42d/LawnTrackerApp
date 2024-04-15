@@ -9,11 +9,22 @@ import {
   displayTrackerNotification,
 } from '../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../Consts';
-import {GetStoredState} from '../providers/statecontext/EffectHandlers';
+import {
+  GetStoredState,
+  StoredState,
+} from '../providers/statecontext/EffectHandlers';
 import {trackerStatus} from '../providers/statecontext/Trackers';
 import {GDDAlgorithm} from '../providers/settingscontext/Types';
 import {AppState} from 'react-native';
-import {PropsWithChildren, useEffect} from 'react';
+import {PropsWithChildren, useContext, useEffect, useState} from 'react';
+import {LOCATIONS_STORAGE_KEY, StateContext} from '../providers/StateContext';
+import {Location} from '../providers/statecontext/Locations';
+import {
+  WeatherUpdate,
+  addWeatherArrayToLocations,
+  fetchLocationsWeather,
+} from '../Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /// Initiate background event handler.
 // Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
@@ -21,9 +32,10 @@ import {PropsWithChildren, useEffect} from 'react';
 // NOTE: This can update app state (from both foreground and background)
 export function BackgroundFetcher(
   props: PropsWithChildren<{
-    refreshWeatherCallback: () => Promise<void>;
+    refreshWeatherCallback: (update: WeatherUpdate[]) => void;
   }>,
 ) {
+  const state = useContext(StateContext);
   useEffect(() => {
     initBackgroundFetch();
   }, []);
@@ -36,10 +48,24 @@ export function BackgroundFetcher(
       AppState.currentState,
     );
     // Important:  await asychronous tasks when using HeadlessJS.
-    await props.refreshWeatherCallback().then(async _ => {
-      if (AppState.currentState === 'active') return;
-      await notifyFromStoredState();
-    });
+    const storedstate = await GetStoredState();
+    if (storedstate) {
+      const fetchedWeatherArray = await fetchLocationsWeather(
+        storedstate.locations,
+      );
+      props.refreshWeatherCallback(fetchedWeatherArray);
+      // Don't notify if app is in foreground
+      if (AppState.currentState !== 'active') {
+        // There is some duplication of effort here, as refreshWeatherCallback also performs this calculation.
+        // We could instead do all the calculation here and pass the new StoredState back to statecontext.
+        const newState = refreshStoredStateWeather(
+          storedstate,
+          fetchedWeatherArray,
+          Date.now(),
+        );
+        await notifyFromStoredState(newState);
+      }
+    }
     // IMPORTANT:  You must signal to the OS that your task is complete.
     console.log('[BackgroundFetch] executed');
     BackgroundFetch.finish(taskId);
@@ -68,16 +94,37 @@ export function BackgroundFetcher(
   return props.children;
 }
 
-export async function notifyFromStoredState() {
-  const bgFetch = await GetStoredState();
-  const bgCheck = bgFetch?.trackers.map(t =>
-    trackerStatus(t, Date.now(), bgFetch.locations, GDDAlgorithm.VariantA),
+export async function notifyFromStoredState(state: StoredState | undefined) {
+  const notifications = state?.trackers.map(t =>
+    trackerStatus(t, Date.now(), state.locations, GDDAlgorithm.VariantA),
   );
-  console.log(JSON.stringify(bgCheck));
-  if (bgCheck) {
-    const p = bgCheck.map(async b => {
+  console.log(JSON.stringify(notifications));
+  if (notifications) {
+    const p = notifications.map(async b => {
       displayTrackerNotification(b);
     });
     await Promise.all(p);
   }
+}
+
+// Duplication of some functionality in reducer
+export function refreshStoredStateWeather(
+  state: StoredState,
+  newWeather: WeatherUpdate[],
+  timeUnixMs: number,
+): StoredState {
+  const refreshedLocations = addWeatherArrayToLocations(
+    state.locations,
+    newWeather,
+  );
+  return {
+    ...state,
+    locations: refreshedLocations.map(l => ({
+      ...l,
+      weatherStatus: {
+        lastRefreshedUnixMs: timeUnixMs,
+        status: 'Loaded',
+      },
+    })),
+  };
 }
