@@ -59,7 +59,7 @@ export function TrackerCard({
           }
         }}
         right={() => (
-          <View>
+          <View style={{paddingRight: 10}}>
             <Icon source={props.rightIcon} size={CARD_TEXT_ICON_SIZE * 2} />
           </View>
         )}

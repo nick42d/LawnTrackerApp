@@ -30,7 +30,9 @@ export default function ViewTrackerScreen({
     item.kind === 'gdd'
       ? getTrackerGddArray(item, locations, settings.algorithm)
       : undefined;
-  const data = gddArray ? getGraphPlot(gddArray) : undefined;
+  const data = gddArray
+    ? getGraphPlot(gddArray, theme.colors.primaryContainer)
+    : undefined;
   return (
     <ScrollView>
       <TrackerProps tracker={item} />

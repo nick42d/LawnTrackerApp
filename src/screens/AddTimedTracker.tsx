@@ -60,14 +60,18 @@ export default function AddTimedTrackerScreen({
   // Date can't be in the past
   // Consider - maybe this is OK
   function dateInRange(): boolean {
-    const firstAcceptableDate = new Date();
-    return startDate >= firstAcceptableDate;
+    // const firstAcceptableDate = new Date();
+    return true;
+    // return startDate >= firstAcceptableDate;
   }
   function nameEntered(): boolean {
     return name.length !== 0;
   }
   function durationEntered(): boolean {
-    return !(isNaN(Number(durationDays)) || durationDays.length === 0);
+    return !(
+      (isNaN(Number(durationDays)) || durationDays.length === 0) &&
+      Number(durationDays) !== 0
+    );
   }
   function validateInput(): boolean {
     if (!nameEntered()) {

@@ -2,6 +2,10 @@ import {TimedTracker} from '../../providers/statecontext/Trackers';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
 import {TrackerCardProps} from './Types';
 import {AddDays} from '../../Utils';
+import {addDays, differenceInCalendarDays} from 'date-fns';
+import {GetGddTrackerCalloutColor} from './GddTracker';
+import {SettingsContext} from '../../providers/SettingsContext';
+import {useContext, useState} from 'react';
 
 export function ToTimedTrackerCardProps(
   timedTracker: TimedTracker,
@@ -11,10 +15,20 @@ export function ToTimedTrackerCardProps(
   onStop: () => void,
   onResume: () => void,
 ): TrackerCardProps {
-  // Temp!
-  const daysRem = 5;
+  const {settings} = useContext(SettingsContext);
+  // This is likely also duplicated when checking notifications
+  const daysRem = differenceInCalendarDays(
+    addDays(timedTracker.start_date_unix_ms, timedTracker.duration_days),
+    new Date(),
+  );
+  const leftCalloutText = `T${Math.sign(daysRem) >= 0 ? '-' : '+'}${Math.abs(daysRem)}`;
   const leftCalloutStatus =
     timedTracker.trackerStatus === 'Stopped' ? 'Stopped' : undefined;
+  const leftCalloutColor = GetTimedTrackerCalloutColor(
+    settings.warning_threshold_perc,
+    daysRem,
+    timedTracker.duration_days,
+  );
   const actions = [{icon: 'delete', name: 'Delete', callback: onDelete}];
   if (timedTracker.trackerStatus === 'Stopped') {
     actions.push({icon: 'play', name: 'Resume', callback: onResume});
@@ -27,7 +41,11 @@ export function ToTimedTrackerCardProps(
   return {
     heading: timedTracker.name,
     subheading: timedTracker.description,
-    leftCalloutProps: {text: `T-${daysRem}`, status: leftCalloutStatus},
+    leftCalloutProps: {
+      text: leftCalloutText,
+      status: leftCalloutStatus,
+      backgroundColor: leftCalloutColor,
+    },
     rightIcon: 'clock-start',
     lines: [
       {
@@ -43,7 +61,7 @@ export function ToTimedTrackerCardProps(
       {
         icon: 'calendar-end',
         title: 'End date',
-        text: AddDays(
+        text: addDays(
           new Date(timedTracker.start_date_unix_ms),
           timedTracker.duration_days,
         ).toDateString(),
@@ -55,4 +73,19 @@ export function ToTimedTrackerCardProps(
         tracker: timedTracker,
       }),
   };
+}
+export function GetTimedTrackerCalloutColor(
+  warning_threshold_perc: number,
+  cur: number,
+  target: number,
+): 'red' | 'orange' | undefined {
+  const daysTowardsTarget = target - cur;
+  const progress = daysTowardsTarget / target;
+  if (progress >= 1) {
+    return 'red';
+  } else if (progress >= warning_threshold_perc) {
+    return 'orange';
+  } else {
+    return undefined;
+  }
 }

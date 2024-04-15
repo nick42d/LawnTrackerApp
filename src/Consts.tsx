@@ -1,10 +1,12 @@
 // Hardcoded - TODO: Device specific
 export const GRAPH_WIDTH = 300;
-// Specific to weatherapi.com
+// How far we are happy to search weather in API.
 export const MAX_HISTORY_DAYS = 30;
 export const MAX_FORECAST_DAYS = 7;
-// Harcoded - TODO: predictive
-export const ESTIMATED_DAYS = 7;
+// Days of estimate to produce past Target
+export const EXTRA_ESTIMATE_DAYS = 3;
+// For performance reasons, limit the maximum number of estimate days
+export const MAX_ESTIMATE_DAYS = 50;
 // Openmeteo params
 // API parameters for current day
 export const API_WEATHER_CURRENT_PARAMS = [

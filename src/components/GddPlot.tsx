@@ -58,17 +58,18 @@ export function GddPlot(props: {data: GddGraphPlot; targetGdd: number}) {
         yAxisColor={theme.colors.onSurface}
         xAxisColor={theme.colors.onSurface}
         xAxisLabelTextStyle={{width: 80, color: theme.colors.onSurface}}
-        xAxisIndicesWidth={60}
         focusEnabled
         showStripOnFocus
         showTextOnFocus
+        // TODO: Better handle large arrays
+        stripHeight={999}
+        stripColor={theme.colors.primaryContainer}
         spacing={25}
         thickness={3}
         showScrollIndicator
-        showValuesAsDataPointsText
         color={HISTORICAL_COLOR}
-        hideDataPoints
         showVerticalLines
+        dataPointsRadius={0}
       />
     </View>
   );

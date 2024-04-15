@@ -17,7 +17,7 @@ import {
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
-import {WeatherUpdate, fetchLocationsWeather} from '../Api';
+import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../Api';
 import notifee from '@notifee/react-native';
 import {BackgroundEventCallback} from '../Notification';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';

@@ -1,4 +1,8 @@
-import {DATE_PICKER_LOCALE, ESTIMATED_DAYS} from '../../Consts';
+import {
+  DATE_PICKER_LOCALE,
+  EXTRA_ESTIMATE_DAYS,
+  MAX_ESTIMATE_DAYS,
+} from '../../Consts';
 import {calcGdd} from '../../Knowledge';
 import {GddTracker} from '../../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../../api/Types';
@@ -7,6 +11,8 @@ import {Location, WeatherStatus} from '../../providers/statecontext/Locations';
 import {format} from 'date-fns';
 import {AddDays} from '../../Utils';
 import {addDays} from 'date-fns/addDays';
+import {Text, View} from 'react-native';
+import DatapointLabel from './DatapointLabel';
 
 // TODO: Remove unimplemented
 const PLOT_WEATHER_TYPES = ['Historical', 'Forecasted', 'Estimated'] as const;
@@ -20,6 +26,9 @@ export type GraphPlotItem = {
   value: number;
   label?: string;
   dataPointText: string;
+  dataPointLabelComponent: () => React.JSX.Element;
+  dataPointLabelShiftY: number;
+  dataPointLabelShiftX: number;
 };
 export type DailyGdd = {
   gdd: number;
@@ -85,7 +94,18 @@ export function getTrackerGddArray(
     algorithm,
   );
   // Estimate is based off average of history and forecast.
-  const average_gdd = listAverage(historyAndForecastGddArray.map(x => x.gdd));
+  // We could remove a map here if listAverage can take a callback.
+  const averageGdd = listAverage(historyAndForecastGddArray.map(x => x.gdd));
+  const totalNonEstimateGdd = averageGdd * historyAndForecastGddArray.length;
+  // NOTE: this could result in a massive dataset, so we should cap the target.
+  // Also, consider div/0 issue
+  const estimateNumberDays = Math.min(
+    Math.ceil(
+      Math.max(item.target_gdd - totalNonEstimateGdd, 0) / averageGdd +
+        EXTRA_ESTIMATE_DAYS,
+    ),
+    MAX_ESTIMATE_DAYS,
+  );
   // Weather array may be empty
   const maybeLastNonEstimateDayUnix =
     historyAndForecastGddArray.at(-1)?.dateUnix;
@@ -94,9 +114,9 @@ export function getTrackerGddArray(
     ? addDays(new Date(maybeLastNonEstimateDayUnix * 1000), 1).valueOf()
     : item.start_date_unix_ms;
   const estimateGddArray = estimateToGddArr(
-    average_gdd,
+    averageGdd,
     firstEstimateDayUnixMs,
-    ESTIMATED_DAYS,
+    estimateNumberDays,
   );
   let sum = 0;
   return historyAndForecastGddArray.concat(estimateGddArray).map(x => {
@@ -105,7 +125,11 @@ export function getTrackerGddArray(
     return {...x, gddAcc: sum};
   });
 }
-export function getGraphPlot(trackerGddArray: DailyGddAcc[]): GddGraphPlot {
+// Unfortunately this needs to know the theme background colour
+export function getGraphPlot(
+  trackerGddArray: DailyGddAcc[],
+  bgColor: string,
+): GddGraphPlot {
   const forecastStartIndex = trackerGddArray.findIndex(
     x => x.weatherType === 'Forecasted',
   );
@@ -114,10 +138,23 @@ export function getGraphPlot(trackerGddArray: DailyGddAcc[]): GddGraphPlot {
   );
   const items: GraphPlotItem[] = trackerGddArray.map((x, idx) => {
     const dateString = format(new Date(x.dateUnix * 1000), 'EEEEEE dd/MM');
+    const value = x.gddAcc;
+    const basePlotItem = {
+      value,
+      dataPointText: dateString,
+      dataPointLabelComponent: () =>
+        DatapointLabel({
+          line2: value.toFixed(1).toString(),
+          line1: dateString,
+          bgColor: bgColor,
+        }),
+      dataPointLabelShiftY: -60,
+      dataPointLabelShiftX: -5,
+    };
     if (idx % 7 === 0) {
-      return {value: x.gddAcc, label: dateString, dataPointText: dateString};
+      return {...basePlotItem, label: dateString};
     }
-    return {value: x.gddAcc, dataPointText: dateString};
+    return basePlotItem;
   });
   return {
     items,
