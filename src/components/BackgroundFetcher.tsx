@@ -14,7 +14,7 @@ import {
   StoredState,
 } from '../providers/statecontext/EffectHandlers';
 import {trackerStatus} from '../providers/statecontext/Trackers';
-import {GDDAlgorithm} from '../providers/settingscontext/Types';
+import {GddAlgorithm} from '../providers/settingscontext/Types';
 import {AppState} from 'react-native';
 import {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import {LOCATIONS_STORAGE_KEY, StateContext} from '../providers/StateContext';
@@ -94,9 +94,13 @@ export function BackgroundFetcher(
   return props.children;
 }
 
+/**
+ * DOES NOT CURRENTLY RESPECT VARIANT FROM SETTINGS
+ * @param state
+ */
 export async function notifyFromStoredState(state: StoredState | undefined) {
   const notifications = state?.trackers.map(t =>
-    trackerStatus(t, Date.now(), state.locations, GDDAlgorithm.VariantA),
+    trackerStatus(t, Date.now(), state.locations, 'Variant A'),
   );
   console.log(JSON.stringify(notifications));
   if (notifications) {

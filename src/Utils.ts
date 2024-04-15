@@ -14,3 +14,11 @@ export function AddDays(day: Date, days: number): Date {
   newDate.setDate(newDate.getDate() + days);
   return newDate;
 }
+
+/**
+ * Asynchronous timeout function.
+ * Does nothing but return a future that resolves in ms
+ */
+export async function timeout(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

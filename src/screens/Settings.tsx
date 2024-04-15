@@ -2,12 +2,14 @@ import React, {useContext, useEffect, useState} from 'react';
 import {List, Portal, Switch, Text} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {
-  BaseTemp,
-  GDDAlgorithm,
+  GddBaseTemp,
+  GddAlgorithm,
   UNITS_OF_MEASURE,
   UnitOfMeasure,
-  gddAlgorithmToText,
   isUnitOfMeasure,
+  GDD_ALGORITHMS,
+  gddBaseTempToString,
+  GDD_BASE_TEMPS,
 } from '../providers/settingscontext/Types';
 import {ScrollView, View} from 'react-native';
 import GenericSelectionDialog, {
@@ -15,38 +17,12 @@ import GenericSelectionDialog, {
 } from '../components/SelectionDialog';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import {StateContext} from '../providers/StateContext';
-
-const ALGORITHMS = [GDDAlgorithm.VariantA, GDDAlgorithm.VariantB];
-const BASE_TEMPS = [BaseTemp.Zero, BaseTemp.Ten];
+import {SettingsListProps} from '../components/settingslist/Types';
+import SettingsList from '../components/SettingsList';
 
 export default function SettingsScreen() {
   const {settings, setSettings} = useContext(SettingsContext);
   const {clearAll} = useContext(StateContext);
-  const [baseTempDialogVisible, setBaseTempDialogVisible] = useState(false);
-  const [unitOfMeasureDialogVisible, setUnitOfMeasureDialogVisible] =
-    useState(false);
-  const [algorithmDialogVisible, setAlgorithmDialogVisible] = useState(false);
-  const [thresholdDialogVisible, setThresholdDialogVisible] = useState(false);
-  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
-  function ClearAllDialogCallback() {
-    clearAll();
-    setShowClearAllDialog(false);
-  }
-  function ShowClearAllDialog() {
-    setShowClearAllDialog(true);
-  }
-  function ShowAlgorithmDialog() {
-    setAlgorithmDialogVisible(true);
-  }
-  function ShowThresholdDialog() {
-    setThresholdDialogVisible(true);
-  }
-  function ShowBaseTempDialog() {
-    setBaseTempDialogVisible(true);
-  }
-  function ShowUnitOfMeasureDialog() {
-    setUnitOfMeasureDialogVisible(true);
-  }
   function setDarkMode(value: boolean) {
     if (setSettings !== undefined)
       setSettings({...settings, dark_mode_enabled: value});
@@ -55,14 +31,18 @@ export default function SettingsScreen() {
     if (setSettings !== undefined)
       setSettings({...settings, auto_dark_mode: value});
   }
-  function setAlgorithm(value: GDDAlgorithm) {
+  function setAlgorithm(value: GddAlgorithm) {
     if (setSettings !== undefined) setSettings({...settings, algorithm: value});
   }
-  function setWarningThreshold(value: number) {
+  function setWarningThresholdPercentage(value: number) {
     if (setSettings !== undefined)
       setSettings({...settings, warning_threshold_perc: value});
   }
-  function setDefaultBaseTemp(value: BaseTemp) {
+  function setWarningThresholdDays(value: number) {
+    if (setSettings !== undefined)
+      setSettings({...settings, warning_threshold_days: value});
+  }
+  function setDefaultBaseTemp(value: GddBaseTemp) {
     if (setSettings !== undefined)
       setSettings({...settings, default_base_temp: value});
   }
@@ -70,137 +50,102 @@ export default function SettingsScreen() {
     if (setSettings !== undefined)
       setSettings({...settings, unit_of_measure: value});
   }
-  return (
-    <ScrollView>
-      <List.Section>
-        <List.Item
-          onPress={ShowThresholdDialog}
-          title="Warning threshold percentage"
-          description="Percentage completion to trigger amber status"
-          right={() => (
-            <Text>{(settings.warning_threshold_perc * 100).toFixed(0)}%</Text>
-          )}
-        />
-        <List.Item
-          onPress={ShowUnitOfMeasureDialog}
-          title="Unit of measure - weather"
-          description="Unit of measure for Locations page. Note, will not affect Growing Degree Days (Metric only)."
-          right={() => <Text>{settings.unit_of_measure}</Text>}
-        />
-        <List.Item
-          title="Dark mode"
-          description={'Will not turn off automatically'}
-          right={() => (
-            <Switch
-              value={settings.dark_mode_enabled}
-              onValueChange={chg => {
-                if (setDarkMode !== undefined) {
-                  setDarkMode(chg);
-                }
-              }}
-            />
-          )}
-        />
-        <List.Item
-          title="Auto dark mode"
-          description={
-            'Whether system settings will automatically put app into dark mode'
-          }
-          right={() => (
-            <Switch
-              value={settings.auto_dark_mode}
-              onValueChange={chg => {
-                if (setAutoDarkMode !== undefined) {
-                  setAutoDarkMode(chg);
-                }
-              }}
-            />
-          )}
-        />
-        <List.Item
-          onPress={ShowClearAllDialog}
-          title="Clear all"
-          description="Clear all trackers and locations."
-        />
-        <List.Subheader>Growing Degree Days Settings</List.Subheader>
-        <List.Item
-          onPress={ShowAlgorithmDialog}
-          title="GDD Algorithm"
-          description="Unit of measure used to calculate GDD. See help page for more details."
-          right={() => <Text>{gddAlgorithmToText(settings.algorithm)}</Text>}
-        />
-        <List.Item
-          onPress={ShowBaseTempDialog}
-          title="Default base temp"
-          description="Default base temp to use when adding GDD trackers"
-          right={() => <Text>{settings.default_base_temp}</Text>}
-        />
-      </List.Section>
-      <Portal>
-        <GenericSelectionDialog<BaseTemp>
-          title="Select Base Temp"
-          visible={baseTempDialogVisible}
-          setVisible={x => {
-            setBaseTempDialogVisible(x);
-          }}
-          curValue={settings.default_base_temp}
-          setCurValue={(set: string) => {
-            setDefaultBaseTemp(Number(set));
-          }}
-          values={BASE_TEMPS.map(x => ({label: BaseTemp[x], value: x}))}
-        />
-        <GenericSelectionDialog<GDDAlgorithm>
-          title="Select Algorithm"
-          visible={algorithmDialogVisible}
-          setVisible={x => {
-            setAlgorithmDialogVisible(x);
-          }}
-          curValue={settings.algorithm}
-          setCurValue={(set: string) => {
-            setAlgorithm(Number(set));
-          }}
-          values={ALGORITHMS.map(x => ({label: GDDAlgorithm[x], value: x}))}
-        />
-        <GenericSelectionDialog<UnitOfMeasure>
-          title="Select Unit of Measure"
-          visible={unitOfMeasureDialogVisible}
-          setVisible={x => {
-            setUnitOfMeasureDialogVisible(x);
-          }}
-          curValue={settings.unit_of_measure}
-          setCurValue={(set: string) => {
-            // Handle invariant from dialog
-            if (isUnitOfMeasure(set)) {
-              setUnitOfMeasure(set);
-            } else {
-              // Should be unreachable.
-              throw new Error(
-                'Unhandled invariant - tried to set unit of measure to a generic string',
-              );
-            }
-          }}
-          values={UNITS_OF_MEASURE.map(x => ({
-            label: x,
-            value: x,
-          }))}
-        />
-        <SliderSelectionDialog
-          title="Select Warning Threshold Perc"
-          setCurValue={setWarningThreshold}
-          setVisible={setThresholdDialogVisible}
-          visible={thresholdDialogVisible}
-          curValue={settings.warning_threshold_perc}
-        />
-        <ConfirmationDialog
-          title={'Confirm clear all'}
-          message={
-            'Are you sure you want to clear all? All trackers and locations will be cleared.'
-          }
-          visible={showClearAllDialog}
-          setVisible={setShowClearAllDialog}
-          onOk={ClearAllDialogCallback}
-        />
-      </Portal>
-    </ScrollView>
-  );
+  const SettingsListState: SettingsListProps[] = [
+    {
+      key: '0',
+      title: 'Warning threshold percentage',
+      description: 'Percentage completion to trigger amber status',
+      kind: 'slider',
+      value: settings.warning_threshold_perc,
+      onChange: v => setWarningThresholdPercentage(v),
+      minValue: 0,
+      maxValue: 1,
+      step: 0.05,
+      dialogShown: false,
+      stringConverter: v => `${(v * 100).toFixed(0)}%`,
+    },
+    {
+      key: '0.5',
+      title: 'Calendar warning threshold (days)',
+      description:
+        'Calender trackers only - minimum days remaining to trigger amber status',
+      kind: 'slider',
+      value: settings.warning_threshold_days,
+      onChange: v => setWarningThresholdDays(v),
+      minValue: 0,
+      maxValue: 30,
+      step: 1,
+      dialogShown: false,
+      stringConverter: v => `${v.toFixed(0)}`,
+    },
+    {
+      key: '1',
+      kind: 'list',
+      title: 'Unit of measure - weather',
+      description:
+        'Unit of measure for Locations page. Note, will not affect Growing Degree Days (Metric only).',
+      value: settings.unit_of_measure,
+      // TODO: Safety
+      onChange: v => setUnitOfMeasure(v),
+      list: UNITS_OF_MEASURE,
+      dialogShown: false,
+    },
+    {
+      key: '2',
+      kind: 'toggle',
+      title: 'Dark mode',
+      description: 'Will not turn off automatically',
+      value: settings.dark_mode_enabled,
+      onChange: v => setDarkMode(v),
+    },
+    {
+      key: '3',
+      kind: 'toggle',
+      title: 'Auto dark mode',
+      description:
+        'Whether system settings will automatically put app into dark mode',
+      value: settings.dark_mode_enabled,
+      onChange: v => setAutoDarkMode(v),
+    },
+    {
+      key: '4',
+      kind: 'press',
+      title: 'Clear all',
+      description: 'Clear all trackers and locations.',
+      warningDialog: {
+        visible: false,
+        title: 'Confirm clear all',
+        message:
+          'Are you sure you want to clear all? All trackers and locations will be cleared.',
+      },
+      onPress: clearAll,
+    },
+    {
+      key: '5',
+      kind: 'subheader',
+      subheaderTitle: 'Growing Degree Days Settings',
+    },
+    {
+      key: '6',
+      kind: 'list',
+      title: 'GDD algorithm',
+      description:
+        'Unit of measure used to calculate GDD. See help page for more details.',
+      value: settings.algorithm,
+      list: GDD_ALGORITHMS,
+      onChange: v => setAlgorithm(v),
+      dialogShown: false,
+    },
+    {
+      key: '7',
+      kind: 'list',
+      title: 'Default base temp',
+      description: 'Default base temp to use when adding GDD trackers',
+      value: gddBaseTempToString(settings.default_base_temp),
+      list: GDD_BASE_TEMPS.map(g => gddBaseTempToString(g)),
+      onChange: v => setDefaultBaseTemp(Number(v)),
+      dialogShown: false,
+    },
+  ];
+  return <SettingsList list={SettingsListState} />;
 }

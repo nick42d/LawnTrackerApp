@@ -12,7 +12,6 @@ import {
 } from 'react-native-paper';
 import {ScrollView, TouchableHighlight, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from '../Knowledge';
 import {
   newCalendarTracker,
   newGddTracker,

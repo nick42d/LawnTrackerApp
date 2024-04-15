@@ -1,16 +1,14 @@
 /// Module intended to contain app business logic
 
-import { GDDAlgorithm } from './providers/settingscontext/Types';
-
-export const BASE_TEMPS_C = [0, 10];
+import {GddAlgorithm, GddBaseTemp} from './providers/settingscontext/Types';
 
 export function calcGdd(
   t_min: number,
   t_max: number,
   t_base: number,
-  algorithm: GDDAlgorithm,
+  algorithm: GddAlgorithm,
 ): number {
-  if (algorithm !== GDDAlgorithm.VariantB) {
+  if (algorithm === 'Variant A') {
     return Math.max((t_max + t_min) / 2 - t_base, 0);
   } else {
     t_min = Math.max(t_min, t_base);

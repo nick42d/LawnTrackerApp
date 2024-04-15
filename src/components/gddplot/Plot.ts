@@ -6,7 +6,7 @@ import {
 import {calcGdd} from '../../Knowledge';
 import {GddTracker} from '../../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../../api/Types';
-import {GDDAlgorithm} from '../../providers/settingscontext/Types';
+import {GddAlgorithm} from '../../providers/settingscontext/Types';
 import {Location, WeatherStatus} from '../../providers/statecontext/Locations';
 import {format} from 'date-fns';
 import {AddDays} from '../../Utils';
@@ -50,7 +50,7 @@ function weatherDaysToGddArr(
   forecasts: WeatherAppDay[],
   startDateUnix: number,
   tBase: number,
-  algorithm: GDDAlgorithm,
+  algorithm: GddAlgorithm,
 ): DailyGdd[] {
   if (forecasts === undefined) return [];
   return forecasts
@@ -79,7 +79,7 @@ function estimateToGddArr(
 export function getTrackerGddArray(
   item: GddTracker,
   locations: Location[],
-  algorithm: GDDAlgorithm,
+  algorithm: GddAlgorithm,
 ): DailyGddAcc[] | undefined {
   const startDateUnix = item.start_date_unix_ms / 1000;
   const tBase = item.base_temp;

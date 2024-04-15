@@ -12,21 +12,23 @@ import {
 } from 'react-native-paper';
 import {ScrollView, TouchableHighlight, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from '../Knowledge';
 import {newGddTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
 import {DATE_PICKER_LOCALE, MAX_HISTORY_DAYS} from '../Consts';
 import SaveButton from '../components/SaveButton';
 import {StateContext} from '../providers/StateContext';
+import {GDD_BASE_TEMPS} from '../providers/settingscontext/Types';
+import {SettingsContext} from '../providers/SettingsContext';
 
 export default function AddGddTrackerScreen({
   route,
   navigation,
 }: AppScreenProps<'AddGddTracker'>) {
+  const {settings} = useContext(SettingsContext);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [target, setTarget] = useState('');
-  const [toggle, setToggle] = useState('0');
+  const [toggle, setToggle] = useState(settings.default_base_temp.toString());
   const [startDate, setStartDate] = useState(new Date());
   const {locations, addTracker: addGddTracker} = useContext(StateContext);
   const [locationId, setLocationId] = useState(locations.at(0)?.apiId);
@@ -180,7 +182,7 @@ export default function AddGddTrackerScreen({
         <SegmentedButtons
           value={toggle}
           onValueChange={setToggle}
-          buttons={BASE_TEMPS_C.map(el => ({
+          buttons={GDD_BASE_TEMPS.map(el => ({
             value: el.toString(),
             label: el.toString(),
           }))}

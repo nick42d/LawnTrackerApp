@@ -1,12 +1,12 @@
 import {calcGdd} from '../Knowledge';
 import {GddTracker} from '../providers/statecontext/Trackers';
-import {GDDAlgorithm} from '../providers/settingscontext/Types';
+import {GddAlgorithm} from '../providers/settingscontext/Types';
 import {Location, LocationError} from '../providers/statecontext/Locations';
 
 export function calcGddTotal(
   item: GddTracker,
   locations: Location[],
-  algorithm: GDDAlgorithm,
+  algorithm: GddAlgorithm,
 ): number | LocationError {
   let itemsLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemsLocation === undefined)

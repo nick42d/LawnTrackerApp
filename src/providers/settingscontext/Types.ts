@@ -7,28 +7,31 @@ export type SettingsState = {
 };
 
 export type Settings = {
-  algorithm: GDDAlgorithm;
+  algorithm: GddAlgorithm;
   warning_threshold_perc: number;
+  warning_threshold_days: number;
   unit_of_measure: UnitOfMeasure;
   auto_dark_mode: boolean;
   dark_mode_enabled: boolean;
-  default_base_temp: BaseTemp;
+  default_base_temp: GddBaseTemp;
   api_key: string | undefined;
 };
 
-export enum GDDAlgorithm {
-  // As per wikipedia definitions: https://en.wikipedia.org/wiki/Growing_degree-day
-  VariantA,
-  VariantB,
-}
+export const GDD_ALGORITHMS = ['Variant A', 'Variant B'] as const;
+/**
+ * As per wikipedia definitions: https://en.wikipedia.org/wiki/Growing_degree-day
+ */
+export type GddAlgorithm = (typeof GDD_ALGORITHMS)[number];
 
-export function gddAlgorithmToText(algorithm: GDDAlgorithm) {
-  switch (algorithm) {
-    case GDDAlgorithm.VariantA: {
-      return 'Variant A';
+export const GDD_BASE_TEMPS = [0, 10] as const;
+export type GddBaseTemp = (typeof GDD_BASE_TEMPS)[number];
+export function gddBaseTempToString(g: GddBaseTemp): string {
+  switch (g) {
+    case 0: {
+      return 'Zero';
     }
-    case GDDAlgorithm.VariantB: {
-      return 'Variant B';
+    case 10: {
+      return 'Ten';
     }
   }
 }
@@ -47,8 +50,4 @@ export function unitOfMeasureAbbreviate(u: UnitOfMeasure): string {
       return 'C';
     }
   }
-}
-export enum BaseTemp {
-  Zero = 0,
-  Ten = 10,
 }

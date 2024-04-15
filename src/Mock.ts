@@ -10,9 +10,9 @@ import {
 import {AddDays} from './Utils';
 import {
   Settings,
-  GDDAlgorithm,
+  GddAlgorithm,
   UnitOfMeasure,
-  BaseTemp,
+  GddBaseTemp,
 } from './providers/settingscontext/Types';
 import {StateManager} from './providers/statecontext/Types';
 import {Location, newWeatherStatus} from './providers/statecontext/Locations';
@@ -25,13 +25,14 @@ const SYDNEY_LONG = 151.2093;
 
 export function defaultSettings(): Settings {
   return {
-    algorithm: GDDAlgorithm.VariantA,
+    algorithm: 'Variant A',
     warning_threshold_perc: 0.8,
+    warning_threshold_days: 7,
     unit_of_measure: API_UNIT_OF_MEASURE,
     auto_dark_mode: true,
     dark_mode_enabled: false,
     api_key: undefined,
-    default_base_temp: BaseTemp.Ten,
+    default_base_temp: 10,
   };
 }
 

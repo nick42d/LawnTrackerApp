@@ -1,7 +1,7 @@
 import {addDays} from 'date-fns';
 import {calcGdd} from '../../Knowledge';
 import {calcGddTotal} from '../../knowledge/Gdd';
-import {GDDAlgorithm} from '../settingscontext/Types';
+import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
 
 export function newGddTracker(
@@ -9,7 +9,7 @@ export function newGddTracker(
   description: string,
   locationId: number,
   target_gdd: number,
-  base_temp: number,
+  base_temp: GddBaseTemp,
   start_date: Date,
 ): GddTracker {
   return {
@@ -134,7 +134,7 @@ export function trackerStatus(
   tracker: Tracker,
   curDateUnixMs: number,
   locations: Location[],
-  algorithm: GDDAlgorithm,
+  algorithm: GddAlgorithm,
 ): TrackerStatusCheck {
   if (tracker.trackerStatus === 'Stopped')
     return {

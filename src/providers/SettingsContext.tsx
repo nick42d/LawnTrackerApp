@@ -3,6 +3,7 @@ import {defaultSettings as defaultSettings} from '../Mock';
 import {SettingsState} from './settingscontext/Types';
 import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {timeout} from '../Utils';
 
 export const SETTINGS_STORAGE_KEY = 'SETTINGS';
 export const SettingsContext = createContext<SettingsState>({
@@ -36,18 +37,21 @@ export function SettingsContextProvider({children}: React.PropsWithChildren) {
   useEffect(() => {
     let active = true;
     console.log('Settings state changed');
-    if (status === 'Loaded') {
-      console.log('Setting settings');
-      AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
-        .then(() =>
-          !active
-            ? console.error(
-                'Destructor called on effect before write settings finished',
-              )
-            : console.log('Settings set'),
-        )
-        .catch(() => console.log('Error setting settings'));
-    }
+    timeout(50).then(() => {
+      if (active === false) return;
+      if (status === 'Loaded') {
+        console.log('Setting settings');
+        AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
+          .then(() =>
+            !active
+              ? console.warn(
+                  'Destructor called on effect before write settings finished',
+                )
+              : console.log('Settings set'),
+          )
+          .catch(() => console.log('Error setting settings'));
+      }
+    });
     return () => {
       active = false;
       console.log('Cleaning up settings effect');
