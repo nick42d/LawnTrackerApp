@@ -1,5 +1,6 @@
 import ConfirmationDialog from '../ConfirmationDialog';
-import GenericSelectionDialog, {
+import {
+  GenericSelectionDialog,
   SliderSelectionDialog,
 } from '../SelectionDialog';
 import {
@@ -14,20 +15,34 @@ export default function SettingsListDialog(props: {
     | SettingsListListProps
     | SettingsListSliderProps
     | SettingsListPressProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  visible: boolean;
+  hideDialog: () => void;
 }) {
   switch (props.item.kind) {
     case 'list': {
-      return <SettingsListListDialog item={props.item} />;
+      return (
+        <SettingsListListDialog
+          shown={props.visible}
+          hideDialog={props.hideDialog}
+          item={props.item}
+        />
+      );
     }
     case 'slider': {
-      return <SettingsListSliderDialog item={props.item} />;
+      return (
+        <SettingsListSliderDialog
+          shown={props.visible}
+          hideDialog={props.hideDialog}
+          item={props.item}
+        />
+      );
     }
     case 'press': {
       return (
         <SettingsListPressDialog
           item={props.item}
-          stateUpdater={props.stateUpdater}
+          shown={props.visible}
+          hideDialog={props.hideDialog}
         />
       );
     }
@@ -36,7 +51,8 @@ export default function SettingsListDialog(props: {
 
 function SettingsListPressDialog(props: {
   item: SettingsListPressProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  hideDialog: () => void;
+  shown: boolean;
 }) {
   if (props.item.warningDialog) {
     const dialog = props.item.warningDialog;
@@ -44,43 +60,46 @@ function SettingsListPressDialog(props: {
       <ConfirmationDialog
         title={dialog.title}
         message={dialog.message}
-        visible={dialog.visible}
-        setVisible={v =>
-          props.stateUpdater({
-            ...props.item,
-            warningDialog: {...dialog, visible: v},
-          })
-        }
+        visible={props.shown}
+        hideDialog={props.hideDialog}
         onOk={props.item.onPress}
       />
     );
   }
 }
-function SettingsListListDialog(props: {item: SettingsListListProps}) {
-  return (
-    <GenericSelectionDialog<string>
-      title="Select Unit of Measure"
-      visible={props.item.dialogShown}
-      setVisible={x => {}}
-      values={props.item.list}
-      curValue={props.item.value}
-      setCurValue={() => {}}
-      stringConverter={s => s}
+function SettingsListListDialog(props: {
+  item: SettingsListListProps;
+  hideDialog: () => void;
+  shown: boolean;
+}) {
+  return props.item.listProps(i => (
+    <GenericSelectionDialog
+      title={props.item.title}
+      visible={props.shown}
+      hideDialog={props.hideDialog}
+      values={i.list}
+      curValue={i.value}
+      onChange={i.onChange}
+      stringConverter={i.stringConverter}
     />
-  );
+  ));
 }
-function SettingsListSliderDialog(props: {item: SettingsListSliderProps}) {
+function SettingsListSliderDialog(props: {
+  item: SettingsListSliderProps;
+  hideDialog: () => void;
+  shown: boolean;
+}) {
   return (
     <SliderSelectionDialog
-      title="Select Warning Threshold Perc"
-      setCurValue={() => {}}
-      setVisible={() => {}}
-      visible={props.item.dialogShown}
+      title={props.item.title}
+      onChange={props.item.onChange}
+      hideDialog={props.hideDialog}
+      visible={props.shown}
       curValue={props.item.value}
       minValue={props.item.minValue}
       maxValue={props.item.maxValue}
       step={props.item.step}
-      textConverter={props.item.stringConverter}
+      stringConverter={props.item.stringConverter}
     />
   );
 }

@@ -1,23 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {List, Portal, Switch, Text} from 'react-native-paper';
 import {SettingsContext} from '../providers/SettingsContext';
 import {
   GddBaseTemp,
   GddAlgorithm,
   UNITS_OF_MEASURE,
   UnitOfMeasure,
-  isUnitOfMeasure,
   GDD_ALGORITHMS,
   gddBaseTempToString,
   GDD_BASE_TEMPS,
 } from '../providers/settingscontext/Types';
-import {ScrollView, View} from 'react-native';
-import GenericSelectionDialog, {
-  SliderSelectionDialog,
-} from '../components/SelectionDialog';
-import ConfirmationDialog from '../components/ConfirmationDialog';
 import {StateContext} from '../providers/StateContext';
-import {SettingsListProps} from '../components/settingslist/Types';
+import {
+  SettingsListProps,
+  toSomeSettingsListListProps,
+} from '../components/settingslist/Types';
 import SettingsList from '../components/SettingsList';
 
 export default function SettingsScreen() {
@@ -61,7 +57,6 @@ export default function SettingsScreen() {
       minValue: 0,
       maxValue: 1,
       step: 0.05,
-      dialogShown: false,
       stringConverter: v => `${(v * 100).toFixed(0)}%`,
     },
     {
@@ -75,7 +70,6 @@ export default function SettingsScreen() {
       minValue: 0,
       maxValue: 30,
       step: 1,
-      dialogShown: false,
       stringConverter: v => `${v.toFixed(0)}`,
     },
     {
@@ -84,11 +78,13 @@ export default function SettingsScreen() {
       title: 'Unit of measure - weather',
       description:
         'Unit of measure for Locations page. Note, will not affect Growing Degree Days (Metric only).',
-      value: settings.unit_of_measure,
-      // TODO: Safety
-      onChange: v => setUnitOfMeasure(v),
-      list: UNITS_OF_MEASURE,
-      dialogShown: false,
+      listProps: toSomeSettingsListListProps({
+        value: settings.unit_of_measure,
+        // TODO: Safety
+        onChange: v => setUnitOfMeasure(v),
+        list: UNITS_OF_MEASURE,
+        stringConverter: v => v,
+      }),
     },
     {
       key: '2',
@@ -104,7 +100,7 @@ export default function SettingsScreen() {
       title: 'Auto dark mode',
       description:
         'Whether system settings will automatically put app into dark mode',
-      value: settings.dark_mode_enabled,
+      value: settings.auto_dark_mode,
       onChange: v => setAutoDarkMode(v),
     },
     {
@@ -113,7 +109,6 @@ export default function SettingsScreen() {
       title: 'Clear all',
       description: 'Clear all trackers and locations.',
       warningDialog: {
-        visible: false,
         title: 'Confirm clear all',
         message:
           'Are you sure you want to clear all? All trackers and locations will be cleared.',
@@ -131,20 +126,24 @@ export default function SettingsScreen() {
       title: 'GDD algorithm',
       description:
         'Unit of measure used to calculate GDD. See help page for more details.',
-      value: settings.algorithm,
-      list: GDD_ALGORITHMS,
-      onChange: v => setAlgorithm(v),
-      dialogShown: false,
+      listProps: toSomeSettingsListListProps({
+        value: settings.algorithm,
+        list: GDD_ALGORITHMS,
+        onChange: v => setAlgorithm(v),
+        stringConverter: v => v,
+      }),
     },
     {
       key: '7',
       kind: 'list',
       title: 'Default base temp',
       description: 'Default base temp to use when adding GDD trackers',
-      value: gddBaseTempToString(settings.default_base_temp),
-      list: GDD_BASE_TEMPS.map(g => gddBaseTempToString(g)),
-      onChange: v => setDefaultBaseTemp(Number(v)),
-      dialogShown: false,
+      listProps: toSomeSettingsListListProps({
+        value: settings.default_base_temp,
+        list: GDD_BASE_TEMPS,
+        onChange: v => setDefaultBaseTemp(v),
+        stringConverter: gddBaseTempToString,
+      }),
     },
   ];
   return <SettingsList list={SettingsListState} />;

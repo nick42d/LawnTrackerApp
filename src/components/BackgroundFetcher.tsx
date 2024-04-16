@@ -35,7 +35,6 @@ export function BackgroundFetcher(
     refreshWeatherCallback: (update: WeatherUpdate[]) => void;
   }>,
 ) {
-  const state = useContext(StateContext);
   useEffect(() => {
     initBackgroundFetch();
   }, []);

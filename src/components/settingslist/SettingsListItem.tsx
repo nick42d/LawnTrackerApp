@@ -10,38 +10,25 @@ import {
 
 export default function SettingsListItem(props: {
   item: SettingsListProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  showDialog: () => void;
 }) {
   switch (props.item.kind) {
     case 'list': {
       return (
-        <SettingsListListItem
-          item={props.item}
-          stateUpdater={props.stateUpdater}
-        />
+        <SettingsListListItem item={props.item} showDialog={props.showDialog} />
       );
     }
     case 'toggle': {
-      return (
-        <SettingsListToggleItem
-          item={props.item}
-          stateUpdater={props.stateUpdater}
-        />
-      );
+      return <SettingsListToggleItem item={props.item} />;
     }
     case 'subheader': {
-      return (
-        <SettingsListSubheaderItem
-          item={props.item}
-          stateUpdater={props.stateUpdater}
-        />
-      );
+      return <SettingsListSubheaderItem item={props.item} />;
     }
     case 'press': {
       return (
         <SettingsListPressItem
           item={props.item}
-          stateUpdater={props.stateUpdater}
+          showDialog={props.showDialog}
         />
       );
     }
@@ -49,17 +36,14 @@ export default function SettingsListItem(props: {
       return (
         <SettingsListSliderItem
           item={props.item}
-          stateUpdater={props.stateUpdater}
+          showDialog={props.showDialog}
         />
       );
     }
   }
 }
 
-function SettingsListSubheaderItem(props: {
-  item: SettingsListSubheaderProps;
-  stateUpdater: (newState: SettingsListProps) => void;
-}) {
+function SettingsListSubheaderItem(props: {item: SettingsListSubheaderProps}) {
   return (
     <List.Subheader key={props.item.key}>
       {props.item.subheaderTitle}
@@ -68,21 +52,18 @@ function SettingsListSubheaderItem(props: {
 }
 function SettingsListListItem(props: {
   item: SettingsListListProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  showDialog: () => void;
 }) {
-  return (
+  return props.item.listProps(i => (
     <List.Item
-      onPress={() => {}}
+      onPress={props.showDialog}
       title={props.item.title}
       description={props.item.description}
-      right={() => <Text>{props.item.value}</Text>}
+      right={() => <Text>{i.stringConverter(i.value)}</Text>}
     />
-  );
+  ));
 }
-function SettingsListToggleItem(props: {
-  item: SettingsListToggleProps;
-  stateUpdater: (newState: SettingsListProps) => void;
-}) {
+function SettingsListToggleItem(props: {item: SettingsListToggleProps}) {
   return (
     <List.Item
       title={props.item.title}
@@ -91,7 +72,6 @@ function SettingsListToggleItem(props: {
         <Switch
           value={props.item.value}
           onValueChange={v => {
-            props.stateUpdater({...props.item, value: v});
             props.item.onChange(v);
           }}
         />
@@ -101,11 +81,11 @@ function SettingsListToggleItem(props: {
 }
 function SettingsListSliderItem(props: {
   item: SettingsListSliderProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  showDialog: () => void;
 }) {
   return (
     <List.Item
-      onPress={() => {}}
+      onPress={props.showDialog}
       title={props.item.title}
       description={props.item.description}
       right={() => <Text>{props.item.stringConverter(props.item.value)}</Text>}
@@ -114,20 +94,16 @@ function SettingsListSliderItem(props: {
 }
 function SettingsListPressItem(props: {
   item: SettingsListPressProps;
-  stateUpdater: (newState: SettingsListProps) => void;
+  showDialog: () => void;
 }) {
   return (
     <List.Item
       onPress={() => {
         if (props.item.warningDialog) {
-          const dialog = props.item.warningDialog;
-          props.stateUpdater({
-            ...props.item,
-            warningDialog: {...dialog, visible: true},
-          });
-        } else {
-          props.item.onPress();
+          props.showDialog();
+          return;
         }
+        props.item.onPress();
       }}
       title={props.item.title}
       description={props.item.description}
