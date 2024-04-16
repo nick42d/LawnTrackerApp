@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
 import {ContextStatus} from '../Types';
 import {Location} from './Locations';
-import {GddTracker, Tracker} from './Trackers';
+import {Tracker} from './Trackers';
 
 export type StoredState = {
   trackers: Tracker[];

@@ -1,26 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  Button,
-  Dialog,
-  Divider,
-  HelperText,
-  Portal,
-  RadioButton,
-  SegmentedButtons,
-  Text,
-  TextInput,
-} from 'react-native-paper';
-import {ScrollView, TouchableHighlight, View} from 'react-native';
+import {Divider, HelperText, TextInput} from 'react-native-paper';
+import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {BASE_TEMPS_C} from '../Knowledge';
-import {
-  newCalendarTracker,
-  newGddTracker,
-} from '../providers/statecontext/Trackers';
+import {newCalendarTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
-import {DATE_PICKER_LOCALE, MAX_HISTORY_DAYS} from '../Consts';
+import {DATE_PICKER_LOCALE} from '../Consts';
 import SaveButton from '../components/SaveButton';
 import {StateContext} from '../providers/StateContext';
+import {startOfDay} from 'date-fns';
 
 export default function AddCalendarTrackerScreen({
   navigation,
@@ -48,7 +35,7 @@ export default function AddCalendarTrackerScreen({
   // Date can't be in the past
   // Consider - should be in future
   function dateInRange(): boolean {
-    const firstAcceptableDate = new Date();
+    const firstAcceptableDate = startOfDay(new Date());
     return targetDate >= firstAcceptableDate;
   }
   function nameEntered(): boolean {

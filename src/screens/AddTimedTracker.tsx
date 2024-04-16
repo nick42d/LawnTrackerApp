@@ -1,28 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  Button,
-  Dialog,
-  Divider,
-  HelperText,
-  Portal,
-  RadioButton,
-  SegmentedButtons,
-  Text,
-  TextInput,
-} from 'react-native-paper';
-import {ScrollView, TouchableHighlight, View} from 'react-native';
+import {Divider, HelperText, TextInput} from 'react-native-paper';
+import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {
-  newCalendarTracker,
-  newGddTracker,
-  newTimedTracker,
-} from '../providers/statecontext/Trackers';
+import {newTimedTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
-import {MAX_HISTORY_DAYS} from '../Consts';
 import SaveButton from '../components/SaveButton';
 import {StateContext} from '../providers/StateContext';
 import {DATE_PICKER_LOCALE} from '../Consts';
-import {differenceInCalendarWeeksWithOptions} from 'date-fns/fp/differenceInCalendarWeeksWithOptions';
 
 export default function AddTimedTrackerScreen({
   navigation,

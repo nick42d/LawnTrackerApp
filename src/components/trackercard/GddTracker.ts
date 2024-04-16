@@ -1,6 +1,6 @@
 import {useContext} from 'react';
 import {GddTracker} from '../../providers/statecontext/Trackers';
-import {ReplaceUndefinedString} from '../../Utils';
+import {replaceUndefinedString} from '../../Utils';
 import {
   calcGddTotal as calcGddTotal,
   isWeatherInitialized as isWeatherInitialised,

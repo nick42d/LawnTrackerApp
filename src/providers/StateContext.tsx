@@ -13,7 +13,7 @@ import {
   onChangeGddTrackers as OnChangeGddTrackers,
   OnChangeLocations,
   GetStoredState,
-} from './statecontext/EffectHandlers';
+} from './statecontext/AsyncStorage';
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
@@ -21,6 +21,7 @@ import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../Api';
 import notifee from '@notifee/react-native';
 import {BackgroundEventCallback} from '../Notification';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
+import {timeout} from '../Utils';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -67,11 +68,11 @@ export function StateContextProvider({
     let active = true;
     console.log('App state changed - trackers');
     // Debounce
-    setTimeout(() => {
+    timeout(50).then(() => {
       if (active) {
         OnChangeGddTrackers(state.status, state.trackers);
       }
-    }, 50);
+    });
     return () => {
       active = false;
       console.log('Closing trackers change effect');
@@ -86,11 +87,11 @@ export function StateContextProvider({
       console.log(l.name, 'status: ', l.weatherStatus);
     });
     // Debounce
-    setTimeout(() => {
+    timeout(50).then(() => {
       if (active) {
         OnChangeLocations(state.status, state.locations);
       }
-    }, 50);
+    });
     return () => {
       active = false;
       console.log('Closing locations change effect');

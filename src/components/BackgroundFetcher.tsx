@@ -1,35 +1,30 @@
 // Module intended to contain the back-end worker
 // Sync app with Async Storage
 // Issue notifications
-
 import BackgroundFetch from 'react-native-background-fetch';
-import {
-  displayNotification,
-  displayNotificationAction,
-  displayTrackerNotification,
-} from '../Notification';
+import {displayTrackerNotification} from '../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../Consts';
 import {
   GetStoredState,
   StoredState,
-} from '../providers/statecontext/EffectHandlers';
+} from '../providers/statecontext/AsyncStorage';
 import {trackerStatus} from '../providers/statecontext/Trackers';
-import {GddAlgorithm} from '../providers/settingscontext/Types';
+import {Settings} from '../providers/settingscontext/Types';
 import {AppState} from 'react-native';
-import {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {LOCATIONS_STORAGE_KEY, StateContext} from '../providers/StateContext';
-import {Location} from '../providers/statecontext/Locations';
+import {PropsWithChildren, useEffect} from 'react';
 import {
   WeatherUpdate,
   addWeatherArrayToLocations,
   fetchLocationsWeather,
 } from '../Api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getStoredSettings as getStoredSettings} from '../providers/settingscontext/AsyncStorage';
+import {defaultSettings} from '../Mock';
 
-/// Initiate background event handler.
-// Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
-// NOTE: the foreground/background event handler is here, but the headless event handler is in HeadlessCallback module and registered in index.
-// NOTE: This can update app state (from both foreground and background)
+/**  Initiate background fetch and assign event handler.
+ * Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
+ * NOTE: the foreground/background event handler is here, but the headless event handler is in HeadlessCallback module and registered in index.
+ * NOTE: This can update app state (from both foreground and background)
+ */
 export function BackgroundFetcher(
   props: PropsWithChildren<{
     refreshWeatherCallback: (update: WeatherUpdate[]) => void;
@@ -62,7 +57,8 @@ export function BackgroundFetcher(
           fetchedWeatherArray,
           Date.now(),
         );
-        await notifyFromStoredState(newState);
+        const settings = await getStoredSettings();
+        await notifyFromStoredState(newState, settings);
       }
     }
     // IMPORTANT:  You must signal to the OS that your task is complete.
@@ -94,12 +90,18 @@ export function BackgroundFetcher(
 }
 
 /**
- * DOES NOT CURRENTLY RESPECT VARIANT FROM SETTINGS
+ *
  * @param state
+ * @param settings
  */
-export async function notifyFromStoredState(state: StoredState | undefined) {
+export async function notifyFromStoredState(
+  state: StoredState | undefined,
+  settings: Settings | undefined,
+) {
+  // If settings is not defined then use the default
+  const certainSettings = settings ? settings : defaultSettings();
   const notifications = state?.trackers.map(t =>
-    trackerStatus(t, Date.now(), state.locations, 'Variant A'),
+    trackerStatus(t, Date.now(), state.locations, certainSettings.algorithm),
   );
   console.log(JSON.stringify(notifications));
   if (notifications) {

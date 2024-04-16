@@ -1,17 +1,11 @@
-import {
-  DATE_PICKER_LOCALE,
-  EXTRA_ESTIMATE_DAYS,
-  MAX_ESTIMATE_DAYS,
-} from '../../Consts';
+import {EXTRA_ESTIMATE_DAYS, MAX_ESTIMATE_DAYS} from '../../Consts';
 import {calcGdd} from '../../Knowledge';
 import {GddTracker} from '../../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../../api/Types';
 import {GddAlgorithm} from '../../providers/settingscontext/Types';
-import {Location, WeatherStatus} from '../../providers/statecontext/Locations';
+import {Location} from '../../providers/statecontext/Locations';
 import {format} from 'date-fns';
-import {AddDays} from '../../Utils';
 import {addDays} from 'date-fns/addDays';
-import {Text, View} from 'react-native';
 import DatapointLabel from './DatapointLabel';
 
 // TODO: Remove unimplemented

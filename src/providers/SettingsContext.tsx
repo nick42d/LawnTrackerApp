@@ -4,6 +4,7 @@ import {SettingsState} from './settingscontext/Types';
 import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {timeout} from '../Utils';
+import {getStoredSettings} from './settingscontext/AsyncStorage';
 
 export const SETTINGS_STORAGE_KEY = 'SETTINGS';
 export const SettingsContext = createContext<SettingsState>({
@@ -21,16 +22,13 @@ export function SettingsContextProvider({children}: React.PropsWithChildren) {
   useEffect(() => {
     console.log('Settings context loaded');
     setStatus('Loading');
-    AsyncStorage.getItem(SETTINGS_STORAGE_KEY)
-      .then(x => {
-        if (x !== null) {
-          console.log('Loading Settings from device');
-          // NOTE: Parse could fail if someone else writes to this key!
-          setSettings(JSON.parse(x));
-        } else console.log('No Settings on device - using defaults');
-        setStatus('Loaded');
-      })
-      .catch(() => console.log('Error getting settings'));
+    getStoredSettings().then(s => {
+      if (s !== undefined) {
+        console.log('Loading Settings from device');
+        setSettings(s);
+      } else console.log("Couldn't load Settings - using defaults");
+      setStatus('Loaded');
+    });
   }, []);
   // Keep settings synced to AsyncStorage
   // TODO: Better handle race conditions

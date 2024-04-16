@@ -136,7 +136,7 @@ export default function HomeScreen({
           title={dialogTitle}
           message={dialogMessage}
           visible={showDialog}
-          hideDialog={setShowDialog}
+          hideDialog={() => setShowDialog(false)}
           onOk={dialogCallback}
         />
       </Portal>

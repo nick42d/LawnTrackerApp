@@ -1,6 +1,7 @@
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
 import {notifyFromStoredState} from './components/BackgroundFetcher';
-import {GetStoredState} from './providers/statecontext/EffectHandlers';
+import {GetStoredState as getStoredState} from './providers/statecontext/AsyncStorage';
+import {getStoredSettings} from './providers/settingscontext/AsyncStorage';
 
 /// Task to be run by headless background fetch.
 // NOTE: Not supported on iOS
@@ -17,8 +18,11 @@ export async function HeadlessCallback(event: HeadlessEvent) {
   }
   console.log('[BackgroundFetch HeadlessTask] start: ', taskId);
 
-  const state = await GetStoredState();
-  const notify = await notifyFromStoredState(state);
+  const [state, settings] = await Promise.all([
+    getStoredState(),
+    getStoredSettings(),
+  ]);
+  const notify = await notifyFromStoredState(state, settings);
   // TODO: Write back to storedstate
   console.log('[BackgroundFetch HeadlessTask] executed');
 

@@ -2,7 +2,7 @@ import {LineChart} from 'react-native-gifted-charts';
 import {GddGraphPlot, GraphPlotItem} from './gddplot/Plot';
 import {useTheme} from 'react-native-paper';
 import {View} from 'react-native';
-import {PlotLegend} from './PlotLegend';
+import {PlotLegend} from './gddplot/PlotLegend';
 import {GRAPH_WIDTH} from '../Consts';
 
 const HISTORICAL_COLOR = 'green';

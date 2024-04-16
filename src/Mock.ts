@@ -1,22 +1,16 @@
 // Mock functions to generate test types when initially testing app.
 
 import {
-  GddTracker,
   Tracker,
   newCalendarTracker,
   newGddTracker,
   newTimedTracker,
 } from './providers/statecontext/Trackers';
-import {AddDays} from './Utils';
-import {
-  Settings,
-  GddAlgorithm,
-  UnitOfMeasure,
-  GddBaseTemp,
-} from './providers/settingscontext/Types';
+import {Settings} from './providers/settingscontext/Types';
 import {StateManager} from './providers/statecontext/Types';
 import {Location, newWeatherStatus} from './providers/statecontext/Locations';
 import {API_UNIT_OF_MEASURE} from './Consts';
+import {addDays} from 'date-fns';
 
 const PERTH_LAT = -32.0494;
 const PERTH_LONG = 115.9122;
@@ -31,7 +25,6 @@ export function defaultSettings(): Settings {
     unit_of_measure: API_UNIT_OF_MEASURE,
     auto_dark_mode: true,
     dark_mode_enabled: false,
-    api_key: undefined,
     default_base_temp: 10,
   };
 }
@@ -97,9 +90,9 @@ export function mockTrackers(): Tracker[] {
       -1,
       250,
       0,
-      AddDays(new Date(), -7),
+      addDays(new Date(), -7),
     ),
-    newTimedTracker('EcoWet', 'Front Lawn', AddDays(new Date(), -2), 7),
-    newCalendarTracker('Acelepryn', 'Both Lawns', AddDays(new Date(), 30)),
+    newTimedTracker('EcoWet', 'Front Lawn', addDays(new Date(), -2), 7),
+    newCalendarTracker('Acelepryn', 'Both Lawns', addDays(new Date(), 30)),
   ];
 }

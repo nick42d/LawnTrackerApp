@@ -14,7 +14,6 @@ export type Settings = {
   auto_dark_mode: boolean;
   dark_mode_enabled: boolean;
   default_base_temp: GddBaseTemp;
-  api_key: string | undefined;
 };
 
 export const GDD_ALGORITHMS = ['Variant A', 'Variant B'] as const;

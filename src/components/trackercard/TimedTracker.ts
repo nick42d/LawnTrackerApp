@@ -1,7 +1,6 @@
 import {TimedTracker} from '../../providers/statecontext/Trackers';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
 import {TrackerCardProps} from './Types';
-import {AddDays} from '../../Utils';
 import {addDays, differenceInCalendarDays} from 'date-fns';
 import {GetGddTrackerCalloutColor} from './GddTracker';
 import {SettingsContext} from '../../providers/SettingsContext';
