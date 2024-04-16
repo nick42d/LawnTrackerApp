@@ -6,6 +6,7 @@ import {addDays, differenceInCalendarDays} from 'date-fns';
 import {GetGddTrackerCalloutColor} from './GddTracker';
 import {SettingsContext} from '../../providers/SettingsContext';
 import {useContext, useState} from 'react';
+import {formatDaysRem} from './Common';
 
 export function ToTimedTrackerCardProps(
   timedTracker: TimedTracker,
@@ -21,7 +22,7 @@ export function ToTimedTrackerCardProps(
     addDays(timedTracker.start_date_unix_ms, timedTracker.duration_days),
     new Date(),
   );
-  const leftCalloutText = `T${Math.sign(daysRem) >= 0 ? '-' : '+'}${Math.abs(daysRem)}`;
+  const leftCalloutText = formatDaysRem(daysRem);
   const leftCalloutStatus =
     timedTracker.trackerStatus === 'Stopped' ? 'Stopped' : undefined;
   const leftCalloutColor = GetTimedTrackerCalloutColor(
