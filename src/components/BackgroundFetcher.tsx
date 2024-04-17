@@ -43,6 +43,7 @@ export function BackgroundFetcher(
     );
     // Important:  await asychronous tasks when using HeadlessJS.
     const storedstate = await GetStoredState();
+    // Similar logic tp HeadlessCallback
     if (storedstate) {
       const fetchedWeatherArray = await fetchLocationsWeather(
         storedstate.locations,
@@ -90,26 +91,24 @@ export function BackgroundFetcher(
 }
 
 /**
- *
+ * TODO: Return a new StoredState with notifications variables updated
  * @param state
  * @param settings
  */
 export async function notifyFromStoredState(
-  state: StoredState | undefined,
+  state: StoredState,
   settings: Settings | undefined,
 ) {
   // If settings is not defined then use the default
   const certainSettings = settings ? settings : defaultSettings();
-  const notifications = state?.trackers.map(t =>
+  const notifications = state.trackers.map(t =>
     trackerStatus(t, Date.now(), state.locations, certainSettings.algorithm),
   );
   console.log(JSON.stringify(notifications));
-  if (notifications) {
-    const p = notifications.map(async b => {
-      displayTrackerNotification(b);
-    });
-    await Promise.all(p);
-  }
+  const p = notifications.map(async b => {
+    displayTrackerNotification(b);
+  });
+  await Promise.all(p);
 }
 
 // Duplication of some functionality in reducer

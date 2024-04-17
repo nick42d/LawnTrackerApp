@@ -1,10 +1,19 @@
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
-import {notifyFromStoredState} from './components/BackgroundFetcher';
-import {GetStoredState as getStoredState} from './providers/statecontext/AsyncStorage';
+import {
+  notifyFromStoredState,
+  refreshStoredStateWeather,
+} from './components/BackgroundFetcher';
+import {
+  OnChangeLocations as onChangeLocations,
+  GetStoredState as getStoredState,
+  onChangeGddTrackers,
+} from './providers/statecontext/AsyncStorage';
 import {getStoredSettings} from './providers/settingscontext/AsyncStorage';
+import {fetchLocationsWeather} from './Api';
 
-/// Task to be run by headless background fetch.
-// NOTE: Not supported on iOS
+/**  Task to be run by headless background fetch.
+ * NOTE: Not supported on iOS
+ */
 export async function HeadlessCallback(event: HeadlessEvent) {
   // Get task id from event {}:
   let taskId = event.taskId;
@@ -22,8 +31,21 @@ export async function HeadlessCallback(event: HeadlessEvent) {
     getStoredState(),
     getStoredSettings(),
   ]);
-  const notify = await notifyFromStoredState(state, settings);
-  // TODO: Write back to storedstate
+  // Similar logic to BackgroundFetcher - but don't check if AppState is active.
+  if (state) {
+    const fetchedWeatherArray = await fetchLocationsWeather(state.locations);
+    const newState = refreshStoredStateWeather(
+      state,
+      fetchedWeatherArray,
+      Date.now(),
+    );
+    // Use of the onChange functions is a hack and should be improved.
+    await Promise.all([
+      onChangeLocations('Loaded', newState.locations),
+      onChangeGddTrackers('Loaded', newState.trackers),
+      notifyFromStoredState(newState, settings),
+    ]);
+  }
   console.log('[BackgroundFetch HeadlessTask] executed');
 
   // Required:  Signal to native code that your task is complete.

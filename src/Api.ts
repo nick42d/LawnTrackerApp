@@ -20,6 +20,7 @@ import {
   ApiTemperatureUnit as ApiTemperatureUnit,
   apiWeatherToAppWeather,
   appUnitOfMeasureToApiTemperatureUnit,
+  WeatherAppLocation,
 } from './api/Types';
 import {celsiustoFarenheit, farenheitToCelsius} from './Knowledge';
 import {UnitOfMeasure} from './providers/settingscontext/Types';

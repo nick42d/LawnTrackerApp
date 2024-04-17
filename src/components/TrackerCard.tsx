@@ -1,6 +1,6 @@
 import {ColorValue, StyleSheet, View} from 'react-native';
 import {Button, Card, Icon, Text} from 'react-native-paper';
-import {CARD_TITLE_VARIANT} from '../Components';
+import {CARD_TITLE_VARIANT} from '../Styles.ts';
 import styles from '../Styles';
 import {Tracker} from '../providers/statecontext/Trackers.ts';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';

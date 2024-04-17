@@ -1,6 +1,6 @@
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, View} from 'react-native';
 import {Button, Card, Icon, Text} from 'react-native-paper';
-import {CARD_TITLE_VARIANT} from '../Components';
+import {CARD_TITLE_VARIANT} from '../Styles';
 import * as central_styles from '../Styles';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import {Location} from '../providers/statecontext/Locations';

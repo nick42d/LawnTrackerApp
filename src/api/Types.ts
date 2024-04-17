@@ -32,9 +32,7 @@ export function apiWeatherToAppWeather(
 }
 
 export function apiLocationsToAppLocations(apiLocations: WeatherApiLocations) {
-  return {
-    locations: apiLocations.results.map(x => apiLocationToAppLocation(x)),
-  };
+  return apiLocations.results.map(x => apiLocationToAppLocation(x));
 }
 function apiLocationToAppLocation(
   apiLocation: WeatherApiLocation,

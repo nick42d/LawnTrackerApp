@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+
+export const CARD_TITLE_VARIANT = 'titleLarge';
 
 const styles = StyleSheet.create({
   fabStyle: {
@@ -24,7 +26,31 @@ const styles = StyleSheet.create({
   },
   trackerCardLeftCalloutText: {
     textAlign: 'center',
-    textAlignVertical: 'center'
-  }
+    textAlignVertical: 'center',
+  },
+  addLocationsPage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  map: {
+    flex: 1,
+    alignSelf: 'stretch',
+  },
+  loadScreenContainer: {
+    flex: 1,
+    gap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadScreenText: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  loadScreenLogo: {
+    width: 200,
+    height: 200,
+  },
 });
 export default styles;

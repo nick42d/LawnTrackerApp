@@ -44,7 +44,7 @@ export async function displayNotification(
     body: detail,
     // TODO: iOS config
     android: {
-      smallIcon: 'ic_launcher',
+      smallIcon: 'ic_notification',
       channelId,
       // pressAction is needed if you want the notification to open the app when pressed
       pressAction: {

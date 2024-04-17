@@ -1,26 +1,15 @@
 import React, {useContext, useState} from 'react';
 import {Icon, List, Searchbar, Text, useTheme} from 'react-native-paper';
-import {StyleSheet, View} from 'react-native';
+import {Keyboard, StyleSheet, TextInput, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 import SaveButton from '../components/SaveButton';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../Api';
 import {WeatherAppLocation} from '../api/Types';
+import styles from '../Styles';
 
 const NUMBER_SEARCH_RESULTS = 5;
-const mapstyles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  map: {
-    flex: 1,
-    alignSelf: 'stretch',
-  },
-});
 type AddLocationCardState = {
   name: string;
   apiId: number;
@@ -37,11 +26,10 @@ export default function AddLocationCardScreen({
   const [state, setState] = useState<AddLocationCardState | undefined>();
   const [searchState, setSearchState] = useState({
     query: '',
+    loading: false,
     showSuggestions: false,
   });
   const [searchResults, setSearchResults] = useState<WeatherAppLocation[]>([]);
-  const [searchResultsShown, setSearchResultsShown] = useState(false);
-  const [markerSel, setMarkerSel] = useState(true);
   const theme = useTheme();
 
   React.useEffect(() => {
@@ -85,26 +73,36 @@ export default function AddLocationCardScreen({
   // Handle state updates to provide search suggestions whilst handling race conditions.
   React.useEffect(() => {
     let active = true;
-    if (
-      searchState.showSuggestions === false ||
-      searchState.query.length === 0
-    ) {
-      setSearchResultsShown(false);
-    } else {
+    if (searchState.query.length !== 0) {
       console.log('Requesting search results');
+      setSearchState({...searchState, query: searchState.query, loading: true});
       fetchLocations(searchState.query, NUMBER_SEARCH_RESULTS).then(l => {
-        if (l && active === true) {
-          console.log('setting search results');
-          setSearchResults(l.locations);
-          setSearchResultsShown(true);
+        if (active === true) {
+          if (l) {
+            console.log('setting search results');
+            setSearchResults(l);
+          } else {
+            console.log('Got no search results');
+            setSearchResults([]);
+          }
+          setSearchState({
+            ...searchState,
+            query: searchState.query,
+            loading: false,
+          });
         }
       });
-    }
+    } else
+      setSearchState({
+        query: searchState.query,
+        loading: false,
+        showSuggestions: false,
+      });
     return () => {
       active = false;
       console.log('Closing search suggestions effect');
     };
-  }, [searchState]);
+  }, [searchState.query]);
 
   function prettyLocTooltip(): string {
     if (state === undefined) return '';
@@ -115,9 +113,9 @@ export default function AddLocationCardScreen({
   }
 
   return (
-    <View style={mapstyles.page}>
+    <View style={styles.addLocationsPage}>
       <MapLibreGL.MapView
-        style={mapstyles.map}
+        style={styles.map}
         logoEnabled={true}
         zoomEnabled={false}
         scrollEnabled={false}
@@ -141,7 +139,7 @@ export default function AddLocationCardScreen({
             id="pt-ann"
             key="pt-ann"
             coordinate={latLongArray()}
-            selected={markerSel}
+            selected={false}
             anchor={{x: 0.5, y: 1}}
             title="Location">
             <Icon source="map-marker" size={40} />
@@ -152,15 +150,16 @@ export default function AddLocationCardScreen({
       <View style={{position: 'absolute', top: 10}}>
         <Searchbar
           onChangeText={t => {
-            setSearchState({showSuggestions: true, query: t});
+            setSearchState({...searchState, showSuggestions: true, query: t});
           }}
           onSubmitEditing={_ =>
             setSearchState({...searchState, showSuggestions: true})
           }
           value={searchState.query}
           style={{width: 380}}
+          loading={searchState.loading}
         />
-        {searchResultsShown && searchResults.length !== 0 ? (
+        {searchState.showSuggestions && searchResults.length !== 0 ? (
           <List.Section
             style={{
               borderRadius: 10,
@@ -175,15 +174,20 @@ export default function AddLocationCardScreen({
                   description={s.admin1 + ', ' + s.country}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
-                    setState({
-                      latitude: s.latitude,
-                      longitude: s.longitude,
-                      name: s.name,
-                      country: s.country,
-                      apiId: s.apiId,
-                      admin1: s.admin1,
+                    Keyboard.dismiss(),
+                      setState({
+                        latitude: s.latitude,
+                        longitude: s.longitude,
+                        name: s.name,
+                        country: s.country,
+                        apiId: s.apiId,
+                        admin1: s.admin1,
+                      });
+                    setSearchState({
+                      ...searchState,
+                      query: '',
+                      showSuggestions: false,
                     });
-                    setSearchState({query: '', showSuggestions: false});
                   }}
                 />
               );
