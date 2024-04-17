@@ -12,6 +12,18 @@ export function reducer(
       return {...state, status: 'Loaded'};
     case 'SetLoading':
       return {...state, status: 'Loading'};
+    case 'SetWeatherLocationRefreshing': {
+      return {
+        ...state,
+        locations: state.locations.map(l => {
+          if (l.apiId !== action.locationId) return l;
+          return {
+            ...l,
+            weatherStatus: {...l.weatherStatus, status: 'Refreshing'},
+          };
+        }),
+      };
+    }
     case 'SetWeatherRefreshing': {
       return {
         ...state,

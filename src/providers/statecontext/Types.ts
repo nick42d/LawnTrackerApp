@@ -25,6 +25,7 @@ export type StateAction =
   | StateActionSetLoading
   | StateActionSetLoaded
   | StateActionSetWeatherRefreshing
+  | StateActionSetWeatherLocationRefreshing
   | StateActionClearAll
   | StateActionDeleteLocationId
   | StateActionReplaceLocations
@@ -50,6 +51,10 @@ type StateActionSetLoaded = {
 };
 type StateActionSetWeatherRefreshing = {
   kind: 'SetWeatherRefreshing';
+};
+type StateActionSetWeatherLocationRefreshing = {
+  kind: 'SetWeatherLocationRefreshing';
+  locationId: number;
 };
 type StateActionClearAll = {
   kind: 'ClearAll';

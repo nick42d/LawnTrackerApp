@@ -1,5 +1,3 @@
-<a href="https://www.flaticon.com/free-icons/mowing" title="mowing icons">Mowing icons created by Freepik - Flaticon</a>
-
 # About
 
 LawnTracker is an open source React Native (Android) app designed to keep track of lawn maintenance tasks and notify you when they are due. The app can deal with duration based, calendar based, and growing degree day based tasks.
@@ -19,8 +17,8 @@ No setup is required. To add a new tracker, press the plus button on the home sc
 - Whilst React Native is cross-platform, I haven't tested the app on iOS as I don't own an Apple device or XCode.
 - The app has been designed to be serverless.
   Instead of running on the server, the app periodically spins up background tasks using the react-native-background-task see if tasks are overdue.
-- Due to iOS restrictions - if the app was ported to iOS, notifications won't be possible once the app is terminated under the current serverless architecture.
 - Notifications are generated using the notifee library.
+- Due to iOS restrictions - if the app was ported to iOS, notifications won't be possible once the app is terminated under the current serverless architecture.
 
 ## How to build and run
 

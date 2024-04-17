@@ -59,7 +59,6 @@ export default function ViewTrackerScreen({
           </DataTable>
         </View>
       ) : undefined}
-      :Safety{' '}
     </ScrollView>
   );
 }

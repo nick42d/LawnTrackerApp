@@ -121,7 +121,7 @@ export function StateContextProvider({
       timeUnixMs: new Date().valueOf(),
     });
   }
-  function addLocation(location: Location) {
+  async function addLocation(location: Location) {
     if (state.locations.find(l => l.apiId === location.apiId) !== undefined) {
       console.log(`Unable to add location as it already exists`);
       throw new StateContextError({
@@ -130,6 +130,16 @@ export function StateContextProvider({
       });
     }
     dispatch({kind: 'AddLocation', location});
+    dispatch({
+      kind: 'SetWeatherLocationRefreshing',
+      locationId: location.apiId,
+    });
+    const fetchedWeatherArray = await fetchLocationsWeather([location]);
+    dispatch({
+      kind: 'AddRefreshedWeatherArray',
+      weather: fetchedWeatherArray,
+      timeUnixMs: new Date().valueOf(),
+    });
   }
   function deleteLocationId(id: number) {
     console.log(`Attempting to delete location id ${id}`);
