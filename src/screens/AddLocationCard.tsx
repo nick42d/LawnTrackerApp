@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react';
-import {Icon, List, Searchbar, Text, useTheme} from 'react-native-paper';
+import {List, Searchbar, Text, useTheme} from 'react-native-paper';
 import {Keyboard, StyleSheet, TextInput, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
-import SaveButton from '../components/SaveButton';
+import AppBarIconButton from '../components/AppBarIconButton';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../Api';
@@ -35,8 +35,9 @@ export default function AddLocationCardScreen({
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <SaveButton
+        <AppBarIconButton
           disabled={state === undefined}
+          icon="content-save"
           onPress={() => {
             if (state)
               try {
@@ -142,8 +143,7 @@ export default function AddLocationCardScreen({
             selected={false}
             anchor={{x: 0.5, y: 1}}
             title="Location">
-            <Icon source="map-marker" size={40} />
-            <MapLibreGL.Callout title={prettyLocTooltip()} />
+            <View></View>
           </MapLibreGL.PointAnnotation>
         ) : undefined}
       </MapLibreGL.MapView>

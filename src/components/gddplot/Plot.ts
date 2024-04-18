@@ -26,7 +26,7 @@ export type GraphPlotItem = {
 };
 export type DailyGdd = {
   gdd: number;
-  dateUnix: number;
+  dateUnixMs: number;
   weatherType: PlotWeatherType;
 };
 export type DailyGddAcc = DailyGdd & {gddAcc: number};
@@ -42,17 +42,17 @@ function listAverage<T>(list: T[], cb: (t: T) => number): number {
 }
 function weatherDaysToGddArr(
   forecasts: WeatherAppDay[],
-  startDateUnix: number,
+  startDateUnixMs: number,
   tBase: number,
   algorithm: GddAlgorithm,
 ): DailyGdd[] {
   if (forecasts === undefined) return [];
   return forecasts
-    .filter(x => x.date_unix >= startDateUnix)
+    .filter(x => x.dateUnixMs >= startDateUnixMs)
     .map(x => ({
-      gdd: calcGdd(x.mintemp, x.maxtemp, tBase, algorithm),
-      dateUnix: x.date_unix,
-      weatherType: x.weather_type,
+      gdd: calcGdd(x.minTemp, x.maxTemp, tBase, algorithm),
+      dateUnixMs: x.dateUnixMs,
+      weatherType: x.weatherType,
     }));
 }
 function estimateToGddArr(
@@ -64,7 +64,7 @@ function estimateToGddArr(
     .fill(estimate)
     .map((x, i) => ({
       gdd: x,
-      dateUnix: addDays(startDateUnixMs, i).valueOf() / 1000,
+      dateUnixMs: addDays(startDateUnixMs, i).valueOf(),
       weatherType: 'Estimated',
     }));
 }
@@ -75,15 +75,14 @@ export function getTrackerGddArray(
   locations: Location[],
   algorithm: GddAlgorithm,
 ): DailyGddAcc[] | undefined {
-  const startDateUnix = item.start_date_unix_ms / 1000;
   const tBase = item.base_temp;
   // Consider creating this as a context method.
   const itemLocation = locations.find(loc => loc.apiId === item.locationId);
   if (itemLocation === undefined) return undefined;
   if (itemLocation.weather === undefined) return undefined;
   const historyAndForecastGddArray = weatherDaysToGddArr(
-    itemLocation.weather.weather_array,
-    startDateUnix,
+    itemLocation.weather.weatherArray,
+    item.start_date_unix_ms,
     tBase,
     algorithm,
   );
@@ -100,11 +99,11 @@ export function getTrackerGddArray(
     MAX_ESTIMATE_DAYS,
   );
   // Weather array may be empty
-  const maybeLastNonEstimateDayUnix =
-    historyAndForecastGddArray.at(-1)?.dateUnix;
+  const maybeLastNonEstimateDayUnixMs =
+    historyAndForecastGddArray.at(-1)?.dateUnixMs;
   // If so, last non-estimate day is the day before start date.
-  const firstEstimateDayUnixMs = maybeLastNonEstimateDayUnix
-    ? addDays(new Date(maybeLastNonEstimateDayUnix * 1000), 1).valueOf()
+  const firstEstimateDayUnixMs = maybeLastNonEstimateDayUnixMs
+    ? addDays(new Date(maybeLastNonEstimateDayUnixMs), 1).valueOf()
     : item.start_date_unix_ms;
   const estimateGddArray = estimateToGddArr(
     averageGdd,
@@ -130,7 +129,7 @@ export function getGraphPlot(
     x => x.weatherType === 'Estimated',
   );
   const items: GraphPlotItem[] = trackerGddArray.map((x, idx) => {
-    const dateString = format(new Date(x.dateUnix * 1000), 'EEEEEE dd/MM');
+    const dateString = format(new Date(x.dateUnixMs * 1000), 'EEEEEE dd/MM');
     const value = x.gddAcc;
     const basePlotItem = {
       value,
@@ -164,7 +163,7 @@ export function getGddEstimate(
   const estimatedDayItem = gddArray.find(x => x.gddAcc >= targetGdd);
   if (estimatedDayItem === undefined) return undefined;
   return {
-    estimateDateUnixMs: estimatedDayItem.dateUnix * 1000,
+    estimateDateUnixMs: estimatedDayItem.dateUnixMs,
     estimateType: estimatedDayItem.weatherType,
   };
 }

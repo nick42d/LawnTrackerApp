@@ -2,20 +2,20 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Divider, HelperText, TextInput} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {newCalendarTracker} from '../providers/statecontext/Trackers';
+import {newTimedTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
-import {DATE_PICKER_LOCALE} from '../Consts';
 import AppBarIconButton from '../components/AppBarIconButton';
 import {StateContext} from '../providers/StateContext';
-import {startOfDay} from 'date-fns';
+import {DATE_PICKER_LOCALE} from '../Consts';
 
-export default function AddCalendarTrackerScreen({
+export default function EditTrackerScreen({
   navigation,
-}: AppScreenProps<'AddCalendarTracker'>) {
+}: AppScreenProps<'EditTracker'>) {
   const {addTracker} = useContext(StateContext);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
-  const [targetDate, setTargetDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [durationDays, setDurationDays] = useState('7');
 
   useEffect(() => {
     navigation.setOptions({
@@ -25,28 +25,46 @@ export default function AddCalendarTrackerScreen({
           icon="content-save"
           onPress={() => {
             // Assume all fields are valid, as you can't click the button otherwise.
-            addTracker(newCalendarTracker(name, desc, targetDate));
+            addTracker(
+              newTimedTracker(
+                name,
+                desc,
+                startDate,
+                // Safe as input is checked
+                Number(durationDays),
+              ),
+            );
             navigation.goBack();
           }}
         />
       ),
     });
-  }, [name, targetDate, desc]);
+  }, [name, startDate, desc, durationDays]);
 
   // Date can't be in the past
-  // Consider - should be in future
+  // Consider - maybe this is OK
   function dateInRange(): boolean {
-    const firstAcceptableDate = startOfDay(new Date());
-    return targetDate >= firstAcceptableDate;
+    // const firstAcceptableDate = new Date();
+    return true;
+    // return startDate >= firstAcceptableDate;
   }
   function nameEntered(): boolean {
     return name.length !== 0;
+  }
+  function durationEntered(): boolean {
+    return !(
+      (isNaN(Number(durationDays)) || durationDays.length === 0) &&
+      Number(durationDays) !== 0
+    );
   }
   function validateInput(): boolean {
     if (!nameEntered()) {
       return false;
     }
     if (!dateInRange()) {
+      return false;
+    }
+    if (!durationEntered()) {
       return false;
     }
     return true;
@@ -76,13 +94,24 @@ export default function AddCalendarTrackerScreen({
         <DatePickerInput
           locale={DATE_PICKER_LOCALE}
           label="Start date"
-          value={targetDate}
-          onChange={d => setTargetDate(d as Date)}
+          value={startDate}
+          onChange={d => setStartDate(d as Date)}
           inputMode="start"
           hasError={!dateInRange()}
         />
         <HelperText type="error" visible={!dateInRange()}>
-          Date must be in the future
+          Start Date must be in the future
+        </HelperText>
+        <Divider />
+        <TextInput
+          label="Duration (days)"
+          value={durationDays}
+          onChangeText={d => setDurationDays(d)}
+          left={<TextInput.Icon icon="target" />}
+          error={!durationEntered()}
+        />
+        <HelperText type="error" visible={!durationEntered()}>
+          Number must be entered as a Target
         </HelperText>
       </View>
     </ScrollView>

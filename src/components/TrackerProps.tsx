@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import {Tracker} from '../providers/statecontext/Trackers';
+import {Tracker, getTrackerType} from '../providers/statecontext/Trackers';
 import {List, Text, TextInput} from 'react-native-paper';
 
 export type TrackerProps = {
@@ -9,15 +9,11 @@ export function TrackerProps({tracker}: TrackerProps) {
   return (
     <View>
       <List.Section>
-        <List.Subheader>{'Tracker type: ' + tracker.kind}</List.Subheader>
-        <List.Item title={'Name'} description={tracker.name} />
-        <List.Item title={'Description'} description={tracker.description} />
-        <TextInput label="test" mode="outlined" placeholder="123" />
+        <List.Item title="Tracker type" description={getTrackerType(tracker)} />
+        <List.Item title="Name" description={tracker.name} />
+        <List.Item title="Description" description={tracker.description} />
+        <List.Item title="Tracker status" description={tracker.trackerStatus} />
       </List.Section>
-      <Text variant="bodyMedium">
-        {'Tracker status: ' + tracker.trackerStatus.toString()}
-      </Text>
-      <Text variant="bodyMedium">Consider adding an Edit Tracker screen</Text>
     </View>
   );
 }

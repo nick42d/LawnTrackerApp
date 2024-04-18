@@ -33,10 +33,10 @@ export function GddPlot(props: {data: GddGraphPlot; targetGdd: number}) {
     <View>
       <PlotLegend
         points={[
-          {name: 'historical', color: HISTORICAL_COLOR},
-          {name: 'forecasted', color: FORECASTED_COLOR},
-          {name: 'estimated', color: ESTIMATED_COLOR},
-          {name: 'target', color: TARGET_COLOR},
+          {name: 'Historical', color: HISTORICAL_COLOR},
+          {name: 'Forecasted', color: FORECASTED_COLOR},
+          {name: 'Estimated', color: ESTIMATED_COLOR},
+          {name: 'Target', color: TARGET_COLOR},
         ]}
       />
       <LineChart

@@ -1,4 +1,4 @@
-import {format} from 'date-fns';
+import {format, startOfDay} from 'date-fns';
 import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
 import {UnitOfMeasure} from '../providers/settingscontext/Types';
 
@@ -12,22 +12,22 @@ export function appUnitOfMeasureToApiTemperatureUnit(
 
 export function apiWeatherToAppWeather(
   apiWeather: WeatherApiForecast,
-  unitOfMeasure: UnitOfMeasure,
+  temperatureUnit: UnitOfMeasure,
 ): Weather {
-  const weather_array: WeatherAppDay[] = apiWeather.daily.time.map((t, i) => ({
-    date_unix: t,
-    weather_type: t > apiWeather.current.time ? 'Forecasted' : 'Historical',
-    maxtemp: apiWeather.daily.temperature_2m_max[i],
-    mintemp: apiWeather.daily.temperature_2m_min[i],
+  const weatherArray: WeatherAppDay[] = apiWeather.daily.time.map((t, i) => ({
+    dateUnixMs: startOfDay(t * 1000).valueOf(),
+    weatherType: t > apiWeather.current.time ? 'Forecasted' : 'Historical',
+    maxTemp: apiWeather.daily.temperature_2m_max[i],
+    minTemp: apiWeather.daily.temperature_2m_min[i],
   }));
   return {
-    current_condition: {
+    currentCondition: {
       code: apiWeather.current.weather_code,
       isDay: apiWeather.current.is_day,
       temp: apiWeather.current.temperature_2m,
     },
-    weather_array,
-    temperature_unit: unitOfMeasure,
+    weatherArray,
+    temperatureUnit,
   };
 }
 
@@ -55,7 +55,7 @@ function apiLocationToAppLocation(
 export function checkWeatherInvariants(
   weather: Weather,
 ): WeatherInvariantCheck {
-  const scanner = weather.weather_array.reduce<WeatherInvariantCheck>(
+  const scanner = weather.weatherArray.reduce<WeatherInvariantCheck>(
     (acc, e) => {
       if (acc.status === 'Failed')
         return {
@@ -63,11 +63,9 @@ export function checkWeatherInvariants(
           lastDateUnixMs: acc.lastDateUnixMs,
         };
       if (acc.status === 'Initial' || acc.lastDateUnixMs === undefined)
-        return {status: 'Ok', lastDateUnixMs: e.date_unix * 1000};
-      const prevDate = new Date(acc.lastDateUnixMs);
-      const nextDate = new Date(e.date_unix * 1000);
-      prevDate.setHours(0, 0, 0, 0);
-      nextDate.setHours(0, 0, 0, 0);
+        return {status: 'Ok', lastDateUnixMs: e.dateUnixMs};
+      const prevDate = startOfDay(acc.lastDateUnixMs);
+      const nextDate = startOfDay(e.dateUnixMs);
       if (nextDate > prevDate) {
         return {status: 'Ok', lastDateUnixMs: nextDate.valueOf()};
       } else {
@@ -87,27 +85,27 @@ export function convertUnits(
   weather: Weather,
   newUnit: UnitOfMeasure,
 ): Weather {
-  if (weather.temperature_unit === newUnit) return weather;
+  if (weather.temperatureUnit === newUnit) return weather;
   const Converter =
     newUnit === 'Imperial' ? celsiustoFarenheit : farenheitToCelsius;
-  const newWeatherArray: WeatherAppDay[] = weather.weather_array.map(w => ({
-    maxtemp: Converter(w.maxtemp),
-    mintemp: Converter(w.mintemp),
-    weather_type: w.weather_type,
-    date_unix: w.date_unix,
+  const newWeatherArray: WeatherAppDay[] = weather.weatherArray.map(w => ({
+    maxTemp: Converter(w.maxTemp),
+    minTemp: Converter(w.minTemp),
+    weatherType: w.weatherType,
+    dateUnixMs: w.dateUnixMs,
   }));
   return {
-    current_condition: weather.current_condition,
-    weather_array: [], // TODO
-    temperature_unit: newUnit,
+    currentCondition: weather.currentCondition,
+    weatherArray: [], // TODO
+    temperatureUnit: newUnit,
   };
 }
 
 // TODO: Add unit
 export type Weather = {
-  current_condition: WeatherAppCondition;
-  weather_array: WeatherAppDay[];
-  temperature_unit: UnitOfMeasure;
+  currentCondition: WeatherAppCondition;
+  weatherArray: WeatherAppDay[];
+  temperatureUnit: UnitOfMeasure;
 };
 
 export type WeatherAppCondition = {
@@ -117,10 +115,10 @@ export type WeatherAppCondition = {
 };
 
 export type WeatherAppDay = {
-  date_unix: number;
-  weather_type: 'Historical' | 'Forecasted';
-  maxtemp: number;
-  mintemp: number;
+  dateUnixMs: number;
+  weatherType: 'Historical' | 'Forecasted';
+  maxTemp: number;
+  minTemp: number;
 };
 
 export type WeatherApiLocations = {

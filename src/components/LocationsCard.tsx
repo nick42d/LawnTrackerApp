@@ -34,7 +34,7 @@ export function LocationsCard({
     }
   }
   const weatherImages = location.weather
-    ? getWeatherImagesObject(location.weather.current_condition)
+    ? getWeatherImagesObject(location.weather.currentCondition)
     : undefined;
   const weatherStatus =
     location.weatherStatus.status === 'Refreshing'
@@ -49,11 +49,11 @@ export function LocationsCard({
       : farenheitToCelsius;
   const convertedTemperature =
     location.weather !== undefined
-      ? location.weather.temperature_unit !== settings.unit_of_measure
-        ? TemperatureConverter(location.weather.current_condition.temp)
-        : location.weather.current_condition.temp
+      ? location.weather.temperatureUnit !== settings.unit_of_measure
+        ? TemperatureConverter(location.weather.currentCondition.temp)
+        : location.weather.currentCondition.temp
       : undefined;
-  const loggingStartUnix = location.weather?.weather_array.at(0)?.date_unix;
+  const loggingStartUnixMs = location.weather?.weatherArray.at(0)?.dateUnixMs;
   return (
     <Card
       mode="elevated"
@@ -91,8 +91,8 @@ export function LocationsCard({
         <Text>
           <Icon source="calendar-start" size={20} />
           Logging start:{' '}
-          {loggingStartUnix
-            ? new Date(loggingStartUnix * 1000).toDateString()
+          {loggingStartUnixMs
+            ? new Date(loggingStartUnixMs).toDateString()
             : ''}
         </Text>
       </Card.Content>

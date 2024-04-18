@@ -15,10 +15,11 @@ import {DatePickerInput} from 'react-native-paper-dates';
 import {newGddTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
 import {DATE_PICKER_LOCALE, MAX_HISTORY_DAYS} from '../Consts';
-import SaveButton from '../components/SaveButton';
+import AppBarIconButton from '../components/AppBarIconButton';
 import {StateContext} from '../providers/StateContext';
 import {GDD_BASE_TEMPS} from '../providers/settingscontext/Types';
 import {SettingsContext} from '../providers/SettingsContext';
+import {differenceInCalendarDays} from 'date-fns';
 
 export default function AddGddTrackerScreen({
   route,
@@ -46,8 +47,9 @@ export default function AddGddTrackerScreen({
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <SaveButton
+        <AppBarIconButton
           disabled={!validateInput()}
+          icon="content-save"
           onPress={() => {
             // Assume all fields are valid, as you can't click the button otherwise.
             addGddTracker(
@@ -76,10 +78,9 @@ export default function AddGddTrackerScreen({
     return foundLoc ? `${foundLoc.name}, ${foundLoc.country}` : '';
   }
   function dateInRange(): boolean {
-    const firstAcceptableDate = new Date();
-    // TODO set to midnight
-    firstAcceptableDate.setDate(startDate.getDate() - MAX_HISTORY_DAYS);
-    return startDate >= firstAcceptableDate;
+    const delta = differenceInCalendarDays(new Date(), startDate);
+    console.log(delta);
+    return delta <= MAX_HISTORY_DAYS;
   }
   function locationSelected(): boolean {
     if (locationId === undefined) return false;

@@ -114,30 +114,30 @@ export function convertWeatherUnits(
   const Converter =
     newUnit === 'Metric' ? farenheitToCelsius : celsiustoFarenheit;
   const newWeather = {
-    date_unix: weather.date_unix,
-    weather_type: weather.weather_type,
-    mintemp: Converter(weather.mintemp),
-    maxtemp: Converter(weather.maxtemp),
+    dateUnixMs: weather.dateUnixMs,
+    weatherType: weather.weatherType,
+    minTemp: Converter(weather.minTemp),
+    maxTemp: Converter(weather.maxTemp),
   };
   return newWeather;
 }
 
 export function addWeather(weather: Weather, newWeather: Weather): Weather {
-  const isUnitChange = weather.temperature_unit !== newWeather.temperature_unit;
-  const newMinDay: number = newWeather.weather_array.reduce<number>(
-    (acc: number, cur: WeatherAppDay) => Math.min(acc, cur.date_unix),
+  const isUnitChange = weather.temperatureUnit !== newWeather.temperatureUnit;
+  const newMinDay: number = newWeather.weatherArray.reduce<number>(
+    (acc: number, cur: WeatherAppDay) => Math.min(acc, cur.dateUnixMs),
     Number.MAX_SAFE_INTEGER,
   );
   // Filter old weather array to remove old values and then convert temperature units if needed.
-  const filteredDays = weather.weather_array
-    .filter(cur => cur.date_unix < newMinDay)
+  const filteredDays = weather.weatherArray
+    .filter(cur => cur.dateUnixMs < newMinDay)
     .map(w =>
-      isUnitChange ? convertWeatherUnits(w, newWeather.temperature_unit) : w,
+      isUnitChange ? convertWeatherUnits(w, newWeather.temperatureUnit) : w,
     );
-  const combinedDays = filteredDays.concat(newWeather.weather_array);
+  const combinedDays = filteredDays.concat(newWeather.weatherArray);
   return {
-    current_condition: newWeather.current_condition,
-    temperature_unit: newWeather.temperature_unit,
-    weather_array: combinedDays,
+    currentCondition: newWeather.currentCondition,
+    temperatureUnit: newWeather.temperatureUnit,
+    weatherArray: combinedDays,
   };
 }

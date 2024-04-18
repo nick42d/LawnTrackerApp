@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {DataTable, Text, useTheme} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
@@ -9,13 +9,33 @@ import {TrackerProps} from '../components/TrackerProps';
 import {checkWeatherInvariants} from '../api/Types';
 import {format} from 'date-fns';
 import {GddPlot} from '../components/GddPlot';
+import AppBarIconButton from '../components/AppBarIconButton';
 
 export default function ViewTrackerScreen({
+  navigation,
   route,
 }: AppScreenProps<'ViewTracker'>) {
   const {locations} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
   const theme = useTheme();
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <AppBarIconButton
+          onPress={() => {
+            console.log(
+              'Edit button pressed, tracker id: ',
+              route.params.tracker.uuid,
+            );
+            navigation.navigate('EditTracker', {
+              trackerId: route.params.tracker.uuid,
+            });
+          }}
+          icon="pencil-outline"
+        />
+      ),
+    });
+  }, []);
   const item = route.params.tracker;
   // Temp check for invariants
   locations.map(l => {
@@ -47,9 +67,9 @@ export default function ViewTrackerScreen({
               <DataTable.Title>GDD Type</DataTable.Title>
             </DataTable.Header>
             {gddArray.map(i => (
-              <DataTable.Row key={i.dateUnix}>
+              <DataTable.Row key={i.dateUnixMs}>
                 <DataTable.Cell>
-                  {format(new Date(i.dateUnix * 1000), 'EEEEEE dd/MM')}
+                  {format(new Date(i.dateUnixMs), 'EEEEEE dd/MM')}
                 </DataTable.Cell>
                 <DataTable.Cell>{i.gdd.toFixed(1)}</DataTable.Cell>
                 <DataTable.Cell>{i.gddAcc.toFixed(1)}</DataTable.Cell>

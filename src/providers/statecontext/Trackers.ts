@@ -67,6 +67,16 @@ function newNotificationStatus(): NotificationStatus {
   };
 }
 
+export function getTrackerType(tracker: Tracker): string {
+  switch (tracker.kind) {
+    case 'calendar':
+      return 'Calendar';
+    case 'timed':
+      return 'Timed';
+    case 'gdd':
+      return 'Gdd';
+  }
+}
 export type Tracker = GddTracker | TimedTracker | CalendarTracker;
 export type TrackerStatus = 'Stopped' | 'Running';
 export type NotificationStatus = {

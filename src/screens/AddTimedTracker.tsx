@@ -4,7 +4,7 @@ import {ScrollView, View} from 'react-native';
 import {DatePickerInput} from 'react-native-paper-dates';
 import {newTimedTracker} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
-import SaveButton from '../components/SaveButton';
+import AppBarIconButton from '../components/AppBarIconButton';
 import {StateContext} from '../providers/StateContext';
 import {DATE_PICKER_LOCALE} from '../Consts';
 
@@ -20,8 +20,9 @@ export default function AddTimedTrackerScreen({
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <SaveButton
+        <AppBarIconButton
           disabled={!validateInput()}
+          icon="content-save"
           onPress={() => {
             // Assume all fields are valid, as you can't click the button otherwise.
             addTracker(

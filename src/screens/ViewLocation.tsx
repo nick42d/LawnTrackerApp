@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {DataTable, Text, useTheme} from 'react-native-paper';
+import {DataTable, List, Text, useTheme} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 
@@ -9,6 +9,26 @@ export default function ViewLocationScreen({
   const item = route.params.location;
   return (
     <ScrollView>
+      <List.Section>
+        <List.Item title={'Name'} description={item.name} />
+        <List.Item title={'Country'} description={item.country} />
+        <List.Item title={'Latitude'} description={item.latitude.toFixed(4)} />
+        <List.Item
+          title={'Longitude'}
+          description={item.longitude.toFixed(4)}
+        />
+        <List.Item title={'Status'} description={item.weatherStatus.status} />
+        <List.Item
+          title={'Last refreshed'}
+          description={
+            item.weatherStatus.lastRefreshedUnixMs
+              ? new Date(
+                  item.weatherStatus.lastRefreshedUnixMs,
+                ).toLocaleString()
+              : 'Never'
+          }
+        />
+      </List.Section>
       {item.weather ? (
         <DataTable>
           <DataTable.Header>
@@ -17,14 +37,14 @@ export default function ViewLocationScreen({
             <DataTable.Title>Min</DataTable.Title>
             <DataTable.Title>Type</DataTable.Title>
           </DataTable.Header>
-          {item.weather.weather_array.map(w => (
-            <DataTable.Row key={w.date_unix}>
+          {item.weather.weatherArray.map(w => (
+            <DataTable.Row key={w.dateUnixMs}>
               <DataTable.Cell>
-                {new Date(w.date_unix * 1000).toLocaleDateString()}
+                {new Date(w.dateUnixMs).toLocaleDateString()}
               </DataTable.Cell>
-              <DataTable.Cell>{w.maxtemp}</DataTable.Cell>
-              <DataTable.Cell>{w.mintemp}</DataTable.Cell>
-              <DataTable.Cell>{w.weather_type}</DataTable.Cell>
+              <DataTable.Cell>{w.maxTemp}</DataTable.Cell>
+              <DataTable.Cell>{w.minTemp}</DataTable.Cell>
+              <DataTable.Cell>{w.weatherType}</DataTable.Cell>
             </DataTable.Row>
           ))}
         </DataTable>

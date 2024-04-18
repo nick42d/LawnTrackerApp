@@ -4,11 +4,10 @@ import {
   NavigatorScreenParams,
   Theme,
 } from '@react-navigation/native';
-import {GddTracker, Tracker} from '../providers/statecontext/Trackers';
+import {Tracker} from '../providers/statecontext/Trackers';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
-  Text,
   useTheme,
 } from 'react-native-paper';
 import {
@@ -22,15 +21,15 @@ import AddGddTrackerScreen from '../screens/AddGddTracker';
 import ViewTrackerScreen from '../screens/ViewTracker';
 import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
-import {AddLocation, Location} from '../providers/statecontext/Locations';
+import {Location} from '../providers/statecontext/Locations';
 import AddLocationCardScreen from '../screens/AddLocationCard';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
-import {View} from 'react-native';
 import LoadingScreen from '../screens/Loading';
 import AddCalendarTrackerScreen from '../screens/AddCalendarTracker';
 import AddTimedTrackerScreen from '../screens/AddTimedTracker';
 import ViewLocationScreen from '../screens/ViewLocation';
+import EditTrackerScreen from '../screens/EditTracker';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -42,6 +41,7 @@ export type RootStackParamList = {
   AddLocationCard: {fromAddGddTracker: boolean} | undefined;
   ViewTracker: {tracker: Tracker};
   ViewLocation: {location: Location};
+  EditTracker: {trackerId: string};
 };
 
 export type AppDrawerParamList = {
@@ -120,6 +120,11 @@ function AppRootStackNavigator() {
           name="ViewTracker"
           component={ViewTrackerScreen}
           options={{title: 'View Tracker'}}
+        />
+        <Stack.Screen
+          name="EditTracker"
+          component={EditTrackerScreen}
+          options={{title: 'Edit Tracker'}}
         />
         <Stack.Screen
           name="AddLocationCard"
