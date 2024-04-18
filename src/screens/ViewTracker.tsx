@@ -1,5 +1,5 @@
-import React, {useContext, useEffect} from 'react';
-import {DataTable, Text, useTheme} from 'react-native-paper';
+import React, {useContext, useEffect, useState} from 'react';
+import {ActivityIndicator, DataTable, Text, useTheme} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 import {getGraphPlot, getTrackerGddArray} from '../components/gddplot/Plot';
@@ -10,6 +10,7 @@ import {checkWeatherInvariants} from '../api/Types';
 import {format} from 'date-fns';
 import {GddPlot} from '../components/GddPlot';
 import AppBarIconButton from '../components/AppBarIconButton';
+import {timeout} from '../Utils';
 
 export default function ViewTrackerScreen({
   navigation,
@@ -18,6 +19,7 @@ export default function ViewTrackerScreen({
   const {locations, trackers} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
   const theme = useTheme();
+  const [waited, setWaited] = useState(false);
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -35,6 +37,8 @@ export default function ViewTrackerScreen({
         />
       ),
     });
+    // Hack to 'lazy load' the slow parts of the card
+    timeout(50).then(() => setWaited(true));
   }, []);
   const item = trackers.find(t => t.uuid === route.params.trackerId);
   // Temp check for invariants
@@ -58,25 +62,31 @@ export default function ViewTrackerScreen({
       {item ? <TrackerProps tracker={item} /> : undefined}
       {item?.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
         <View style={{rowGap: 30}}>
-          <GddPlot data={data} targetGdd={item.target_gdd} />
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title>Day</DataTable.Title>
-              <DataTable.Title>GDD</DataTable.Title>
-              <DataTable.Title>GDD - Total</DataTable.Title>
-              <DataTable.Title>GDD Type</DataTable.Title>
-            </DataTable.Header>
-            {gddArray.map(i => (
-              <DataTable.Row key={i.dateUnixMs}>
-                <DataTable.Cell>
-                  {format(new Date(i.dateUnixMs), 'EEEEEE dd/MM')}
-                </DataTable.Cell>
-                <DataTable.Cell>{i.gdd.toFixed(1)}</DataTable.Cell>
-                <DataTable.Cell>{i.gddAcc.toFixed(1)}</DataTable.Cell>
-                <DataTable.Cell>{i.weatherType}</DataTable.Cell>
-              </DataTable.Row>
-            ))}
-          </DataTable>
+          {waited ? (
+            <View>
+              <GddPlot data={data} targetGdd={item.target_gdd} />
+              <DataTable>
+                <DataTable.Header>
+                  <DataTable.Title>Day</DataTable.Title>
+                  <DataTable.Title>GDD</DataTable.Title>
+                  <DataTable.Title>GDD - Total</DataTable.Title>
+                  <DataTable.Title>GDD Type</DataTable.Title>
+                </DataTable.Header>
+                {gddArray.map(i => (
+                  <DataTable.Row key={i.dateUnixMs}>
+                    <DataTable.Cell>
+                      {format(new Date(i.dateUnixMs), 'EEEEEE dd/MM')}
+                    </DataTable.Cell>
+                    <DataTable.Cell>{i.gdd.toFixed(1)}</DataTable.Cell>
+                    <DataTable.Cell>{i.gddAcc.toFixed(1)}</DataTable.Cell>
+                    <DataTable.Cell>{i.weatherType}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+              </DataTable>
+            </View>
+          ) : (
+            <ActivityIndicator size="large" />
+          )}
         </View>
       ) : undefined}
     </ScrollView>

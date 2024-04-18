@@ -1,14 +1,17 @@
 import {LineChart} from 'react-native-gifted-charts';
 import {GddGraphPlot, GraphPlotItem} from './gddplot/Plot';
-import {useTheme} from 'react-native-paper';
+import {ActivityIndicator, useTheme} from 'react-native-paper';
 import {View} from 'react-native';
 import {PlotLegend} from './gddplot/PlotLegend';
 import {GRAPH_WIDTH} from '../Consts';
+import {useEffect, useState} from 'react';
+import {timeout} from '../Utils';
 
 const HISTORICAL_COLOR = 'green';
 const FORECASTED_COLOR = 'yellowgreen';
 const ESTIMATED_COLOR = 'skyblue';
 const TARGET_COLOR = 'orangered';
+const GRAPH_X_SPACING = 25;
 
 export function GddPlot(props: {
   data: GddGraphPlot;
@@ -45,7 +48,7 @@ export function GddPlot(props: {
       <LineChart
         data={props.data.items}
         lineSegments={segments}
-        width={GRAPH_WIDTH}
+        width={Math.min(GRAPH_WIDTH, props.data.items.length * GRAPH_X_SPACING)}
         showReferenceLine1
         referenceLine1Config={{
           thickness: 2,
@@ -67,7 +70,7 @@ export function GddPlot(props: {
         // TODO: Better handle large arrays
         stripHeight={999}
         stripColor={theme.colors.primaryContainer}
-        spacing={25}
+        spacing={GRAPH_X_SPACING}
         thickness={3}
         showScrollIndicator
         color={HISTORICAL_COLOR}

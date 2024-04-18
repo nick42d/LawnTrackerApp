@@ -1,12 +1,14 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {DataTable, List, Text, useTheme} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
+import {timeout} from '../Utils';
 
 export default function ViewLocationScreen({
   route,
 }: AppScreenProps<'ViewLocation'>) {
   const item = route.params.location;
+
   return (
     <ScrollView>
       <List.Section>
