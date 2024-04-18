@@ -40,7 +40,7 @@ export function defaultStateManager(): StateManager {
     refreshWeather: async () => {
       LogErrorCallbackNotSet('refreshWeather');
     },
-    addLocation: _ => {
+    addLocation: async () => {
       LogErrorCallbackNotSet('addLocation');
     },
     clearAll: () => {

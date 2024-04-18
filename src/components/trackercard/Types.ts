@@ -4,6 +4,8 @@ import {ToCalendarTrackerCardProps} from './CalendarTracker';
 import {ToGddTrackerCardProps} from './GddTracker';
 import {ToTimedTrackerCardProps} from './TimedTracker';
 import {LeftCalloutProps} from './LeftCallout';
+import {Settings} from '../../providers/settingscontext/Types';
+import {Location} from '../../providers/statecontext/Locations';
 
 type TrackerCardPropsParamList = {
   props: TrackerCardProps;
@@ -29,6 +31,8 @@ export type TrackerCardProps = {
 };
 export function TrackerPropsToCardProps(
   tracker: Tracker,
+  settings: Settings,
+  locations: Location[],
   onDelete: () => void,
   onReset: () => void,
   onStop: () => void,
@@ -40,6 +44,8 @@ export function TrackerPropsToCardProps(
       return ToGddTrackerCardProps(
         tracker,
         navigation,
+        settings,
+        locations,
         onDelete,
         onReset,
         onStop,
@@ -50,6 +56,7 @@ export function TrackerPropsToCardProps(
       return ToCalendarTrackerCardProps(
         tracker,
         navigation,
+        settings,
         onDelete,
         onStop,
         onResume,
@@ -59,6 +66,7 @@ export function TrackerPropsToCardProps(
       return ToTimedTrackerCardProps(
         tracker,
         navigation,
+        settings,
         onDelete,
         onReset,
         onStop,

@@ -1,8 +1,8 @@
 import {addDays} from 'date-fns';
-import {calcGdd} from '../../Knowledge';
 import {calcGddTotal} from '../../knowledge/Gdd';
 import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
+import {v4 as uuidv4} from 'uuid';
 
 export function newGddTracker(
   name: string,
@@ -17,6 +17,7 @@ export function newGddTracker(
     locationId,
     description,
     name,
+    uuid: uuidv4(),
     target_gdd,
     base_temp,
     start_date_unix_ms: start_date.valueOf(),
@@ -34,6 +35,7 @@ export function newCalendarTracker(
     kind: 'calendar',
     description,
     name,
+    uuid: uuidv4(),
     target_date_unix_ms: target_date.valueOf(),
     trackerStatus: 'Running',
     notificationStatus: newNotificationStatus(),
@@ -50,6 +52,7 @@ export function newTimedTracker(
     kind: 'timed',
     description,
     name,
+    uuid: uuidv4(),
     start_date_unix_ms: start_date.valueOf(),
     duration_days,
     trackerStatus: 'Running',
@@ -75,6 +78,7 @@ export type CalendarTracker = {
   kind: 'calendar';
   name: string;
   description: string;
+  uuid: string;
   target_date_unix_ms: number;
   trackerStatus: TrackerStatus;
   notificationStatus: NotificationStatus;
@@ -83,6 +87,7 @@ export type TimedTracker = {
   kind: 'timed';
   name: string;
   description: string;
+  uuid: string;
   start_date_unix_ms: number;
   duration_days: number;
   trackerStatus: TrackerStatus;
@@ -92,6 +97,7 @@ export type GddTracker = {
   kind: 'gdd';
   name: string;
   description: string;
+  uuid: string;
   target_gdd: number;
   base_temp: number;
   start_date_unix_ms: number;
@@ -121,11 +127,13 @@ export type TrackerStatusCheck =
       kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
       trackerKind: 'gdd' | 'timed' | 'calendar';
       trackerName: string;
+      trackerId: string;
     }
   | {
       kind: 'TargetReached' | 'Running';
       trackerKind: 'gdd' | 'timed' | 'calendar';
       trackerName: string;
+      trackerId: string;
       target: number;
       actual: number;
     };
@@ -140,6 +148,7 @@ export function trackerStatus(
     return {
       trackerKind: tracker.kind,
       trackerName: tracker.name,
+      trackerId: tracker.uuid,
       kind: 'Stopped',
     };
   switch (tracker.kind) {
@@ -150,6 +159,7 @@ export function trackerStatus(
             actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'TargetReached',
             target,
           }
@@ -157,6 +167,7 @@ export function trackerStatus(
             actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'Running',
             target,
           };
@@ -167,6 +178,7 @@ export function trackerStatus(
         return {
           trackerKind: tracker.kind,
           trackerName: tracker.name,
+          trackerId: tracker.uuid,
           kind: 'ErrorCalculatingGdd',
         };
       const target = tracker.target_gdd;
@@ -175,6 +187,7 @@ export function trackerStatus(
             actual: actual_gdd,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'TargetReached',
             target,
           }
@@ -182,6 +195,7 @@ export function trackerStatus(
             actual: actual_gdd,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'Running',
             target,
           };
@@ -196,6 +210,7 @@ export function trackerStatus(
             actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'TargetReached',
             target,
           }
@@ -203,6 +218,7 @@ export function trackerStatus(
             actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
+            trackerId: tracker.uuid,
             kind: 'Running',
             target,
           };

@@ -8,7 +8,7 @@ export type StateManager = {
   trackers: Tracker[];
   status: ContextStatus;
   refreshWeather: () => Promise<void>;
-  addLocation: (loc: Location) => void;
+  addLocation: (loc: Location) => Promise<void>;
   deleteLocationId: (id: number) => void;
   addTracker: (tracker: Tracker) => void;
   deleteTrackerName: (trackerName: string) => void;
@@ -33,11 +33,10 @@ export type StateAction =
   | StateActionAddLocation
   | StateActionReplaceTrackers
   | StateActionAddTracker
-  | StateActionDeleteTrackerName
-  | StateActionResetTrackerName
-  | StateActionResetTrackerName
-  | StateActionStopTrackerName
-  | StateActionResumeTrackerName;
+  | StateActionDeleteTrackerId
+  | StateActionResetTrackerId
+  | StateActionStopTrackerId
+  | StateActionResumeTrackerId;
 export type FunctionlessStateContext = {
   locations: Location[];
   trackers: Tracker[];
@@ -84,19 +83,19 @@ type StateActionAddTracker = {
   kind: 'AddTracker';
   tracker: Tracker;
 };
-type StateActionDeleteTrackerName = {
-  kind: 'DeleteTrackerName';
-  name: string;
+type StateActionDeleteTrackerId = {
+  kind: 'DeleteTrackerId';
+  id: string;
 };
-type StateActionResetTrackerName = {
-  kind: 'ResetTrackerName';
-  name: string;
+type StateActionResetTrackerId = {
+  kind: 'ResetTrackerId';
+  id: string;
 };
-type StateActionStopTrackerName = {
-  kind: 'StopTrackerName';
-  name: string;
+type StateActionStopTrackerId = {
+  kind: 'StopTrackerId';
+  id: string;
 };
-type StateActionResumeTrackerName = {
-  kind: 'ResumeTrackerName';
-  name: string;
+type StateActionResumeTrackerId = {
+  kind: 'ResumeTrackerId';
+  id: string;
 };

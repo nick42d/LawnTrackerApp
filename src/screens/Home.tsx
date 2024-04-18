@@ -88,11 +88,11 @@ export default function HomeScreen({
           <TrackerCard
             item={item}
             navigation={navigation}
-            onDelete={() => onDelete(item.name)}
-            onReset={() => onReset(item.name)}
-            onStop={() => onStop(item.name)}
+            onDelete={() => onDelete(item.uuid)}
+            onReset={() => onReset(item.uuid)}
+            onStop={() => onStop(item.uuid)}
             // This case doesn't need validation, no ill effects can occur.
-            onResume={() => resumeTrackerName(item.name)}
+            onResume={() => resumeTrackerName(item.uuid)}
           />
         )}
       />

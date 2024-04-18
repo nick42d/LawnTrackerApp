@@ -66,37 +66,37 @@ export function reducer(
     case 'AddTracker':
       return {...state, trackers: [...state.trackers, action.tracker]};
     // Note - not all trackers can be reset, but more than just GDD trackers.
-    case 'ResetTrackerName': {
-      console.log(`Resetting GDD tracker name ${action.name}`);
+    case 'ResetTrackerId': {
+      console.log(`Resetting GDD tracker id ${action.id}`);
       return {
         ...state,
         trackers: state.trackers.map(t =>
-          t.name === action.name ? resetTracker(t) : t,
+          t.uuid === action.id ? resetTracker(t) : t,
         ),
       };
     }
-    case 'DeleteTrackerName': {
-      console.log(`Deleting tracker name ${action.name}`);
+    case 'DeleteTrackerId': {
+      console.log(`Deleting tracker id ${action.id}`);
       return {
         ...state,
-        trackers: state.trackers.filter(item => item.name !== action.name),
+        trackers: state.trackers.filter(item => item.uuid !== action.id),
       };
     }
-    case 'StopTrackerName': {
-      console.log(`Stopping tracker name ${action.name}`);
+    case 'StopTrackerId': {
+      console.log(`Stopping tracker id ${action.id}`);
       return {
         ...state,
         trackers: state.trackers.map(t =>
-          t.name === action.name ? stopTracker(t) : t,
+          t.uuid === action.id ? stopTracker(t) : t,
         ),
       };
     }
-    case 'ResumeTrackerName': {
-      console.log(`Resuming tracker name ${action.name}`);
+    case 'ResumeTrackerId': {
+      console.log(`Resuming tracker id ${action.id}`);
       return {
         ...state,
         trackers: state.trackers.map(t =>
-          t.name === action.name ? resumeTracker(t) : t,
+          t.uuid === action.id ? resumeTracker(t) : t,
         ),
       };
     }

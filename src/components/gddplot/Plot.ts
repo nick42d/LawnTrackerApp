@@ -36,9 +36,9 @@ export type GddGraphPlot = {
   estimateStartIndex: number;
 };
 
-function listAverage(list: number[]): number {
+function listAverage<T>(list: T[], cb: (t: T) => number): number {
   if (list.length === 0) return 0;
-  return list.reduce((sum, acc) => acc + sum, 0) / list.length;
+  return list.reduce((acc, cur) => acc + cb(cur), 0) / list.length;
 }
 function weatherDaysToGddArr(
   forecasts: WeatherAppDay[],
@@ -88,8 +88,7 @@ export function getTrackerGddArray(
     algorithm,
   );
   // Estimate is based off average of history and forecast.
-  // We could remove a map here if listAverage can take a callback.
-  const averageGdd = listAverage(historyAndForecastGddArray.map(x => x.gdd));
+  const averageGdd = listAverage(historyAndForecastGddArray, x => x.gdd);
   const totalNonEstimateGdd = averageGdd * historyAndForecastGddArray.length;
   // NOTE: this could result in a massive dataset, so we should cap the target.
   // Also, consider div/0 issue

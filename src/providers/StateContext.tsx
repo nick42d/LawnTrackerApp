@@ -1,12 +1,5 @@
 import React, {useEffect, useReducer, useState} from 'react';
-import {
-  GddTracker,
-  Tracker,
-  resetTracker,
-  resumeTracker,
-  stopTracker,
-} from './statecontext/Trackers';
-import {ContextStatus} from './Types';
+import {Tracker} from './statecontext/Trackers';
 import {StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
 import {
@@ -18,8 +11,11 @@ import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
 import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../Api';
-import notifee from '@notifee/react-native';
-import {BackgroundEventCallback} from '../Notification';
+import notifee, {
+  Event,
+  EventType,
+  NotificationPressAction,
+} from '@notifee/react-native';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
 
@@ -60,10 +56,8 @@ export function StateContextProvider({
       });
     // Initialise notifee foreground event handler.
     // Background event handler is in index.js.
-    notifee.onForegroundEvent(BackgroundEventCallback);
+    notifee.onForegroundEvent(onNotificationForegroundEvent);
   }, []);
-  // Keep state synced to AsyncStorage
-  // TODO: Better handle race conditions
   useEffect(() => {
     let active = true;
     console.log('App state changed - trackers');
@@ -78,14 +72,9 @@ export function StateContextProvider({
       console.log('Closing trackers change effect');
     };
   }, [state.status, state.trackers]);
-  // Keep state synced to AsyncStorage
-  // TODO: Better handle race conditions
   useEffect(() => {
     let active = true;
     console.log('App state changed - locations');
-    state.locations.forEach(l => {
-      console.log(l.name, 'status: ', l.weatherStatus);
-    });
     // Debounce
     timeout(50).then(() => {
       if (active) {
@@ -97,14 +86,53 @@ export function StateContextProvider({
       console.log('Closing locations change effect');
     };
   }, [state.status, state.locations]);
-
+  async function onNotificationForegroundEvent({type, detail}: Event) {
+    console.log('Notifee foreground event handler called');
+    switch (type) {
+      case EventType.ACTION_PRESS:
+        console.log('User pressed action: ', detail.pressAction);
+        if (detail.pressAction && detail.notification?.data) {
+          handleActionPressed(detail.pressAction, detail.notification.data);
+        } else {
+          console.warn("Expected a pressAction but it wasn't there.");
+        }
+        return;
+      case EventType.DISMISSED:
+        console.log('User dismissed notification');
+        return;
+      case EventType.PRESS:
+        console.log('User pressed notification');
+        return;
+      default:
+        console.log('Unhandled event type: ', EventType[type]);
+    }
+  }
+  async function handleActionPressed(
+    action: NotificationPressAction,
+    data: {[key: string]: string | number | object},
+  ) {
+    // Validate data - ideally this is done elsewhere
+    if (!data.trackerId || typeof data.trackerId !== 'string') {
+      console.log(
+        "Didn't get a tracker id with my notification or it wasn't a string",
+      );
+      return;
+    }
+    // Cases are located in Notification.ts
+    switch (action.id) {
+      case 'snooze': {
+        console.warn('Snooze is currently unhandled. What should it do?');
+      }
+      case 'stop': {
+        console.log('Stopping tracker id', data.trackerId);
+        stopTrackerId(data.trackerId);
+      }
+    }
+  }
   function clearAll() {
     console.log('Running clearall function on state');
     dispatch({kind: 'ClearAll'});
   }
-  const locations = state.locations;
-  const trackers = state.trackers;
-  const status = state.status;
   function updateLocationsWeather(update: WeatherUpdate[]) {
     dispatch({
       kind: 'AddRefreshedWeatherArray',
@@ -159,18 +187,21 @@ export function StateContextProvider({
   function addTracker(tracker: Tracker) {
     dispatch({kind: 'AddTracker', tracker});
   }
-  function deleteTrackerName(name: string) {
-    dispatch({kind: 'DeleteTrackerName', name});
+  function deleteTrackerId(id: string) {
+    dispatch({kind: 'DeleteTrackerId', id});
   }
-  function resetTrackerName(name: string) {
-    dispatch({kind: 'ResetTrackerName', name});
+  function resetTrackerId(id: string) {
+    dispatch({kind: 'ResetTrackerId', id});
   }
-  function stopTrackerName(name: string) {
-    dispatch({kind: 'StopTrackerName', name});
+  function stopTrackerId(id: string) {
+    dispatch({kind: 'StopTrackerId', id});
   }
-  function resumeTrackerName(name: string) {
-    dispatch({kind: 'ResumeTrackerName', name});
+  function resumeTrackerId(id: string) {
+    dispatch({kind: 'ResumeTrackerId', id});
   }
+  const locations = state.locations;
+  const trackers = state.trackers;
+  const status = state.status;
   return (
     <StateContext.Provider
       value={{
@@ -183,10 +214,10 @@ export function StateContextProvider({
         addLocation,
         deleteLocationId,
         addTracker,
-        deleteTrackerName,
-        resetTrackerName,
-        stopTrackerName,
-        resumeTrackerName,
+        deleteTrackerName: deleteTrackerId,
+        resetTrackerName: resetTrackerId,
+        stopTrackerName: stopTrackerId,
+        resumeTrackerName: resumeTrackerId,
       }}>
       <BackgroundFetcher refreshWeatherCallback={updateLocationsWeather}>
         {children}

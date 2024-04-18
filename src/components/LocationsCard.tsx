@@ -1,18 +1,13 @@
-import {Image, View} from 'react-native';
+import {Image} from 'react-native';
 import {Button, Card, Icon, Text} from 'react-native-paper';
 import {CARD_TITLE_VARIANT} from '../Styles';
 import * as central_styles from '../Styles';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import {Location} from '../providers/statecontext/Locations';
 import {useContext} from 'react';
-import {
-  WEATHER_IMAGES,
-  WeatherImagesObject,
-} from '../../assets/weather_icons/WeatherImages';
-import {StateContext} from '../providers/StateContext';
+import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
 import {WeatherAppCondition} from '../api/Types';
 import {WeatherLeftCallout} from './locationscard/LeftCallout';
-import {format} from 'date-fns';
 import {SettingsContext} from '../providers/SettingsContext';
 import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
 
@@ -58,6 +53,7 @@ export function LocationsCard({
         ? TemperatureConverter(location.weather.current_condition.temp)
         : location.weather.current_condition.temp
       : undefined;
+  const loggingStartUnix = location.weather?.weather_array.at(0)?.date_unix;
   return (
     <Card
       mode="elevated"
@@ -94,7 +90,10 @@ export function LocationsCard({
         </Text>
         <Text>
           <Icon source="calendar-start" size={20} />
-          Logging start: Insert start date
+          Logging start:{' '}
+          {loggingStartUnix
+            ? new Date(loggingStartUnix * 1000).toDateString()
+            : ''}
         </Text>
       </Card.Content>
       <Card.Actions>

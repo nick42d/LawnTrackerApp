@@ -7,6 +7,9 @@ import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import {RotateInUpLeft} from 'react-native-reanimated';
 import {TrackerPropsToCardProps} from './trackercard/Types.ts';
 import {LeftCallout} from './trackercard/LeftCallout.tsx';
+import {useContext} from 'react';
+import {SettingsContext} from '../providers/SettingsContext.tsx';
+import {StateContext} from '../providers/StateContext.tsx';
 
 export const CARD_TEXT_ICON_SIZE = 20;
 
@@ -26,8 +29,12 @@ export function TrackerCard({
   onResume,
   navigation,
 }: CardPropsParamList) {
+  const {settings} = useContext(SettingsContext);
+  const {locations} = useContext(StateContext);
   const props = TrackerPropsToCardProps(
     item,
+    settings,
+    locations,
     onDelete,
     onReset,
     onStop,

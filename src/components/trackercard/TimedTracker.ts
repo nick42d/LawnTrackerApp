@@ -2,20 +2,18 @@ import {TimedTracker} from '../../providers/statecontext/Trackers';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
 import {TrackerCardProps} from './Types';
 import {addDays, differenceInCalendarDays} from 'date-fns';
-import {GetGddTrackerCalloutColor} from './GddTracker';
-import {SettingsContext} from '../../providers/SettingsContext';
-import {useContext, useState} from 'react';
 import {formatDaysRem} from './Common';
+import {Settings} from '../../providers/settingscontext/Types';
 
 export function ToTimedTrackerCardProps(
   timedTracker: TimedTracker,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
+  settings: Settings,
   onDelete: () => void,
   onReset: () => void,
   onStop: () => void,
   onResume: () => void,
 ): TrackerCardProps {
-  const {settings} = useContext(SettingsContext);
   // This is likely also duplicated when checking notifications
   const daysRem = differenceInCalendarDays(
     addDays(timedTracker.start_date_unix_ms, timedTracker.duration_days),

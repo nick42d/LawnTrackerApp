@@ -2,18 +2,17 @@ import {CalendarTracker} from '../../providers/statecontext/Trackers';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
 import {TrackerCardProps} from './Types';
 import {differenceInCalendarDays} from 'date-fns';
-import {useContext} from 'react';
-import {SettingsContext} from '../../providers/SettingsContext';
 import {formatDaysRem} from './Common';
+import {Settings} from '../../providers/settingscontext/Types';
 
 export function ToCalendarTrackerCardProps(
   calendarTracker: CalendarTracker,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
+  settings: Settings,
   onDelete: () => void,
   onStop: () => void,
   onResume: () => void,
 ): TrackerCardProps {
-  const {settings} = useContext(SettingsContext);
   const daysRem = differenceInCalendarDays(
     calendarTracker.target_date_unix_ms,
     new Date(),

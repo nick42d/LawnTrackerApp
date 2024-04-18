@@ -14,7 +14,7 @@ import {
   adaptNavigationTheme,
 } from 'react-native-paper';
 import merge from 'deepmerge';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {
   SettingsContext,
   SettingsContextProvider,

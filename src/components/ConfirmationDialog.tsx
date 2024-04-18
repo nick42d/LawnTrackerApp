@@ -17,8 +17,14 @@ export default function ConfirmationDialog(props: {
         <Text>{props.message}</Text>
       </Dialog.Content>
       <Dialog.Actions>
-        <Button onPress={_ => props.hideDialog()}>Cancel</Button>
-        <Button onPress={_ => props.onOk()}>Ok</Button>
+        <Button onPress={() => props.hideDialog()}>Cancel</Button>
+        <Button
+          onPress={() => {
+            props.hideDialog();
+            props.onOk();
+          }}>
+          Ok
+        </Button>
       </Dialog.Actions>
     </Dialog>
   );

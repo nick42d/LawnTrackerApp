@@ -17,17 +17,19 @@ import {StateContext} from '../../providers/StateContext';
 import {TrackerCardProps} from './Types';
 import {LeftCalloutProps} from './LeftCallout';
 import {checkWeatherInvariants} from '../../api/Types';
+import {Settings} from '../../providers/settingscontext/Types';
+import {Location} from '../../providers/statecontext/Locations';
 
 export function ToGddTrackerCardProps(
   gddTracker: GddTracker,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
+  settings: Settings,
+  locations: Location[],
   onDelete: () => void,
   onReset: () => void,
   onStop: () => void,
   onResume: () => void,
 ): TrackerCardProps {
-  const {settings} = useContext(SettingsContext);
-  const {locations} = useContext(StateContext);
   const actual_gdd = calcGddTotal(gddTracker, locations, settings.algorithm);
   const weatherIsRefreshing = isWeatherRefreshing(gddTracker, locations);
   const weatherIsInitialised = isWeatherInitialised(gddTracker, locations);

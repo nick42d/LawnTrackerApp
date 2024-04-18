@@ -89,10 +89,7 @@ export default function AddGddTrackerScreen({
     return name.length !== 0;
   }
   function targetEntered(): boolean {
-    return !(
-      (isNaN(Number(target)) || target.length === 0) &&
-      Number(target) !== 0
-    );
+    return !isNaN(Number(target)) && Number(target) > 0;
   }
 
   function validateInput(): boolean {
