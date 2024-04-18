@@ -10,7 +10,10 @@ const FORECASTED_COLOR = 'yellowgreen';
 const ESTIMATED_COLOR = 'skyblue';
 const TARGET_COLOR = 'orangered';
 
-export function GddPlot(props: {data: GddGraphPlot; targetGdd: number}) {
+export function GddPlot(props: {
+  data: GddGraphPlot;
+  targetGdd: number;
+}): React.JSX.Element {
   const theme = useTheme();
 
   const forecast_start = props.data.forecastStartIndex as number;

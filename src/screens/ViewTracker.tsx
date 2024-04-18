@@ -15,7 +15,7 @@ export default function ViewTrackerScreen({
   navigation,
   route,
 }: AppScreenProps<'ViewTracker'>) {
-  const {locations} = useContext(StateContext);
+  const {locations, trackers} = useContext(StateContext);
   const {settings} = useContext(SettingsContext);
   const theme = useTheme();
   useEffect(() => {
@@ -25,10 +25,10 @@ export default function ViewTrackerScreen({
           onPress={() => {
             console.log(
               'Edit button pressed, tracker id: ',
-              route.params.tracker.uuid,
+              route.params.trackerId,
             );
             navigation.navigate('EditTracker', {
-              trackerId: route.params.tracker.uuid,
+              trackerId: route.params.trackerId,
             });
           }}
           icon="pencil-outline"
@@ -36,7 +36,7 @@ export default function ViewTrackerScreen({
       ),
     });
   }, []);
-  const item = route.params.tracker;
+  const item = trackers.find(t => t.uuid === route.params.trackerId);
   // Temp check for invariants
   locations.map(l => {
     console.log('Checking invariant weather at ' + l.name);
@@ -47,7 +47,7 @@ export default function ViewTrackerScreen({
     console.log(JSON.stringify(checkWeatherInvariants(l.weather)));
   });
   const gddArray =
-    item.kind === 'gdd'
+    item?.kind === 'gdd'
       ? getTrackerGddArray(item, locations, settings.algorithm)
       : undefined;
   const data = gddArray
@@ -55,8 +55,8 @@ export default function ViewTrackerScreen({
     : undefined;
   return (
     <ScrollView>
-      <TrackerProps tracker={item} />
-      {item.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
+      {item ? <TrackerProps tracker={item} /> : undefined}
+      {item?.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
         <View style={{rowGap: 30}}>
           <GddPlot data={data} targetGdd={item.target_gdd} />
           <DataTable>

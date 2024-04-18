@@ -111,7 +111,7 @@ export function ToGddTrackerCardProps(
     actions,
     onPress: () =>
       navigation.navigate('ViewTracker', {
-        tracker: gddTracker,
+        trackerId: gddTracker.uuid,
       }),
   };
 }

@@ -79,7 +79,6 @@ export default function AddGddTrackerScreen({
   }
   function dateInRange(): boolean {
     const delta = differenceInCalendarDays(new Date(), startDate);
-    console.log(delta);
     return delta <= MAX_HISTORY_DAYS;
   }
   function locationSelected(): boolean {

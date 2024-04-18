@@ -39,7 +39,7 @@ export type RootStackParamList = {
   AddCalendarTracker: undefined;
   AddTimedTracker: undefined;
   AddLocationCard: {fromAddGddTracker: boolean} | undefined;
-  ViewTracker: {tracker: Tracker};
+  ViewTracker: {trackerId: string};
   ViewLocation: {location: Location};
   EditTracker: {trackerId: string};
 };
