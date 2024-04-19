@@ -29,10 +29,11 @@ export function defaultSettings(): Settings {
   };
 }
 
+export function LogErrorCallbackNotSet(callbackName: string) {
+  console.log(`Error - ${callbackName} not set`);
+}
+
 export function defaultStateManager(): StateManager {
-  function LogErrorCallbackNotSet(callbackName: string) {
-    console.log(`Error - ${callbackName} not set`);
-  }
   return {
     locations: [],
     trackers: [],

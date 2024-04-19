@@ -1,9 +1,10 @@
 import {ContextStatus} from '../Types';
+import * as v from 'valibot';
 
 export type SettingsState = {
   settings: Settings;
   status: ContextStatus;
-  setSettings: ((settings: Settings) => void) | undefined;
+  setSettings: (settings: Settings) => void;
 };
 
 export type Settings = {
@@ -15,6 +16,24 @@ export type Settings = {
   dark_mode_enabled: boolean;
   default_base_temp: GddBaseTemp;
 };
+// NOTE: This MUST be updated if Settings is updated
+export function validateSettings(
+  maybeSettings: unknown,
+): maybeSettings is Settings {
+  const SettingsSchema = v.object(
+    {
+      algorithm: v.picklist(GDD_ALGORITHMS),
+      warning_threshold_perc: v.number(),
+      warning_threshold_days: v.number(),
+      unit_of_measure: v.picklist(UNITS_OF_MEASURE),
+      auto_dark_mode: v.boolean(),
+      dark_mode_enabled: v.boolean(),
+      default_base_temp: v.picklist(GDD_BASE_TEMPS),
+    },
+    v.never(),
+  );
+  return v.is(SettingsSchema, maybeSettings);
+}
 
 export const GDD_ALGORITHMS = ['Variant A', 'Variant B'] as const;
 /**

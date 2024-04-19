@@ -1,15 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
 import {ContextStatus} from '../Types';
-import {Location} from './Locations';
-import {Tracker} from './Trackers';
+import {Location, LocationSchema} from './Locations';
+import {Tracker, TrackerSchema} from './Trackers';
+import {StoredState} from './Types';
+import * as v from 'valibot';
 
-export type StoredState = {
-  trackers: Tracker[];
-  locations: Location[];
-};
-
-export async function GetStoredState(): Promise<StoredState | undefined> {
+export async function getStoredState(): Promise<StoredState | undefined> {
   return AsyncStorage.multiGet([
     LOCATIONS_STORAGE_KEY,
     GDD_TRACKERS_STORAGE_KEY,
@@ -24,9 +21,14 @@ export async function GetStoredState(): Promise<StoredState | undefined> {
     ) {
       console.log('Loading app state from device');
       try {
-        // Assuming this is type safe
-        const trackers: Tracker[] = JSON.parse(containsTrackers[1]);
-        const locations: Location[] = JSON.parse(containsLoc[1]);
+        const locations: Location[] = v.parse(
+          v.array(LocationSchema),
+          JSON.parse(containsLoc[1]),
+        );
+        const trackers: Tracker[] = v.parse(
+          v.array(TrackerSchema),
+          JSON.parse(containsTrackers[1]),
+        );
         return {
           trackers,
           locations,
@@ -44,10 +46,7 @@ export async function GetStoredState(): Promise<StoredState | undefined> {
   });
 }
 
-export function onChangeGddTrackers(
-  status: ContextStatus,
-  trackers: Tracker[],
-) {
+export function writeTrackers(status: ContextStatus, trackers: Tracker[]) {
   console.log('App context status is: ' + status);
   if (status === 'Loaded') {
     console.log('Setting app state - trackers');
@@ -59,10 +58,7 @@ export function onChangeGddTrackers(
   }
 }
 
-export function OnChangeLocations(
-  status: ContextStatus,
-  locations: Location[],
-) {
+export function writeLocations(status: ContextStatus, locations: Location[]) {
   console.log('App context status is: ' + status);
   let active = true;
   if (status === 'Loaded') {

@@ -1,5 +1,5 @@
 // File to contain functions that call weather api and process weather api
-import {Location} from './providers/statecontext/Locations';
+import {Location, WeatherSchema} from './providers/statecontext/Locations';
 import {
   API_LOCATIONS_LANGUAGE,
   API_LOCATIONS_URL,
@@ -12,29 +12,27 @@ import {
   MAX_HISTORY_DAYS,
 } from './Consts';
 import {
-  Weather,
   WeatherApiForecast,
+  WeatherApiForecastSchema,
   WeatherApiLocations,
-  WeatherAppDay,
-  apiLocationsToAppLocations,
-  ApiTemperatureUnit as ApiTemperatureUnit,
+  WeatherApiLocationsSchema,
   apiWeatherToAppWeather,
   appUnitOfMeasureToApiTemperatureUnit,
-  WeatherAppLocation,
 } from './api/Types';
+import {Weather, WeatherAppDay} from './providers/statecontext/Locations';
 import {celsiustoFarenheit, farenheitToCelsius} from './Knowledge';
 import {UnitOfMeasure} from './providers/settingscontext/Types';
+import * as v from 'valibot';
 
-export async function fetchLocations(locName: string, results: number) {
+export async function fetchLocations(
+  locName: string,
+  results: number,
+): Promise<void | WeatherApiLocations> {
   const response = await fetch(
     `${API_LOCATIONS_URL}?name=${locName}&count=${results}&language=${API_LOCATIONS_LANGUAGE}&format=json`,
   )
-    .then(r => {
-      return r.json() as Promise<WeatherApiLocations>;
-    })
-    .then(l => {
-      return apiLocationsToAppLocations(l);
-    })
+    .then(r => r.json())
+    .then(j => v.parse(WeatherApiLocationsSchema, j))
     .catch(e => console.log('Error', e));
   return response;
 }
@@ -49,11 +47,10 @@ export async function fetchWeather(
   const response = await fetch(
     `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=${API_TIMEZONE}&past_days=${past_days}&forecast_days=${forecast_days}&temperature_unit=${temperature_unit}&format=json`,
   )
-    .then(r => {
-      return r.json() as Promise<WeatherApiForecast>;
-    })
-    .then(w => {
-      return apiWeatherToAppWeather(w, unitOfMeasure);
+    .then(r => r.json())
+    .then(j => {
+      const weather = v.parse(WeatherApiForecastSchema, j);
+      return apiWeatherToAppWeather(weather, unitOfMeasure);
     })
     .catch(e => console.log('Error', e));
   return response;

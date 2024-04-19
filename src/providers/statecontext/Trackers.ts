@@ -3,6 +3,92 @@ import {calcGddTotal} from '../../knowledge/Gdd';
 import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
 import {v4 as uuidv4} from 'uuid';
+import * as v from 'valibot';
+
+// These types are valibot validated
+// due to deserializing from AsyncStorage
+export const TRACKER_STATUSES = ['Stopped', 'Running'] as const;
+export const TrackerStatusSchema = v.picklist(TRACKER_STATUSES);
+export const NotificationStatusSchema = v.object(
+  {
+    lastCheckedUnixMs: v.optional(v.number()),
+    lastNotificationId: v.optional(v.number()),
+    lastNotificationStatus: v.optional(v.picklist(['Active', 'Cleared'])),
+  },
+  v.never(),
+);
+export const CalendarTrackerSchema = v.object(
+  {
+    kind: v.literal('calendar'),
+    name: v.string(),
+    description: v.string(),
+    uuid: v.string(),
+    target_date_unix_ms: v.number(),
+    trackerStatus: TrackerStatusSchema,
+    notificationStatus: NotificationStatusSchema,
+  },
+  v.never(),
+);
+export const TimedTrackerSchema = v.object(
+  {
+    kind: v.literal('timed'),
+    name: v.string(),
+    description: v.string(),
+    uuid: v.string(),
+    start_date_unix_ms: v.number(),
+    duration_days: v.number(),
+    trackerStatus: TrackerStatusSchema,
+    notificationStatus: NotificationStatusSchema,
+  },
+  v.never(),
+);
+export const GddTrackerSchema = v.object(
+  {
+    kind: v.literal('gdd'),
+    name: v.string(),
+    description: v.string(),
+    uuid: v.string(),
+    target_gdd: v.number(),
+    base_temp: v.number(),
+    start_date_unix_ms: v.number(),
+    locationId: v.number(),
+    trackerStatus: TrackerStatusSchema,
+    notificationStatus: NotificationStatusSchema,
+  },
+  v.never(),
+);
+export const TrackerSchema = v.variant('kind', [
+  CalendarTrackerSchema,
+  TimedTrackerSchema,
+  GddTrackerSchema,
+]);
+export type NotificationStatus = v.Output<typeof NotificationStatusSchema>;
+export type CalendarTracker = v.Output<typeof CalendarTrackerSchema>;
+export type TrackerStatus = v.Output<typeof TrackerStatusSchema>;
+export type TimedTracker = v.Output<typeof TimedTrackerSchema>;
+export type GddTracker = v.Output<typeof GddTrackerSchema>;
+export type Tracker = v.Output<typeof TrackerSchema>;
+
+/**
+ * Result of checking if notifications are due.
+ *
+ */
+// Should be in a different module
+export type TrackerStatusCheck =
+  | {
+      kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
+      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerName: string;
+      trackerId: string;
+    }
+  | {
+      kind: 'TargetReached' | 'Running';
+      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerName: string;
+      trackerId: string;
+      target: number;
+      actual: number;
+    };
 
 export function newGddTracker(
   name: string,
@@ -77,44 +163,6 @@ export function getTrackerType(tracker: Tracker): string {
       return 'Gdd';
   }
 }
-export type Tracker = GddTracker | TimedTracker | CalendarTracker;
-export type TrackerStatus = 'Stopped' | 'Running';
-export type NotificationStatus = {
-  lastCheckedUnixMs: number | undefined;
-  lastNotificationId: number | undefined;
-  lastNotificationStatus: 'Active' | 'Cleared' | undefined;
-};
-export type CalendarTracker = {
-  kind: 'calendar';
-  name: string;
-  description: string;
-  uuid: string;
-  target_date_unix_ms: number;
-  trackerStatus: TrackerStatus;
-  notificationStatus: NotificationStatus;
-};
-export type TimedTracker = {
-  kind: 'timed';
-  name: string;
-  description: string;
-  uuid: string;
-  start_date_unix_ms: number;
-  duration_days: number;
-  trackerStatus: TrackerStatus;
-  notificationStatus: NotificationStatus;
-};
-export type GddTracker = {
-  kind: 'gdd';
-  name: string;
-  description: string;
-  uuid: string;
-  target_gdd: number;
-  base_temp: number;
-  start_date_unix_ms: number;
-  locationId: number;
-  trackerStatus: TrackerStatus;
-  notificationStatus: NotificationStatus;
-};
 
 /// Resets tracker - note copy on write behaviour
 export function resetTracker(tracker: Tracker): Tracker {
@@ -131,22 +179,6 @@ export function stopTracker(tracker: Tracker): Tracker {
 export function resumeTracker(tracker: Tracker): Tracker {
   return {...resetTracker(tracker), trackerStatus: 'Running'};
 }
-
-export type TrackerStatusCheck =
-  | {
-      kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
-      trackerKind: 'gdd' | 'timed' | 'calendar';
-      trackerName: string;
-      trackerId: string;
-    }
-  | {
-      kind: 'TargetReached' | 'Running';
-      trackerKind: 'gdd' | 'timed' | 'calendar';
-      trackerName: string;
-      trackerId: string;
-      target: number;
-      actual: number;
-    };
 
 export function trackerStatus(
   tracker: Tracker,

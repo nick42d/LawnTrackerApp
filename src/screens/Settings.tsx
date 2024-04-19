@@ -15,36 +15,34 @@ import {
   toSomeSettingsListListProps,
 } from '../components/settingslist/Types';
 import SettingsList from '../components/SettingsList';
+import {defaultSettings} from '../Mock';
 
 export default function SettingsScreen() {
   const {settings, setSettings} = useContext(SettingsContext);
   const {clearAll} = useContext(StateContext);
+  function resetSettings() {
+    setSettings(defaultSettings());
+  }
   function setDarkMode(value: boolean) {
-    if (setSettings !== undefined)
-      setSettings({...settings, dark_mode_enabled: value});
+    setSettings({...settings, dark_mode_enabled: value});
   }
   function setAutoDarkMode(value: boolean) {
-    if (setSettings !== undefined)
-      setSettings({...settings, auto_dark_mode: value});
+    setSettings({...settings, auto_dark_mode: value});
   }
   function setAlgorithm(value: GddAlgorithm) {
-    if (setSettings !== undefined) setSettings({...settings, algorithm: value});
+    setSettings({...settings, algorithm: value});
   }
   function setWarningThresholdPercentage(value: number) {
-    if (setSettings !== undefined)
-      setSettings({...settings, warning_threshold_perc: value});
+    setSettings({...settings, warning_threshold_perc: value});
   }
   function setWarningThresholdDays(value: number) {
-    if (setSettings !== undefined)
-      setSettings({...settings, warning_threshold_days: value});
+    setSettings({...settings, warning_threshold_days: value});
   }
   function setDefaultBaseTemp(value: GddBaseTemp) {
-    if (setSettings !== undefined)
-      setSettings({...settings, default_base_temp: value});
+    setSettings({...settings, default_base_temp: value});
   }
   function setUnitOfMeasure(value: UnitOfMeasure) {
-    if (setSettings !== undefined)
-      setSettings({...settings, unit_of_measure: value});
+    setSettings({...settings, unit_of_measure: value});
   }
   const SettingsListState: SettingsListProps[] = [
     {
@@ -114,6 +112,17 @@ export default function SettingsScreen() {
           'Are you sure you want to clear all? All trackers and locations will be cleared.',
       },
       onPress: clearAll,
+    },
+    {
+      key: '4.5',
+      kind: 'press',
+      title: 'Reset settings',
+      description: 'Reset to default settings',
+      warningDialog: {
+        title: 'Confirm reset',
+        message: 'Are you sure you want to reset?',
+      },
+      onPress: resetSettings,
     },
     {
       key: '5',

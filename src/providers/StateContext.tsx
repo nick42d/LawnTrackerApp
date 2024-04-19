@@ -1,11 +1,11 @@
-import React, {useEffect, useReducer, useState} from 'react';
+import React, {useEffect, useMemo, useReducer, useState} from 'react';
 import {Tracker} from './statecontext/Trackers';
-import {StateManager} from './statecontext/Types';
+import {FunctionlessStateContext, StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
 import {
-  onChangeGddTrackers as OnChangeGddTrackers,
-  OnChangeLocations,
-  GetStoredState,
+  writeTrackers as OnChangeGddTrackers,
+  writeLocations,
+  getStoredState,
 } from './statecontext/AsyncStorage';
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
@@ -28,17 +28,22 @@ export const StateContext = React.createContext<StateManager>(
 export function StateContextProvider({
   children,
 }: React.PropsWithChildren): React.JSX.Element {
-  // TBD: Can mock functions be cached?
-  const [state, dispatch] = useReducer(reducer, {
-    locations: mockLocations(),
-    trackers: mockTrackers(),
-    status: 'Initialised',
-  });
+  // Only generate the mock state on first render.
+  // Expecting a change in React 19 to allow this to happen inside useReducer itself
+  const initialState = useMemo<FunctionlessStateContext>(
+    () => ({
+      locations: mockLocations(),
+      trackers: mockTrackers(),
+      status: 'Initialised',
+    }),
+    [],
+  );
+  const [state, dispatch] = useReducer(reducer, initialState);
   // On load, load up state and then refresh weather.
   useEffect(() => {
     console.log('App state context loaded, checking device for app state');
     dispatch({kind: 'SetLoading'});
-    GetStoredState()
+    getStoredState()
       .then(s => {
         if (s === undefined) {
           console.info("App state wasn't on device, using defaults");
@@ -78,7 +83,7 @@ export function StateContextProvider({
     // Debounce
     timeout(50).then(() => {
       if (active) {
-        OnChangeLocations(state.status, state.locations);
+        writeLocations(state.status, state.locations);
       }
     });
     return () => {

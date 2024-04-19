@@ -6,7 +6,7 @@ import {HomeLocationsTabScreenProps} from '../navigation/Root';
 import {Location} from '../providers/statecontext/Locations';
 import {useContext} from 'react';
 import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
-import {WeatherAppCondition} from '../api/Types';
+import {WeatherAppCondition} from '../providers/statecontext/Locations';
 import {WeatherLeftCallout} from './locationscard/LeftCallout';
 import {SettingsContext} from '../providers/SettingsContext';
 import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';

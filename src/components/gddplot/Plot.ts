@@ -1,7 +1,7 @@
 import {EXTRA_ESTIMATE_DAYS, MAX_ESTIMATE_DAYS} from '../../Consts';
 import {calcGdd} from '../../Knowledge';
 import {GddTracker} from '../../providers/statecontext/Trackers';
-import {WeatherAppDay} from '../../api/Types';
+import {WeatherAppDay} from '../../providers/statecontext/Locations';
 import {GddAlgorithm} from '../../providers/settingscontext/Types';
 import {Location} from '../../providers/statecontext/Locations';
 import {format} from 'date-fns';

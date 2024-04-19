@@ -37,6 +37,7 @@
     "react-native-svg": "^15.1.0",
     "react-native-vector-icons": "^10.0.3",
     "uuid": "^9.0.1",
+    "valibot": "^0.30.0",
     "yarn": "^1.22.22"
   },
   "devDependencies": {

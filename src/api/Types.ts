@@ -1,15 +1,80 @@
 import {format, startOfDay} from 'date-fns';
 import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
 import {UnitOfMeasure} from '../providers/settingscontext/Types';
+import {Weather, WeatherAppDay} from '../providers/statecontext/Locations';
+import * as v from 'valibot';
 
 export const API_TEMPERATURE_UNITS = ['celsius', 'farenheit'] as const;
+export const WeatherApiLocationSchema = v.object({
+  /// Unique ID for this location from API.
+  id: v.number(),
+  name: v.string(),
+  latitude: v.number(),
+  longitude: v.number(),
+  elevation: v.number(),
+  timezone: v.string(),
+  feature_code: v.string(),
+  country_code: v.string(),
+  country: v.string(),
+  country_id: v.string(),
+  population: v.number(),
+  postcodes: v.array(v.string()),
+  /// Top level administrative division - e.g Western Australia
+  admin1: v.string(),
+  admin2: v.string(),
+  admin3: v.string(),
+  admin4: v.string(),
+  admin1_id: v.string(),
+  admin2_id: v.string(),
+  admin3_id: v.string(),
+  admin4_id: v.string(),
+});
+export const WeatherApiLocationsSchema = v.object({
+  results: v.array(WeatherApiLocationSchema),
+});
+// Subject to const parameters set for api in ../Consts.ts
+export const WeatherApiForecastSchema = v.object({
+  latitude: v.number(),
+  longitude: v.number(),
+  generationtime_ms: v.number(),
+  utc_offset_seconds: v.number(),
+  timezone: v.string(),
+  timezone_abbreviation: v.string(),
+  elevation: v.number(),
+  current_units: v.object({
+    time: v.string(),
+    interval: v.string(),
+    temperature_2m: v.string(),
+    is_day: v.string(),
+    weather_code: v.string(),
+  }),
+  current: v.object({
+    time: v.number(),
+    interval: v.number(),
+    temperature_2m: v.number(),
+    is_day: v.number(),
+    weather_code: v.number(),
+  }),
+  daily_units: v.object({
+    time: v.string(),
+    temperature_2m_max: v.string(),
+    temperature_2m_min: v.string(),
+  }),
+  daily: v.object({
+    time: v.array(v.number()),
+    temperature_2m_max: v.array(v.number()),
+    temperature_2m_min: v.array(v.number()),
+  }),
+});
+export type WeatherApiForecast = v.Output<typeof WeatherApiForecastSchema>;
+export type WeatherApiLocation = v.Output<typeof WeatherApiLocationSchema>;
+export type WeatherApiLocations = v.Output<typeof WeatherApiLocationsSchema>;
 export type ApiTemperatureUnit = (typeof API_TEMPERATURE_UNITS)[number];
 export function appUnitOfMeasureToApiTemperatureUnit(
   unit: UnitOfMeasure,
 ): ApiTemperatureUnit {
   return unit === 'Metric' ? 'celsius' : 'farenheit';
 }
-
 export function apiWeatherToAppWeather(
   apiWeather: WeatherApiForecast,
   temperatureUnit: UnitOfMeasure,
@@ -23,28 +88,11 @@ export function apiWeatherToAppWeather(
   return {
     currentCondition: {
       code: apiWeather.current.weather_code,
-      isDay: apiWeather.current.is_day,
+      isDay: apiWeather.current.is_day === 1,
       temp: apiWeather.current.temperature_2m,
     },
     weatherArray,
     temperatureUnit,
-  };
-}
-
-export function apiLocationsToAppLocations(apiLocations: WeatherApiLocations) {
-  return apiLocations.results.map(x => apiLocationToAppLocation(x));
-}
-function apiLocationToAppLocation(
-  apiLocation: WeatherApiLocation,
-): WeatherAppLocation {
-  return {
-    apiId: apiLocation.id,
-    admin1: apiLocation.admin1,
-    country: apiLocation.country,
-    latitude: apiLocation.latitude,
-    longitude: apiLocation.longitude,
-    name: apiLocation.name,
-    timezone: apiLocation.timezone,
   };
 }
 
@@ -100,102 +148,3 @@ export function convertUnits(
     temperatureUnit: newUnit,
   };
 }
-
-// TODO: Add unit
-export type Weather = {
-  currentCondition: WeatherAppCondition;
-  weatherArray: WeatherAppDay[];
-  temperatureUnit: UnitOfMeasure;
-};
-
-export type WeatherAppCondition = {
-  code: number;
-  temp: number;
-  isDay: boolean;
-};
-
-export type WeatherAppDay = {
-  dateUnixMs: number;
-  weatherType: 'Historical' | 'Forecasted';
-  maxTemp: number;
-  minTemp: number;
-};
-
-export type WeatherApiLocations = {
-  results: WeatherApiLocation[];
-};
-
-export type WeatherAppLocations = {
-  locations: WeatherAppLocation[];
-};
-
-// Trimmed version of API Location type
-export type WeatherAppLocation = {
-  name: string;
-  /// Unique ID for this location from API.
-  apiId: number;
-  latitude: number;
-  longitude: number;
-  timezone: string;
-  country: string;
-  /// Top level administrative division - e.g Western Australia
-  admin1: string;
-};
-
-export type WeatherApiLocation = {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  elevation: number;
-  timezone: string;
-  feature_code: string;
-  country_code: string;
-  country: string;
-  country_id: string;
-  population: number;
-  postcodes: string[];
-  admin1: string;
-  admin2: string;
-  admin3: string;
-  admin4: string;
-  admin1_id: string;
-  admin2_id: string;
-  admin3_id: string;
-  admin4_id: string;
-};
-
-// Subject to const parameters set for api in ../Consts.ts
-export type WeatherApiForecast = {
-  latitude: number;
-  longitude: number;
-  generationtime_ms: number;
-  utc_offset_seconds: number;
-  timezone: string;
-  timezone_abbreviation: string;
-  elevation: number;
-  current_units: {
-    time: string;
-    interval: string;
-    temperature_2m: string;
-    is_day: string;
-    weather_code: string;
-  };
-  current: {
-    time: number;
-    interval: number;
-    temperature_2m: number;
-    is_day: boolean;
-    weather_code: number;
-  };
-  daily_units: {
-    time: string;
-    temperature_2m_max: string;
-    temperature_2m_min: string;
-  };
-  daily: {
-    time: number[];
-    temperature_2m_max: number[];
-    temperature_2m_min: number[];
-  };
-};

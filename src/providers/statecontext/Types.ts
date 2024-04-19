@@ -1,7 +1,7 @@
 import {ContextStatus} from '../Types';
 import {Tracker} from './Trackers';
 import {Location} from './Locations';
-import {Weather} from '../../api/Types';
+import {Weather} from './Locations';
 
 export type StateManager = {
   locations: Location[];
@@ -16,6 +16,11 @@ export type StateManager = {
   stopTrackerName: (trackerName: string) => void;
   resumeTrackerName: (trackerName: string) => void;
   clearAll: () => void;
+};
+
+export type StoredState = {
+  trackers: Tracker[];
+  locations: Location[];
 };
 
 /**

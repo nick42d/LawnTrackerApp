@@ -4,10 +4,8 @@
 import BackgroundFetch from 'react-native-background-fetch';
 import {displayTrackerNotification} from '../Notification';
 import {BACKGROUND_REFRESH_INTERVAL} from '../Consts';
-import {
-  GetStoredState,
-  StoredState,
-} from '../providers/statecontext/AsyncStorage';
+import {getStoredState} from '../providers/statecontext/AsyncStorage';
+import {StoredState} from '../providers/statecontext/Types';
 import {trackerStatus} from '../providers/statecontext/Trackers';
 import {Settings} from '../providers/settingscontext/Types';
 import {AppState} from 'react-native';
@@ -42,7 +40,7 @@ export function BackgroundFetcher(
       AppState.currentState,
     );
     // Important:  await asychronous tasks when using HeadlessJS.
-    const storedstate = await GetStoredState();
+    const storedstate = await getStoredState();
     // Similar logic tp HeadlessCallback
     if (storedstate) {
       const fetchedWeatherArray = await fetchLocationsWeather(

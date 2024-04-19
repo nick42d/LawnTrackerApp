@@ -6,7 +6,7 @@ import AppBarIconButton from '../components/AppBarIconButton';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../Api';
-import {WeatherAppLocation} from '../api/Types';
+import {WeatherApiLocation} from '../api/Types';
 import styles from '../Styles';
 
 const NUMBER_SEARCH_RESULTS = 5;
@@ -29,7 +29,7 @@ export default function AddLocationCardScreen({
     loading: false,
     showSuggestions: false,
   });
-  const [searchResults, setSearchResults] = useState<WeatherAppLocation[]>([]);
+  const [searchResults, setSearchResults] = useState<WeatherApiLocation[]>([]);
   const theme = useTheme();
 
   React.useEffect(() => {
@@ -81,7 +81,7 @@ export default function AddLocationCardScreen({
         if (active === true) {
           if (l) {
             console.log('setting search results');
-            setSearchResults(l);
+            setSearchResults(l.results);
           } else {
             console.log('Got no search results');
             setSearchResults([]);
@@ -170,7 +170,7 @@ export default function AddLocationCardScreen({
               return (
                 <List.Item
                   title={s.name}
-                  key={s.apiId}
+                  key={s.id}
                   description={s.admin1 + ', ' + s.country}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
@@ -180,7 +180,7 @@ export default function AddLocationCardScreen({
                         longitude: s.longitude,
                         name: s.name,
                         country: s.country,
-                        apiId: s.apiId,
+                        apiId: s.id,
                         admin1: s.admin1,
                       });
                     setSearchState({

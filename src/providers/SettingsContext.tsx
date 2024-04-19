@@ -1,5 +1,8 @@
 import {createContext, useEffect, useState} from 'react';
-import {defaultSettings as defaultSettings} from '../Mock';
+import {
+  LogErrorCallbackNotSet,
+  defaultSettings as defaultSettings,
+} from '../Mock';
 import {SettingsState} from './settingscontext/Types';
 import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,7 +13,7 @@ export const SETTINGS_STORAGE_KEY = 'SETTINGS';
 export const SettingsContext = createContext<SettingsState>({
   settings: defaultSettings(),
   status: 'Initialised',
-  setSettings: undefined,
+  setSettings: _ => LogErrorCallbackNotSet('setSettings'),
 });
 
 export function SettingsContextProvider({children}: React.PropsWithChildren) {

@@ -1,22 +1,13 @@
-import {useContext} from 'react';
 import {GddTracker} from '../../providers/statecontext/Trackers';
-import {replaceUndefinedString} from '../../Utils';
 import {
   calcGddTotal as calcGddTotal,
   isWeatherInitialized as isWeatherInitialised,
   isWeatherRefreshing,
 } from '../../knowledge/Gdd';
 import {HomeLocationsTabScreenProps} from '../../navigation/Root';
-import {
-  getGddEstimate,
-  getGraphPlot,
-  getTrackerGddArray,
-} from '../gddplot/Plot';
-import {SettingsContext} from '../../providers/SettingsContext';
-import {StateContext} from '../../providers/StateContext';
+import {getGddEstimate, getTrackerGddArray} from '../gddplot/Plot';
 import {TrackerCardProps} from './Types';
 import {LeftCalloutProps} from './LeftCallout';
-import {checkWeatherInvariants} from '../../api/Types';
 import {Settings} from '../../providers/settingscontext/Types';
 import {Location} from '../../providers/statecontext/Locations';
 
@@ -33,7 +24,6 @@ export function ToGddTrackerCardProps(
   const actual_gdd = calcGddTotal(gddTracker, locations, settings.algorithm);
   const weatherIsRefreshing = isWeatherRefreshing(gddTracker, locations);
   const weatherIsInitialised = isWeatherInitialised(gddTracker, locations);
-  const leftCalloutRefreshing = typeof actual_gdd !== 'number' ? true : false;
   const gddTrackerArray = getTrackerGddArray(
     gddTracker,
     locations,
