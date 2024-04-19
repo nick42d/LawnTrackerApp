@@ -1,5 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {DataTable, List, Text, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  DataTable,
+  List,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 import {timeout} from '../Utils';
@@ -7,6 +13,12 @@ import {timeout} from '../Utils';
 export default function ViewLocationScreen({
   route,
 }: AppScreenProps<'ViewLocation'>) {
+  // Improve responsiveness - load page first then freeze (as DataTable is slow)
+  const [waited, setWaited] = useState(false);
+  useEffect(() => {
+    timeout(50).then(() => setWaited(true));
+  }, []);
+
   const item = route.params.location;
 
   return (
@@ -32,24 +44,28 @@ export default function ViewLocationScreen({
         />
       </List.Section>
       {item.weather ? (
-        <DataTable>
-          <DataTable.Header>
-            <DataTable.Title>Day</DataTable.Title>
-            <DataTable.Title>Max</DataTable.Title>
-            <DataTable.Title>Min</DataTable.Title>
-            <DataTable.Title>Type</DataTable.Title>
-          </DataTable.Header>
-          {item.weather.weatherArray.map(w => (
-            <DataTable.Row key={w.dateUnixMs}>
-              <DataTable.Cell>
-                {new Date(w.dateUnixMs).toLocaleDateString()}
-              </DataTable.Cell>
-              <DataTable.Cell>{w.maxTemp}</DataTable.Cell>
-              <DataTable.Cell>{w.minTemp}</DataTable.Cell>
-              <DataTable.Cell>{w.weatherType}</DataTable.Cell>
-            </DataTable.Row>
-          ))}
-        </DataTable>
+        waited ? (
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Day</DataTable.Title>
+              <DataTable.Title>Max</DataTable.Title>
+              <DataTable.Title>Min</DataTable.Title>
+              <DataTable.Title>Type</DataTable.Title>
+            </DataTable.Header>
+            {item.weather.weatherArray.map(w => (
+              <DataTable.Row key={w.dateUnixMs}>
+                <DataTable.Cell>
+                  {new Date(w.dateUnixMs).toLocaleDateString()}
+                </DataTable.Cell>
+                <DataTable.Cell>{w.maxTemp}</DataTable.Cell>
+                <DataTable.Cell>{w.minTemp}</DataTable.Cell>
+                <DataTable.Cell>{w.weatherType}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+          </DataTable>
+        ) : (
+          <ActivityIndicator />
+        )
       ) : undefined}
     </ScrollView>
   );

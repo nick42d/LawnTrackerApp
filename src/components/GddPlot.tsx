@@ -1,11 +1,9 @@
 import {LineChart} from 'react-native-gifted-charts';
-import {GddGraphPlot, GraphPlotItem} from './gddplot/Plot';
-import {ActivityIndicator, useTheme} from 'react-native-paper';
+import {GddGraphPlot} from './gddplot/Plot';
+import {useTheme} from 'react-native-paper';
 import {View} from 'react-native';
 import {PlotLegend} from './gddplot/PlotLegend';
 import {GRAPH_WIDTH} from '../Consts';
-import {useEffect, useState} from 'react';
-import {timeout} from '../Utils';
 
 const HISTORICAL_COLOR = 'green';
 const FORECASTED_COLOR = 'yellowgreen';
