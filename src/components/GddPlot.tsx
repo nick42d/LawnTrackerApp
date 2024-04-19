@@ -1,6 +1,6 @@
 import {LineChart} from 'react-native-gifted-charts';
 import {GddGraphPlot} from './gddplot/Plot';
-import {useTheme} from 'react-native-paper';
+import {Text, useTheme} from 'react-native-paper';
 import {View} from 'react-native';
 import {PlotLegend} from './gddplot/PlotLegend';
 import {GRAPH_WIDTH} from '../Consts';
@@ -35,6 +35,16 @@ export function GddPlot(props: {
   ];
   return (
     <View>
+      <View>
+        <Text
+          variant="titleLarge"
+          style={{
+            textAlign: 'center',
+            textAlignVertical: 'center',
+          }}>
+          GDD Total by Date
+        </Text>
+      </View>
       <PlotLegend
         points={[
           {name: 'Historical', color: HISTORICAL_COLOR},
