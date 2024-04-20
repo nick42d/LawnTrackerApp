@@ -9,7 +9,7 @@ import {
   writeTrackers,
 } from './providers/statecontext/AsyncStorage';
 import {getStoredSettings} from './providers/settingscontext/AsyncStorage';
-import {fetchLocationsWeather} from './Api';
+import {fetchLocationsWeather} from './api/Api';
 
 /**  Task to be run by headless background fetch.
  * NOTE: Not supported on iOS

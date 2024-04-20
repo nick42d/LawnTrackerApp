@@ -7,15 +7,16 @@ export const MAX_FORECAST_DAYS = 7;
 export const EXTRA_ESTIMATE_DAYS = 3;
 // For performance reasons, limit the maximum number of estimate days
 export const MAX_ESTIMATE_DAYS = 50;
-// Openmeteo params
-// API parameters for current day
+/**
+ * Openmeteo API parameters for current day
+ */
 export const API_WEATHER_CURRENT_PARAMS = [
   'is_day',
   'weather_code',
   'temperature_2m',
 ];
 /**
- * API parameters for each day
+ * Openmeteo API parameters for each day
  */
 export const API_WEATHER_DAILY_PARAMS = [
   'temperature_2m_max',

@@ -14,7 +14,7 @@ import {
   WeatherUpdate,
   addWeatherArrayToLocations,
   fetchLocationsWeather,
-} from '../Api';
+} from '../api/Api';
 import {getStoredSettings as getStoredSettings} from '../providers/settingscontext/AsyncStorage';
 import {defaultSettings} from '../Mock';
 

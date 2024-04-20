@@ -1,4 +1,4 @@
-import {addWeatherArrayToLocations} from '../../Api';
+import {addWeatherArrayToLocations} from '../../api/Api';
 import {resetTracker, resumeTracker, stopTracker} from './Trackers';
 import {FunctionlessStateContext, StateAction} from './Types';
 

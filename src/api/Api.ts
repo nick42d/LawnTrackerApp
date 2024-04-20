@@ -1,5 +1,5 @@
 // File to contain functions that call weather api and process weather api
-import {Location, WeatherSchema} from './providers/statecontext/Locations';
+import {Location} from '../providers/statecontext/Locations';
 import {
   API_LOCATIONS_LANGUAGE,
   API_LOCATIONS_URL,
@@ -10,18 +10,17 @@ import {
   API_WEATHER_URL,
   MAX_FORECAST_DAYS,
   MAX_HISTORY_DAYS,
-} from './Consts';
+} from '../Consts';
 import {
-  WeatherApiForecast,
   WeatherApiForecastSchema,
   WeatherApiLocations,
   WeatherApiLocationsSchema,
   apiWeatherToAppWeather,
   appUnitOfMeasureToApiTemperatureUnit,
-} from './api/Types';
-import {Weather, WeatherAppDay} from './providers/statecontext/Locations';
-import {celsiustoFarenheit, farenheitToCelsius} from './Knowledge';
-import {UnitOfMeasure} from './providers/settingscontext/Types';
+} from './Types';
+import {Weather, WeatherAppDay} from '../providers/statecontext/Locations';
+import {celsiustoFarenheit, farenheitToCelsius} from '../Knowledge';
+import {UnitOfMeasure} from '../providers/settingscontext/Types';
 import * as v from 'valibot';
 
 export async function fetchLocations(
@@ -45,7 +44,7 @@ export async function fetchWeather(
 ): Promise<void | Weather> {
   const temperature_unit = appUnitOfMeasureToApiTemperatureUnit(unitOfMeasure);
   const response = await fetch(
-    `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=${API_TIMEZONE}&past_days=${past_days}&forecast_days=${forecast_days}&temperature_unit=${temperature_unit}&format=json`,
+    `${API_WEATHER_URL}?&latitude=${latitude}&longitude=${longitude}&daily=${API_WEATHER_DAILY_PARAMS.join()}&current=${API_WEATHER_CURRENT_PARAMS.join()}&timeformat=unixtime&timezone=auto&past_days=${past_days}&forecast_days=${forecast_days}&temperature_unit=${temperature_unit}&format=json`,
   )
     .then(r => r.json())
     .then(j => {

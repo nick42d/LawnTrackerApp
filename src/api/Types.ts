@@ -52,7 +52,8 @@ export const WeatherApiForecastSchema = v.object({
     time: v.number(),
     interval: v.number(),
     temperature_2m: v.number(),
-    is_day: v.number(),
+    // Transform binary to boolean on validation
+    is_day: v.transform(v.picklist([0, 1]), input => input === 1),
     weather_code: v.number(),
   }),
   daily_units: v.object({
@@ -79,16 +80,20 @@ export function apiWeatherToAppWeather(
   apiWeather: WeatherApiForecast,
   temperatureUnit: UnitOfMeasure,
 ): Weather {
-  const weatherArray: WeatherAppDay[] = apiWeather.daily.time.map((t, i) => ({
-    dateUnixMs: startOfDay(t * 1000).valueOf(),
-    weatherType: t > apiWeather.current.time ? 'Forecasted' : 'Historical',
-    maxTemp: apiWeather.daily.temperature_2m_max[i],
-    minTemp: apiWeather.daily.temperature_2m_min[i],
-  }));
+  const curDay = startOfDay(apiWeather.current.time * 1000);
+  const weatherArray: WeatherAppDay[] = apiWeather.daily.time.map((t, i) => {
+    const thisDay = startOfDay(t * 1000);
+    return {
+      dateUnixMs: thisDay.valueOf(),
+      weatherType: thisDay >= curDay ? 'Forecasted' : 'Historical',
+      maxTemp: apiWeather.daily.temperature_2m_max[i],
+      minTemp: apiWeather.daily.temperature_2m_min[i],
+    };
+  });
   return {
     currentCondition: {
       code: apiWeather.current.weather_code,
-      isDay: apiWeather.current.is_day === 1,
+      isDay: apiWeather.current.is_day,
       temp: apiWeather.current.temperature_2m,
     },
     weatherArray,

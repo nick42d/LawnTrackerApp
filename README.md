@@ -16,8 +16,7 @@ No setup is required. To add a new tracker, press the plus button on the home sc
 
 - Whilst React Native is cross-platform, I haven't tested the app on iOS as I don't own an Apple device or XCode.
 - The app has been designed to be serverless.
-  Instead of running on the server, the app periodically spins up background tasks using the react-native-background-task see if tasks are overdue.
-- Notifications are generated using the notifee library.
+  Instead of running on the server, the app periodically spins up background tasks using the react-native-background-task library to see if tasks are overdue, then generates notifications using the notifee library.
 - Due to iOS restrictions - if the app was ported to iOS, notifications won't be possible once the app is terminated under the current serverless architecture.
 
 ## How to build and run

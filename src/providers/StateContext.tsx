@@ -10,7 +10,7 @@ import {
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
-import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../Api';
+import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../api/Api';
 import notifee, {
   Event,
   EventType,

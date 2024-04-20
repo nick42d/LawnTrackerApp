@@ -5,7 +5,7 @@ import {AppScreenProps} from '../navigation/Root';
 import AppBarIconButton from '../components/AppBarIconButton';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
-import {fetchLocations} from '../Api';
+import {fetchLocations} from '../api/Api';
 import {WeatherApiLocation} from '../api/Types';
 import styles from '../Styles';
 
