@@ -8,6 +8,7 @@ import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../api/Api';
 import {WeatherApiLocation, prettyPrintLocationDescription} from '../api/Types';
 import styles from '../Styles';
+import {StateContextError} from '../providers/statecontext/Error';
 
 const NUMBER_SEARCH_RESULTS = 5;
 export default function AddLocationScreen({
@@ -34,24 +35,29 @@ export default function AddLocationScreen({
           icon="content-save"
           onPress={() => {
             if (currentLocation)
-              try {
-                addLocation({
-                  name: currentLocation.name,
-                  latitude: currentLocation.latitude,
-                  longitude: currentLocation.longitude,
-                  country: currentLocation.country,
-                  admin1: currentLocation.admin1,
-                  apiId: currentLocation.id,
-                  weather: undefined,
-                  weatherStatus: {
-                    status: 'Initialised',
-                    lastRefreshedUnixMs: undefined,
-                  },
-                });
-              } catch (e) {
-                console.error('Unhandled error: ', e);
-              }
-
+              addLocation({
+                name: currentLocation.name,
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                country: currentLocation.country,
+                admin1: currentLocation.admin1,
+                apiId: currentLocation.id,
+                weather: undefined,
+                weatherStatus: {
+                  status: 'Initialised',
+                  lastRefreshedUnixMs: undefined,
+                },
+              }).catch(e => {
+                if (e instanceof StateContextError) {
+                  navigation.navigate('Drawer', {
+                    screen: 'HomeLocationsTabs',
+                    params: {
+                      screen: 'Locations',
+                      params: {displayErrorOnLoad: e.message},
+                    },
+                  });
+                } else throw e;
+              });
             if (
               route.params?.fromAddGddTracker &&
               currentLocation !== undefined

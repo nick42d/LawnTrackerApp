@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FAB, Portal, Snackbar, Text} from 'react-native-paper';
 import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import styles from '../Styles';
@@ -18,7 +18,13 @@ export default function LocationsScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [alert, setAlert] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-
+  useEffect(() => {
+    if (route.params?.displayErrorOnLoad) {
+      setAlert(route.params.displayErrorOnLoad);
+      setShowAlert(true);
+      navigation.setParams({displayErrorOnLoad: undefined});
+    }
+  }, [route.params?.displayErrorOnLoad]);
   const onRefresh = React.useCallback(() => {
     console.log('Refreshing on Locations screen');
     setRefreshing(true);

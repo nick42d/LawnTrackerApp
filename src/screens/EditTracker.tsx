@@ -19,7 +19,6 @@ export default function EditTrackerScreen({
   navigation,
 }: AppScreenProps<'EditTracker'>) {
   const {changeTracker, locations, trackers} = useContext(StateContext);
-  const {settings} = useContext(SettingsContext);
   // TODO: Safety for locationId
   // On load set up state
   const [state, setState] = useState<AddTrackerInput | undefined>(() => {
@@ -28,6 +27,7 @@ export default function EditTrackerScreen({
     return undefined;
   });
   const [showLocationsDialog, setShowLocationsDialog] = useState(false);
+
   // If we navigated here from Add Locations Screen, make sure the dialog is shown
   // and set the added location as selected.
   useEffect(() => {
@@ -65,7 +65,6 @@ export default function EditTrackerScreen({
   const addTrackerProps = state
     ? getAddTrackerProps(
         locations,
-        // TODO: Safety
         state,
         showLocationsDialog,
         setState,

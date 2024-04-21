@@ -51,7 +51,7 @@ export type AppDrawerParamList = {
 
 export type HomeLocationsTabParamList = {
   Home: undefined;
-  Locations: undefined;
+  Locations: {displayErrorOnLoad: string} | undefined;
 };
 
 export type AppScreenNavigationProp<T extends keyof RootStackParamList> =
