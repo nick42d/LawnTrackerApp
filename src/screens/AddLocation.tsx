@@ -6,24 +6,18 @@ import AppBarIconButton from '../components/AppBarIconButton';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 import {StateContext} from '../providers/StateContext';
 import {fetchLocations} from '../api/Api';
-import {WeatherApiLocation} from '../api/Types';
+import {WeatherApiLocation, prettyPrintLocationDescription} from '../api/Types';
 import styles from '../Styles';
 
 const NUMBER_SEARCH_RESULTS = 5;
-type AddLocationCardState = {
-  name: string;
-  apiId: number;
-  latitude: number;
-  longitude: number;
-  admin1: string;
-  country: string;
-};
-export default function AddLocationCardScreen({
+export default function AddLocationScreen({
   route,
   navigation,
-}: AppScreenProps<'AddLocationCard'>): React.JSX.Element {
+}: AppScreenProps<'AddLocation'>): React.JSX.Element {
   const {addLocation} = useContext(StateContext);
-  const [state, setState] = useState<AddLocationCardState | undefined>();
+  const [currentLocation, setCurrentLocation] = useState<
+    WeatherApiLocation | undefined
+  >();
   const [searchState, setSearchState] = useState({
     query: '',
     loading: false,
@@ -36,18 +30,18 @@ export default function AddLocationCardScreen({
     navigation.setOptions({
       headerRight: () => (
         <AppBarIconButton
-          disabled={state === undefined}
+          disabled={currentLocation === undefined}
           icon="content-save"
           onPress={() => {
-            if (state)
+            if (currentLocation)
               try {
                 addLocation({
-                  name: state.name,
-                  latitude: state.latitude,
-                  longitude: state.longitude,
-                  country: state.country,
-                  admin1: state.admin1,
-                  apiId: state.apiId,
+                  name: currentLocation.name,
+                  latitude: currentLocation.latitude,
+                  longitude: currentLocation.longitude,
+                  country: currentLocation.country,
+                  admin1: currentLocation.admin1,
+                  apiId: currentLocation.id,
                   weather: undefined,
                   weatherStatus: {
                     status: 'Initialised',
@@ -58,9 +52,13 @@ export default function AddLocationCardScreen({
                 console.error('Unhandled error: ', e);
               }
 
-            if (route.params?.fromAddGddTracker && state !== undefined) {
-              navigation.navigate('AddGddTracker', {
-                fromAddLocationId: state?.apiId,
+            if (
+              route.params?.fromAddGddTracker &&
+              currentLocation !== undefined
+            ) {
+              navigation.navigate('AddTracker', {
+                kind: 'gdd',
+                fromAddLocationId: currentLocation?.id,
               });
             } else {
               navigation.goBack();
@@ -69,7 +67,7 @@ export default function AddLocationCardScreen({
         />
       ),
     });
-  }, [state]);
+  }, [currentLocation]);
 
   // Handle state updates to provide search suggestions whilst handling race conditions.
   React.useEffect(() => {
@@ -80,10 +78,10 @@ export default function AddLocationCardScreen({
       fetchLocations(searchState.query, NUMBER_SEARCH_RESULTS).then(l => {
         if (active === true) {
           if (l) {
-            console.log('setting search results');
+            console.log('Setting search results');
             setSearchResults(l.results);
           } else {
-            console.log('Got no search results');
+            console.log('Error in search results, so setting to empty');
             setSearchResults([]);
           }
           setSearchState({
@@ -106,11 +104,13 @@ export default function AddLocationCardScreen({
   }, [searchState.query]);
 
   function prettyLocTooltip(): string {
-    if (state === undefined) return '';
-    return `${state.name} ${state.latitude.toFixed(4)}, ${state.longitude.toFixed(4)}`;
+    if (currentLocation === undefined) return '';
+    return `${currentLocation.name} ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
   }
   function latLongArray(): number[] {
-    return state ? [state.longitude, state.latitude] : [0, 0];
+    return currentLocation
+      ? [currentLocation.longitude, currentLocation.latitude]
+      : [0, 0];
   }
 
   return (
@@ -131,10 +131,10 @@ export default function AddLocationCardScreen({
           }
         />
         <MapLibreGL.Camera
-          zoomLevel={state ? 2 : 1}
+          zoomLevel={currentLocation ? 2 : 1}
           centerCoordinate={latLongArray()}
         />
-        {state ? (
+        {currentLocation ? (
           // NOTE: Icon looks shit in light mode - greyed out when selected and black when not.
           <MapLibreGL.PointAnnotation
             id="pt-ann"
@@ -171,18 +171,10 @@ export default function AddLocationCardScreen({
                 <List.Item
                   title={s.name}
                   key={s.id}
-                  description={s.admin1 + ', ' + s.country}
+                  description={prettyPrintLocationDescription(s)}
                   right={() => <List.Icon icon="magnify" />}
                   onPress={_ => {
-                    Keyboard.dismiss(),
-                      setState({
-                        latitude: s.latitude,
-                        longitude: s.longitude,
-                        name: s.name,
-                        country: s.country,
-                        apiId: s.id,
-                        admin1: s.admin1,
-                      });
+                    Keyboard.dismiss(), setCurrentLocation(s);
                     setSearchState({
                       ...searchState,
                       query: '',

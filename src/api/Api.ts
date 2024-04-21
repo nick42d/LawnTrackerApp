@@ -32,7 +32,7 @@ export async function fetchLocations(
   )
     .then(r => r.json())
     .then(j => v.parse(WeatherApiLocationsSchema, j))
-    .catch(e => console.log('Error', e));
+    .catch(e => console.log('Error', JSON.stringify(e)));
   return response;
 }
 export async function fetchWeather(

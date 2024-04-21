@@ -4,7 +4,6 @@ import {
   NavigatorScreenParams,
   Theme,
 } from '@react-navigation/native';
-import {Tracker} from '../providers/statecontext/Trackers';
 import {
   Appbar,
   MaterialBottomTabScreenProps,
@@ -17,28 +16,26 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import {getHeaderTitle} from '@react-navigation/elements';
-import AddGddTrackerScreen from '../screens/AddGddTracker';
 import ViewTrackerScreen from '../screens/ViewTracker';
 import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {Location} from '../providers/statecontext/Locations';
-import AddLocationCardScreen from '../screens/AddLocationCard';
+import AddLocationScreen from '../screens/AddLocation';
 import {useContext} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import LoadingScreen from '../screens/Loading';
-import AddCalendarTrackerScreen from '../screens/AddCalendarTracker';
-import AddTimedTrackerScreen from '../screens/AddTimedTracker';
 import ViewLocationScreen from '../screens/ViewLocation';
 import EditTrackerScreen from '../screens/EditTracker';
+import AddTrackerScreen from '../screens/AddTracker';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
   Drawer: NavigatorScreenParams<AppDrawerParamList>;
-  AddGddTracker: {fromAddLocationId: number} | undefined;
-  AddCalendarTracker: undefined;
-  AddTimedTracker: undefined;
-  AddLocationCard: {fromAddGddTracker: boolean} | undefined;
+  AddLocation: {fromAddGddTracker: boolean} | undefined;
+  AddTracker:
+    | {kind: 'gdd'; fromAddLocationId?: number}
+    | {kind: 'calendar' | 'timed'};
   ViewTracker: {trackerId: string};
   ViewLocation: {location: Location};
   EditTracker: {trackerId: string};
@@ -102,19 +99,9 @@ function AppRootStackNavigator() {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="AddGddTracker"
-          component={AddGddTrackerScreen}
-          options={{title: 'Add GDD Tracker'}}
-        />
-        <Stack.Screen
-          name="AddCalendarTracker"
-          component={AddCalendarTrackerScreen}
-          options={{title: 'Add Calendar Tracker'}}
-        />
-        <Stack.Screen
-          name="AddTimedTracker"
-          component={AddTimedTrackerScreen}
-          options={{title: 'Add Timed Tracker'}}
+          name="AddTracker"
+          component={AddTrackerScreen}
+          options={{title: 'Add Tracker'}}
         />
         <Stack.Screen
           name="ViewTracker"
@@ -127,8 +114,8 @@ function AppRootStackNavigator() {
           options={{title: 'Edit Tracker'}}
         />
         <Stack.Screen
-          name="AddLocationCard"
-          component={AddLocationCardScreen}
+          name="AddLocation"
+          component={AddLocationScreen}
           options={{title: 'Add Location'}}
         />
         <Stack.Screen

@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useReducer, useState} from 'react';
-import {Tracker} from './statecontext/Trackers';
+import {AddTracker, Tracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
 import {
@@ -189,7 +189,8 @@ export function StateContextProvider({
     }
     dispatch({kind: 'DeleteLocationId', id});
   }
-  function addTracker(tracker: Tracker) {
+  function addTracker(addTracker: AddTracker) {
+    const tracker = newTracker(addTracker);
     dispatch({kind: 'AddTracker', tracker});
   }
   function deleteTrackerId(id: string) {

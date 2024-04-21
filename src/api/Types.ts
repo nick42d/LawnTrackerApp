@@ -11,26 +11,28 @@ export const WeatherApiLocationSchema = v.object({
   name: v.string(),
   latitude: v.number(),
   longitude: v.number(),
-  elevation: v.number(),
-  timezone: v.string(),
   feature_code: v.string(),
-  country_code: v.string(),
-  country: v.string(),
-  country_id: v.string(),
-  population: v.number(),
-  postcodes: v.array(v.string()),
+  // Assume all above fields are not optional.
+  timezone: v.optional(v.string()),
+  elevation: v.optional(v.number()),
+  country_code: v.optional(v.string()),
+  country: v.optional(v.string()),
+  country_id: v.optional(v.number()),
+  population: v.optional(v.number()),
+  postcodes: v.optional(v.array(v.string())),
   /// Top level administrative division - e.g Western Australia
-  admin1: v.string(),
-  admin2: v.string(),
-  admin3: v.string(),
-  admin4: v.string(),
-  admin1_id: v.string(),
-  admin2_id: v.string(),
-  admin3_id: v.string(),
-  admin4_id: v.string(),
+  admin1: v.optional(v.string()),
+  admin2: v.optional(v.string()),
+  admin3: v.optional(v.string()),
+  admin4: v.optional(v.string()),
+  admin1_id: v.optional(v.number()),
+  admin2_id: v.optional(v.number()),
+  admin3_id: v.optional(v.number()),
+  admin4_id: v.optional(v.number()),
 });
 export const WeatherApiLocationsSchema = v.object({
-  results: v.array(WeatherApiLocationSchema),
+  // If no results are received we coerce this to empty array.
+  results: v.optional(v.array(WeatherApiLocationSchema), []),
 });
 // Subject to const parameters set for api in ../Consts.ts
 export const WeatherApiForecastSchema = v.object({
@@ -152,4 +154,11 @@ export function convertUnits(
     weatherArray: [], // TODO
     temperatureUnit: newUnit,
   };
+}
+
+export function prettyPrintLocationDescription(l: WeatherApiLocation): string {
+  if (l.admin1 && l.country) return `${l.admin1}, ${l.country}`;
+  if (l.country) return `${l.country}`;
+  if (l.admin1) return `${l.admin1}`;
+  return '';
 }

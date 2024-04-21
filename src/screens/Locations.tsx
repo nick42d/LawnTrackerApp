@@ -58,7 +58,7 @@ export default function LocationsScreen({
         icon={'plus'}
         onPress={() => {
           console.log('Pressed plus button on locations screen');
-          navigation.navigate('AddLocationCard');
+          navigation.navigate('AddLocation');
         }}
         style={[styles.fabStyle]}
       />

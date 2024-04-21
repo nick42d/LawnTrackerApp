@@ -11,6 +11,7 @@ import {format} from 'date-fns';
 import {GddPlot} from '../components/GddPlot';
 import AppBarIconButton from '../components/AppBarIconButton';
 import {timeout} from '../Utils';
+import GddDataTable from '../components/GddDataTable';
 
 export default function ViewTrackerScreen({
   navigation,
@@ -58,6 +59,7 @@ export default function ViewTrackerScreen({
     ? getGraphPlot(gddArray, theme.colors.primaryContainer)
     : undefined;
   return (
+    // NOTE:  GDD Trackers also show Plot and DataTable
     <ScrollView>
       {item ? <TrackerProps tracker={item} /> : undefined}
       {item?.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
@@ -65,24 +67,7 @@ export default function ViewTrackerScreen({
           {waited ? (
             <View>
               <GddPlot data={data} targetGdd={item.target_gdd} />
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title>Day</DataTable.Title>
-                  <DataTable.Title>GDD</DataTable.Title>
-                  <DataTable.Title>GDD - Total</DataTable.Title>
-                  <DataTable.Title>GDD Type</DataTable.Title>
-                </DataTable.Header>
-                {gddArray.map(i => (
-                  <DataTable.Row key={i.dateUnixMs}>
-                    <DataTable.Cell>
-                      {format(new Date(i.dateUnixMs), 'EEEEEE dd/MM')}
-                    </DataTable.Cell>
-                    <DataTable.Cell>{i.gdd.toFixed(1)}</DataTable.Cell>
-                    <DataTable.Cell>{i.gddAcc.toFixed(1)}</DataTable.Cell>
-                    <DataTable.Cell>{i.weatherType}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-              </DataTable>
+              <GddDataTable gddArray={gddArray} />
             </View>
           ) : (
             <ActivityIndicator size="large" />

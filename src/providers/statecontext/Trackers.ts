@@ -1,13 +1,77 @@
-import {addDays} from 'date-fns';
+import {addDays, startOfDay} from 'date-fns';
 import {calcGddTotal} from '../../knowledge/Gdd';
 import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
 import {v4 as uuidv4} from 'uuid';
 import * as v from 'valibot';
+import {DistributiveOmit} from '../../Utils';
+import {MAX_HISTORY_DAYS} from '../../Consts';
+
+export const TRACKER_STATUSES = ['Stopped', 'Running'] as const;
+export const MAX_DESC_LENGTH = 40;
+export const MAX_NAME_LENGTH = 20;
 
 // These types are valibot validated
 // due to deserializing from AsyncStorage
-export const TRACKER_STATUSES = ['Stopped', 'Running'] as const;
+// and form validation
+export const TrackerNameSchema = v.string([
+  v.minLength(1, 'Name is mandatory'),
+  v.maxLength(
+    MAX_NAME_LENGTH,
+    `Name must be less than ${MAX_NAME_LENGTH} characters`,
+  ),
+]);
+export const TrackerDescSchema = v.string([
+  v.maxLength(
+    MAX_DESC_LENGTH,
+    `Description must be less than ${MAX_DESC_LENGTH} characters`,
+  ),
+]);
+/**
+ * Disallow adding GDD tracker older than API history window
+ */
+export const AddGddTrackerStartDateSchema = v.transform(
+  v.optional(
+    v.date([v.minValue(addDays(startOfDay(new Date()), -MAX_HISTORY_DAYS))]),
+  ),
+  d => (d ? Number(d) : Date.now()),
+);
+/**
+ * Disallow adding Calendar tracker older than today - no point!
+ */
+export const AddCalendarTrackerStartDateSchema = v.transform(
+  v.optional(
+    v.date([
+      v.minValue(
+        startOfDay(new Date()),
+        'Calendar tracker date must be in the future',
+      ),
+    ]),
+  ),
+  d => (d ? Number(d) : Date.now()),
+);
+export const PositiveIntegerSchema = v.number('Not a number', [
+  v.safeInteger('Whole numbers only'),
+  v.minValue(0, 'Number too low'),
+]);
+export const AddGddTrackerTargetSchema = v.transform(
+  v.string('Target must be a number', [v.minLength(1, 'Target is mandatory')]),
+  v => Number(v),
+  PositiveIntegerSchema,
+);
+/**
+ * No date restrictions for timed tracker
+ */
+export const AddTimedTrackerStartDateSchema = v.transform(
+  v.optional(v.date()),
+  d => (d ? Number(d) : Date.now()),
+);
+export const AddTimedTrackerDurationDaysSchema = v.transform(
+  v.string([v.minLength(1)]),
+  v => Number(v),
+  PositiveIntegerSchema,
+);
+export const StringToNumberSchema = v.transform(v.string(), Number);
 export const TrackerStatusSchema = v.picklist(TRACKER_STATUSES);
 export const NotificationStatusSchema = v.object(
   {
@@ -17,86 +81,226 @@ export const NotificationStatusSchema = v.object(
   },
   v.never(),
 );
-export const CalendarTrackerSchema = v.object(
+/**
+ * Base storage validation schema
+ */
+export const BaseTrackerSchema = v.object(
   {
-    kind: v.literal('calendar'),
-    name: v.string(),
-    description: v.string(),
-    uuid: v.string(),
-    target_date_unix_ms: v.number(),
+    name: TrackerNameSchema,
+    description: TrackerDescSchema,
+    uuid: v.string([v.uuid()]),
     trackerStatus: TrackerStatusSchema,
     notificationStatus: NotificationStatusSchema,
   },
   v.never(),
 );
-export const TimedTrackerSchema = v.object(
+/**
+ * Base form validation schema
+ */
+export const BaseAddTrackerSchema = v.object(
   {
-    kind: v.literal('timed'),
-    name: v.string(),
-    description: v.string(),
-    uuid: v.string(),
-    start_date_unix_ms: v.number(),
-    duration_days: v.number(),
-    trackerStatus: TrackerStatusSchema,
-    notificationStatus: NotificationStatusSchema,
+    name: TrackerNameSchema,
+    description: TrackerDescSchema,
   },
   v.never(),
 );
-export const GddTrackerSchema = v.object(
-  {
-    kind: v.literal('gdd'),
-    name: v.string(),
-    description: v.string(),
-    uuid: v.string(),
-    target_gdd: v.number(),
-    base_temp: v.number(),
-    start_date_unix_ms: v.number(),
-    locationId: v.number(),
-    trackerStatus: TrackerStatusSchema,
-    notificationStatus: NotificationStatusSchema,
-  },
-  v.never(),
-);
+/**
+ * Form validation schema
+ */
+export const AddGddTrackerSchema = v.merge([
+  BaseAddTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('gdd'),
+      target_gdd: AddGddTrackerTargetSchema,
+      base_temp: StringToNumberSchema,
+      start_date_unix_ms: AddGddTrackerStartDateSchema,
+      locationId: v.number(),
+    },
+    v.never(),
+  ),
+]);
+/**
+ * Storage validation schema
+ */
+export const GddTrackerSchema = v.merge([
+  BaseTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('gdd'),
+      target_gdd: v.number(),
+      base_temp: v.number(),
+      start_date_unix_ms: v.number(),
+      locationId: v.number(),
+    },
+    v.never(),
+  ),
+]);
+/**
+ * Storage validation schema
+ */
+export const CalendarTrackerSchema = v.merge([
+  BaseTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('calendar'),
+      target_date_unix_ms: v.number(),
+    },
+    v.never(),
+  ),
+]);
+/**
+ * Form validation schema
+ */
+export const AddCalendarTrackerSchema = v.merge([
+  BaseAddTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('calendar'),
+      target_date_unix_ms: AddCalendarTrackerStartDateSchema,
+    },
+    v.never(),
+  ),
+]);
+export const TimedTrackerSchema = v.merge([
+  BaseTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('timed'),
+      start_date_unix_ms: v.number(),
+      duration_days: v.number(),
+    },
+    v.never(),
+  ),
+]);
+export const AddTimedTrackerSchema = v.merge([
+  BaseAddTrackerSchema,
+  v.object(
+    {
+      kind: v.literal('timed'),
+      start_date_unix_ms: AddTimedTrackerStartDateSchema,
+      duration_days: AddTimedTrackerDurationDaysSchema,
+    },
+    v.never(),
+  ),
+]);
 export const TrackerSchema = v.variant('kind', [
   CalendarTrackerSchema,
   TimedTrackerSchema,
   GddTrackerSchema,
 ]);
+export const AddTrackerSchema = v.variant('kind', [
+  AddCalendarTrackerSchema,
+  AddTimedTrackerSchema,
+  AddGddTrackerSchema,
+]);
+
 export type NotificationStatus = v.Output<typeof NotificationStatusSchema>;
 export type CalendarTracker = v.Output<typeof CalendarTrackerSchema>;
 export type TrackerStatus = v.Output<typeof TrackerStatusSchema>;
 export type TimedTracker = v.Output<typeof TimedTrackerSchema>;
 export type GddTracker = v.Output<typeof GddTrackerSchema>;
+export type AddTrackerInput = v.Input<typeof AddTrackerSchema>;
+export type AddGddTrackerInput = v.Input<typeof AddGddTrackerSchema>;
+export type AddCalendarTrackerInput = v.Input<typeof AddCalendarTrackerSchema>;
+export type AddTimedTrackerInput = v.Input<typeof AddTimedTrackerSchema>;
+export type AddTracker = v.Output<typeof AddTrackerSchema>;
 export type Tracker = v.Output<typeof TrackerSchema>;
+export type TrackerKind = Tracker['kind'];
 
+// Should be in a different module
 /**
  * Result of checking if notifications are due.
  *
  */
-// Should be in a different module
 export type TrackerStatusCheck =
   | {
       kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
-      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerKind: TrackerKind;
       trackerName: string;
       trackerId: string;
     }
   | {
       kind: 'TargetReached' | 'Running';
-      trackerKind: 'gdd' | 'timed' | 'calendar';
+      trackerKind: TrackerKind;
       trackerName: string;
       trackerId: string;
       target: number;
       actual: number;
     };
 
+type DefaultAddTrackerInputProps = {
+  kind: TrackerKind;
+  locationId: number;
+  baseTemp: number;
+};
+export function defaultAddTrackerInput(
+  props: DefaultAddTrackerInputProps,
+): AddTrackerInput {
+  switch (props.kind) {
+    case 'gdd':
+      return {
+        kind: 'gdd',
+        name: '',
+        description: '',
+        start_date_unix_ms: new Date(),
+        locationId: props.locationId,
+        base_temp: props.baseTemp.toFixed(0),
+        target_gdd: '',
+      };
+    case 'timed':
+      return {
+        kind: 'timed',
+        name: '',
+        description: '',
+        start_date_unix_ms: new Date(),
+        duration_days: '',
+      };
+    case 'calendar':
+      return {
+        kind: 'calendar',
+        name: '',
+        description: '',
+        target_date_unix_ms: new Date(),
+      };
+  }
+}
+export function newTracker(addTracker: AddTracker) {
+  switch (addTracker.kind) {
+    case 'gdd': {
+      return newGddTracker(
+        addTracker.name,
+        addTracker.description,
+        addTracker.locationId,
+        addTracker.target_gdd,
+        addTracker.base_temp,
+        addTracker.start_date_unix_ms,
+      );
+    }
+    case 'timed': {
+      return newTimedTracker(
+        addTracker.name,
+        addTracker.description,
+        addTracker.start_date_unix_ms,
+        addTracker.duration_days,
+      );
+    }
+    case 'calendar': {
+      return newCalendarTracker(
+        addTracker.name,
+        addTracker.description,
+        addTracker.target_date_unix_ms,
+      );
+    }
+  }
+}
 export function newGddTracker(
   name: string,
   description: string,
   locationId: number,
   target_gdd: number,
-  base_temp: GddBaseTemp,
-  start_date: Date,
+  base_temp: number,
+  start_date_unix_ms: number,
 ): GddTracker {
   return {
     kind: 'gdd',
@@ -106,7 +310,7 @@ export function newGddTracker(
     uuid: uuidv4(),
     target_gdd,
     base_temp,
-    start_date_unix_ms: start_date.valueOf(),
+    start_date_unix_ms,
     trackerStatus: 'Running',
     notificationStatus: newNotificationStatus(),
   };
@@ -115,14 +319,14 @@ export function newGddTracker(
 export function newCalendarTracker(
   name: string,
   description: string,
-  target_date: Date,
+  target_date_unix_ms: number,
 ): CalendarTracker {
   return {
     kind: 'calendar',
     description,
     name,
     uuid: uuidv4(),
-    target_date_unix_ms: target_date.valueOf(),
+    target_date_unix_ms,
     trackerStatus: 'Running',
     notificationStatus: newNotificationStatus(),
   };
@@ -131,7 +335,7 @@ export function newCalendarTracker(
 export function newTimedTracker(
   name: string,
   description: string,
-  start_date: Date,
+  start_date_unix_ms: number,
   duration_days: number,
 ): TimedTracker {
   return {
@@ -139,7 +343,7 @@ export function newTimedTracker(
     description,
     name,
     uuid: uuidv4(),
-    start_date_unix_ms: start_date.valueOf(),
+    start_date_unix_ms,
     duration_days,
     trackerStatus: 'Running',
     notificationStatus: newNotificationStatus(),

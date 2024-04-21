@@ -3,7 +3,10 @@ import {Button, Card, Icon, Text} from 'react-native-paper';
 import {CARD_TITLE_VARIANT} from '../Styles';
 import * as central_styles from '../Styles';
 import {HomeLocationsTabScreenProps} from '../navigation/Root';
-import {Location} from '../providers/statecontext/Locations';
+import {
+  Location,
+  prettyPrintLocation,
+} from '../providers/statecontext/Locations';
 import {useContext} from 'react';
 import {WEATHER_IMAGES} from '../../assets/weather_icons/WeatherImages';
 import {WeatherAppCondition} from '../providers/statecontext/Locations';
@@ -63,7 +66,7 @@ export function LocationsCard({
         navigation.navigate('ViewLocation', {location});
       }}>
       <Card.Title
-        title={location.name + ', ' + location.country}
+        title={prettyPrintLocation(location)}
         subtitle={weatherImages?.desc}
         titleVariant={CARD_TITLE_VARIANT}
         left={() => (

@@ -106,7 +106,7 @@ export default function HomeScreen({
             icon: 'calendar-clock',
             onPress: () => {
               console.log('Pressed add Calendar Tracker button');
-              navigation.navigate('AddCalendarTracker');
+              navigation.navigate('AddTracker', {kind: 'calendar'});
             },
           },
           {
@@ -114,7 +114,7 @@ export default function HomeScreen({
             icon: 'clock-start',
             onPress: () => {
               console.log('Pressed add Timed Tracker button');
-              navigation.navigate('AddTimedTracker');
+              navigation.navigate('AddTracker', {kind: 'timed'});
             },
           },
           {
@@ -122,7 +122,7 @@ export default function HomeScreen({
             icon: 'weather-cloudy-clock',
             onPress: () => {
               console.log('Pressed add GDD Tracker button');
-              navigation.navigate('AddGddTracker');
+              navigation.navigate('AddTracker', {kind: 'gdd'});
             },
           },
         ]}

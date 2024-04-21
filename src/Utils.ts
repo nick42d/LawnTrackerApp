@@ -13,3 +13,11 @@ export function replaceUndefinedString(s: string | undefined): string {
 export async function timeout(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * Distributive Omit type - useful for tagged unions.
+ * https://stackoverflow.com/a/57103940
+ */
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;

@@ -1,5 +1,5 @@
 import {ContextStatus} from '../Types';
-import {Tracker} from './Trackers';
+import {AddTracker, Tracker} from './Trackers';
 import {Location} from './Locations';
 import {Weather} from './Locations';
 
@@ -10,7 +10,7 @@ export type StateManager = {
   refreshWeather: () => Promise<void>;
   addLocation: (loc: Location) => Promise<void>;
   deleteLocationId: (id: number) => void;
-  addTracker: (tracker: Tracker) => void;
+  addTracker: (tracker: AddTracker) => void;
   deleteTrackerName: (trackerName: string) => void;
   resetTrackerName: (trackerName: string) => void;
   stopTrackerName: (trackerName: string) => void;

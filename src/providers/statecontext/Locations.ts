@@ -39,11 +39,11 @@ export const LocationSchema = v.object(
   {
     name: v.string(),
     apiId: v.number(),
-    country: v.string(),
-    /// Top level administrative division - e.g Western Australia
-    admin1: v.string(),
     latitude: v.number(),
     longitude: v.number(),
+    /// Top level administrative division - e.g Western Australia
+    country: v.optional(v.string()),
+    admin1: v.optional(v.string()),
     weather: v.optional(WeatherSchema),
     weatherStatus: WeatherStatusSchema,
   },
@@ -87,3 +87,8 @@ export type MissingWeatherLocationError = {
   kind: 'MissingWeather';
   message: string;
 };
+
+export function prettyPrintLocation(l: Location) {
+  if (l.country) return `${l.name}, ${l.country}`;
+  return l.name;
+}
