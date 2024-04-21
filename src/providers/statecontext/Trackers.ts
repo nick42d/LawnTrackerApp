@@ -234,6 +234,35 @@ type DefaultAddTrackerInputProps = {
   locationId: number;
   baseTemp: number;
 };
+export function getEditTrackerInput(tracker: Tracker): AddTrackerInput {
+  switch (tracker.kind) {
+    case 'gdd':
+      return {
+        kind: 'gdd',
+        name: tracker.name,
+        description: tracker.description,
+        start_date_unix_ms: new Date(tracker.start_date_unix_ms),
+        locationId: tracker.locationId,
+        base_temp: tracker.base_temp.toFixed(0),
+        target_gdd: tracker.target_gdd.toFixed(0),
+      };
+    case 'timed':
+      return {
+        kind: 'timed',
+        name: tracker.name,
+        description: tracker.description,
+        start_date_unix_ms: new Date(tracker.start_date_unix_ms),
+        duration_days: tracker.duration_days.toFixed(0),
+      };
+    case 'calendar':
+      return {
+        kind: 'calendar',
+        name: tracker.name,
+        description: tracker.description,
+        target_date_unix_ms: new Date(tracker.target_date_unix_ms),
+      };
+  }
+}
 export function defaultAddTrackerInput(
   props: DefaultAddTrackerInputProps,
 ): AddTrackerInput {
@@ -263,6 +292,49 @@ export function defaultAddTrackerInput(
         description: '',
         target_date_unix_ms: new Date(),
       };
+  }
+}
+export function editTracker(
+  tracker: Tracker,
+  editTracker: AddTracker,
+): Tracker {
+  if (tracker.kind !== editTracker.kind)
+    throw new Error("Tracker edit params don't match tracker type");
+  switch (editTracker.kind) {
+    case 'gdd': {
+      // Safety - asserted above
+      const gddAssertedTracker = tracker as GddTracker;
+      return {
+        ...gddAssertedTracker,
+        start_date_unix_ms: editTracker.start_date_unix_ms,
+        name: editTracker.name,
+        description: editTracker.description,
+        locationId: editTracker.locationId,
+        target_gdd: editTracker.target_gdd,
+        base_temp: editTracker.base_temp,
+      };
+    }
+    case 'timed': {
+      // Safety - asserted above
+      const timedAssertedTracker = tracker as TimedTracker;
+      return {
+        ...timedAssertedTracker,
+        start_date_unix_ms: editTracker.start_date_unix_ms,
+        name: editTracker.name,
+        description: editTracker.description,
+        duration_days: editTracker.duration_days,
+      };
+    }
+    case 'calendar': {
+      // Safety - asserted above
+      const calendarAssertedTracker = tracker as CalendarTracker;
+      return {
+        ...calendarAssertedTracker,
+        target_date_unix_ms: editTracker.target_date_unix_ms,
+        name: editTracker.name,
+        description: editTracker.description,
+      };
+    }
   }
 }
 export function newTracker(addTracker: AddTracker) {

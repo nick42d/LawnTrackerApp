@@ -1,5 +1,10 @@
 import {addWeatherArrayToLocations} from '../../api/Api';
-import {resetTracker, resumeTracker, stopTracker} from './Trackers';
+import {
+  editTracker,
+  resetTracker,
+  resumeTracker,
+  stopTracker,
+} from './Trackers';
 import {FunctionlessStateContext, StateAction} from './Types';
 
 export function reducer(
@@ -65,6 +70,15 @@ export function reducer(
       return {...state, trackers: action.trackers};
     case 'AddTracker':
       return {...state, trackers: [...state.trackers, action.tracker]};
+    case 'EditTracker': {
+      const newState = {...state};
+      const idx = state.trackers.findIndex(t => t.uuid === action.trackerId);
+      if (idx === -1) return newState;
+      const oldTracker = state.trackers[idx];
+      const newTracker = editTracker(oldTracker, action.editTracker);
+      newState.trackers.splice(idx, 1, newTracker);
+      return newState;
+    }
     // Note - not all trackers can be reset, but more than just GDD trackers.
     case 'ResetTrackerId': {
       console.log(`Resetting GDD tracker id ${action.id}`);

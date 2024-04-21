@@ -1,119 +1,85 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Divider, HelperText, TextInput} from 'react-native-paper';
-import {ScrollView, View} from 'react-native';
-import {DatePickerInput} from 'react-native-paper-dates';
-import {newTimedTracker} from '../providers/statecontext/Trackers';
+import {
+  AddTrackerInput,
+  AddTrackerSchema,
+  getEditTrackerInput,
+} from '../providers/statecontext/Trackers';
 import {AppScreenProps} from '../navigation/Root';
 import AppBarIconButton from '../components/AppBarIconButton';
 import {StateContext} from '../providers/StateContext';
-import {DATE_PICKER_LOCALE} from '../Consts';
+import * as v from 'valibot';
+import AddTrackerList from '../components/AddTrackerList';
+import {ScrollView} from 'react-native-gesture-handler';
+import {getAddTrackerProps} from './addtracker/AddTrackerProps';
+import {SettingsContext} from '../providers/SettingsContext';
+import {Text} from 'react-native-paper';
 
 export default function EditTrackerScreen({
+  route,
   navigation,
 }: AppScreenProps<'EditTracker'>) {
-  const {addTracker} = useContext(StateContext);
-  const [name, setName] = useState('');
-  const [desc, setDesc] = useState('');
-  const [startDate, setStartDate] = useState(new Date());
-  const [durationDays, setDurationDays] = useState('7');
-
+  const {changeTracker, locations, trackers} = useContext(StateContext);
+  const {settings} = useContext(SettingsContext);
+  // TODO: Safety for locationId
+  // On load set up state
+  const [state, setState] = useState<AddTrackerInput | undefined>(() => {
+    const tracker = trackers.find(t => t.uuid === route.params.trackerId);
+    if (tracker) return getEditTrackerInput(tracker);
+    return undefined;
+  });
+  const [showLocationsDialog, setShowLocationsDialog] = useState(false);
+  // If we navigated here from Add Locations Screen, make sure the dialog is shown
+  // and set the added location as selected.
+  useEffect(() => {
+    const params = route.params;
+    if (
+      params !== undefined &&
+      params.kind === 'gdd' &&
+      params.fromAddLocationId &&
+      state &&
+      state.kind === 'gdd'
+    ) {
+      setState({...state, locationId: params.fromAddLocationId});
+      setShowLocationsDialog(true);
+    }
+  }, [route.params]);
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <AppBarIconButton
-          disabled={!validateInput()}
-          icon="content-save"
-          onPress={() => {
-            // Assume all fields are valid, as you can't click the button otherwise.
-            addTracker(
-              newTimedTracker(
-                name,
-                desc,
-                startDate,
-                // Safe as input is checked
-                Number(durationDays),
-              ),
-            );
-            navigation.goBack();
-          }}
-        />
-      ),
+      headerRight: () => {
+        const parse = v.safeParse(AddTrackerSchema, state);
+        return (
+          <AppBarIconButton
+            disabled={!parse.success}
+            icon="content-save"
+            onPress={() => {
+              if (parse.success) {
+                changeTracker(parse.output, route.params.trackerId);
+                navigation.goBack();
+              }
+            }}
+          />
+        );
+      },
     });
-  }, [name, startDate, desc, durationDays]);
-
-  // Date can't be in the past
-  // Consider - maybe this is OK
-  function dateInRange(): boolean {
-    // const firstAcceptableDate = new Date();
-    return true;
-    // return startDate >= firstAcceptableDate;
-  }
-  function nameEntered(): boolean {
-    return name.length !== 0;
-  }
-  function durationEntered(): boolean {
-    return !(
-      (isNaN(Number(durationDays)) || durationDays.length === 0) &&
-      Number(durationDays) !== 0
-    );
-  }
-  function validateInput(): boolean {
-    if (!nameEntered()) {
-      return false;
-    }
-    if (!dateInRange()) {
-      return false;
-    }
-    if (!durationEntered()) {
-      return false;
-    }
-    return true;
-  }
-
+  }, [state]);
+  const addTrackerProps = state
+    ? getAddTrackerProps(
+        locations,
+        // TODO: Safety
+        state,
+        showLocationsDialog,
+        setState,
+        setShowLocationsDialog,
+        () => navigation.navigate('AddLocation', {fromAddGddTracker: true}),
+      )
+    : undefined;
   return (
     <ScrollView>
-      <View>
-        <Divider />
-        <TextInput
-          label="Name"
-          value={name}
-          onChangeText={name => setName(name)}
-          error={!nameEntered()}
-        />
-        <HelperText type="error" visible={!nameEntered()}>
-          Name must be entered
-        </HelperText>
-        <TextInput
-          label="Description"
-          value={desc}
-          onChangeText={desc => setDesc(desc)}
-          // TODO: Better icon
-          left={<TextInput.Icon icon="menu" />}
-        />
-        <Divider />
-        <DatePickerInput
-          locale={DATE_PICKER_LOCALE}
-          label="Start date"
-          value={startDate}
-          onChange={d => setStartDate(d as Date)}
-          inputMode="start"
-          hasError={!dateInRange()}
-        />
-        <HelperText type="error" visible={!dateInRange()}>
-          Start Date must be in the future
-        </HelperText>
-        <Divider />
-        <TextInput
-          label="Duration (days)"
-          value={durationDays}
-          onChangeText={d => setDurationDays(d)}
-          left={<TextInput.Icon icon="target" />}
-          error={!durationEntered()}
-        />
-        <HelperText type="error" visible={!durationEntered()}>
-          Number must be entered as a Target
-        </HelperText>
-      </View>
+      {addTrackerProps ? (
+        <AddTrackerList list={addTrackerProps} />
+      ) : (
+        <Text>Error editing tracker</Text>
+      )}
     </ScrollView>
   );
 }

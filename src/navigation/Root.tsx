@@ -38,7 +38,9 @@ export type RootStackParamList = {
     | {kind: 'calendar' | 'timed'};
   ViewTracker: {trackerId: string};
   ViewLocation: {location: Location};
-  EditTracker: {trackerId: string};
+  EditTracker:
+    | {trackerId: string; kind: 'gdd'; fromAddLocationId?: number}
+    | {trackerId: string; kind: 'calendar' | 'timed'};
 };
 
 export type AppDrawerParamList = {

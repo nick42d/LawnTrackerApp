@@ -11,6 +11,7 @@ export type StateManager = {
   addLocation: (loc: Location) => Promise<void>;
   deleteLocationId: (id: number) => void;
   addTracker: (tracker: AddTracker) => void;
+  changeTracker: (editTracker: AddTracker, trackerId: string) => void;
   deleteTrackerName: (trackerName: string) => void;
   resetTrackerName: (trackerName: string) => void;
   stopTrackerName: (trackerName: string) => void;
@@ -38,6 +39,7 @@ export type StateAction =
   | StateActionAddLocation
   | StateActionReplaceTrackers
   | StateActionAddTracker
+  | StateActionEditTracker
   | StateActionDeleteTrackerId
   | StateActionResetTrackerId
   | StateActionStopTrackerId
@@ -87,6 +89,11 @@ type StateActionReplaceTrackers = {
 type StateActionAddTracker = {
   kind: 'AddTracker';
   tracker: Tracker;
+};
+type StateActionEditTracker = {
+  kind: 'EditTracker';
+  editTracker: AddTracker;
+  trackerId: string;
 };
 type StateActionDeleteTrackerId = {
   kind: 'DeleteTrackerId';

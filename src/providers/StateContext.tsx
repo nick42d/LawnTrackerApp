@@ -189,6 +189,9 @@ export function StateContextProvider({
     }
     dispatch({kind: 'DeleteLocationId', id});
   }
+  function changeTracker(editTracker: AddTracker, trackerId: string) {
+    dispatch({kind: 'EditTracker', editTracker, trackerId});
+  }
   function addTracker(addTracker: AddTracker) {
     const tracker = newTracker(addTracker);
     dispatch({kind: 'AddTracker', tracker});
@@ -220,6 +223,7 @@ export function StateContextProvider({
         addLocation,
         deleteLocationId,
         addTracker,
+        changeTracker,
         deleteTrackerName: deleteTrackerId,
         resetTrackerName: resetTrackerId,
         stopTrackerName: stopTrackerId,
