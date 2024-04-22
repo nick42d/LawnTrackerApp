@@ -1,5 +1,6 @@
 import notifee, {Event, EventType} from '@notifee/react-native';
 import {TrackerStatusCheck} from './providers/statecontext/Trackers';
+import {Linking} from 'react-native';
 
 export const NOTIFICATION_ACTIONS = ['snooze', 'stop'] as const;
 export type NotificationAction = (typeof NOTIFICATION_ACTIONS)[number];
@@ -66,14 +67,37 @@ export async function NotifeeBackgroundEventCallback({type, detail}: Event) {
 /// Handle a background event recieved by notifee
 /// Even creating a notification triggers an event
 async function NotifeeGenericEventCallback({type, detail}: Event) {
+  console.log('Notifee foreground event handler called');
   switch (type) {
     case EventType.ACTION_PRESS:
       console.log('User pressed action: ', detail.pressAction);
+      if (detail.pressAction && detail.notification?.data) {
+        console.warn("Haven't handled this pressAction yet!");
+      } else {
+        console.warn("Expected a pressAction but it wasn't there.");
+      }
       return;
     case EventType.DISMISSED:
       console.log('User dismissed notification');
       return;
     case EventType.PRESS:
+      if (detail.notification?.data) {
+        // Validate data - ideally this is done elsewhere
+        if (
+          !detail.notification.data.trackerId ||
+          typeof detail.notification.data.trackerId !== 'string'
+        ) {
+          console.log(
+            "Didn't get a tracker id with my notification or it wasn't a string",
+          );
+          return;
+        }
+        await Linking.openURL(
+          `lawntracker://tracker/view/${detail.notification.data.trackerId}`,
+        );
+      } else {
+        console.warn("Expected a pressAction but it wasn't there.");
+      }
       console.log('User pressed notification');
       return;
     default:

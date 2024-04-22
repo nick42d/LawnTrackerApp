@@ -18,6 +18,8 @@ import notifee, {
 } from '@notifee/react-native';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
+import {useNavigation} from '@react-navigation/native';
+import {Linking} from 'react-native';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -97,7 +99,10 @@ export function StateContextProvider({
       case EventType.ACTION_PRESS:
         console.log('User pressed action: ', detail.pressAction);
         if (detail.pressAction && detail.notification?.data) {
-          handleActionPressed(detail.pressAction, detail.notification.data);
+          await handleActionPressed(
+            detail.pressAction,
+            detail.notification.data,
+          );
         } else {
           console.warn("Expected a pressAction but it wasn't there.");
         }
@@ -106,11 +111,28 @@ export function StateContextProvider({
         console.log('User dismissed notification');
         return;
       case EventType.PRESS:
+        if (detail.notification?.data) {
+          await handleNotificationPressed(detail.notification.data);
+        } else {
+          console.warn("Expected a pressAction but it wasn't there.");
+        }
         console.log('User pressed notification');
         return;
       default:
         console.log('Unhandled event type: ', EventType[type]);
     }
+  }
+  async function handleNotificationPressed(data: {
+    [key: string]: string | number | object;
+  }) {
+    // Validate data - ideally this is done elsewhere
+    if (!data.trackerId || typeof data.trackerId !== 'string') {
+      console.log(
+        "Didn't get a tracker id with my notification or it wasn't a string",
+      );
+      return;
+    }
+    await Linking.openURL(`lawntracker://tracker/view/${data.trackerId}`);
   }
   async function handleActionPressed(
     action: NotificationPressAction,

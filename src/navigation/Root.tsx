@@ -29,6 +29,17 @@ import EditTrackerScreen from '../screens/EditTracker';
 import AddTrackerScreen from '../screens/AddTracker';
 import {StateContext} from '../providers/StateContext';
 
+// Handle deep linking - for easy navigation from notifications
+const linking = {
+  prefixes: ['lawntracker://'],
+  config: {
+    screens: {
+      ViewTracker: {
+        path: 'tracker/view/:trackerId',
+      },
+    },
+  },
+};
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
@@ -88,7 +99,10 @@ function AppRootStackNavigator() {
   const paperTheme = useTheme<Theme>();
 
   return (
-    <NavigationContainer theme={paperTheme}>
+    <NavigationContainer
+      linking={linking}
+      theme={paperTheme}
+      fallback={<LoadingScreen></LoadingScreen>}>
       <Stack.Navigator
         initialRouteName="Drawer"
         screenOptions={{
