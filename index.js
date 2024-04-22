@@ -9,10 +9,10 @@ import App from './src/App';
 import {name as appName} from './app.json';
 import {enGB, registerTranslation} from 'react-native-paper-dates';
 import MapLibreGL from '@maplibre/maplibre-react-native';
-import {NotifeeBackgroundEventCallback} from './src/Notification';
+import {onBackgroundNotificationEvent} from './src/Notification';
 import BackgroundFetch from 'react-native-background-fetch';
 import notifee from '@notifee/react-native';
-import {HeadlessCallback} from './src/HeadlessCallback';
+import {HeadlessCallback as headlessCallback} from './src/HeadlessCallback';
 
 export default function Main() {
   return <App />;
@@ -24,10 +24,10 @@ MapLibreGL.setAccessToken(null);
 registerTranslation('en-GB', enGB);
 
 // Register background event handler for notifee
-notifee.onBackgroundEvent(NotifeeBackgroundEventCallback);
+notifee.onBackgroundEvent(onBackgroundNotificationEvent);
 
 // Register BackgroundFetch Headless Callback
-BackgroundFetch.registerHeadlessTask(HeadlessCallback);
+BackgroundFetch.registerHeadlessTask(headlessCallback);
 
 // React Native setup
 AppRegistry.registerComponent(appName, () => Main);

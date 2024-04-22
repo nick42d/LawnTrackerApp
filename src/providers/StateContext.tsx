@@ -14,12 +14,17 @@ import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../api/Api';
 import notifee, {
   Event,
   EventType,
+  Notification,
   NotificationPressAction,
 } from '@notifee/react-native';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
 import {useNavigation} from '@react-navigation/native';
 import {Linking} from 'react-native';
+import {
+  getNotificationTrackerId,
+  handleNotificationOpened,
+} from '../Notification';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -63,7 +68,7 @@ export function StateContextProvider({
       });
     // Initialise notifee foreground event handler.
     // Background event handler is in index.js.
-    notifee.onForegroundEvent(onNotificationForegroundEvent);
+    notifee.onForegroundEvent(onForegroundNotificationEvent);
   }, []);
   useEffect(() => {
     let active = true;
@@ -93,67 +98,68 @@ export function StateContextProvider({
       console.log('Closing locations change effect');
     };
   }, [state.status, state.locations]);
-  async function onNotificationForegroundEvent({type, detail}: Event) {
+  /**
+   * Handle foreground notification event
+   * As this is inside context it can directly update App state
+   * Semi-duplicate of onBackgroundNotificationEvent
+   * @returns
+   */
+  async function onForegroundNotificationEvent({type, detail}: Event) {
+    const {notification, pressAction} = detail;
     console.log('Notifee foreground event handler called');
     switch (type) {
       case EventType.ACTION_PRESS:
-        console.log('User pressed action: ', detail.pressAction);
-        if (detail.pressAction && detail.notification?.data) {
-          await handleActionPressed(
-            detail.pressAction,
-            detail.notification.data,
-          );
-        } else {
-          console.warn("Expected a pressAction but it wasn't there.");
+        if (!notification || !pressAction) {
+          console.warn('Notification details missing for action press');
+          return;
         }
+        await handleForegroundNotificationPressAction(
+          pressAction,
+          notification,
+        );
         return;
       case EventType.DISMISSED:
         console.log('User dismissed notification');
         return;
       case EventType.PRESS:
-        if (detail.notification?.data) {
-          await handleNotificationPressed(detail.notification.data);
-        } else {
-          console.warn("Expected a pressAction but it wasn't there.");
+        if (!notification) {
+          console.warn('Notification details missing for notification open');
+          return;
         }
-        console.log('User pressed notification');
+        await handleNotificationOpened(notification);
         return;
       default:
         console.log('Unhandled event type: ', EventType[type]);
     }
   }
-  async function handleNotificationPressed(data: {
-    [key: string]: string | number | object;
-  }) {
-    // Validate data - ideally this is done elsewhere
-    if (!data.trackerId || typeof data.trackerId !== 'string') {
-      console.log(
-        "Didn't get a tracker id with my notification or it wasn't a string",
-      );
-      return;
-    }
-    await Linking.openURL(`lawntracker://tracker/view/${data.trackerId}`);
-  }
-  async function handleActionPressed(
-    action: NotificationPressAction,
-    data: {[key: string]: string | number | object},
+  /**
+   * Handle foreground notification pressAction
+   * As this is inside context it can directly update App state
+   * Semi-duplicate of handleBackgroundNotificationPressAction
+   */
+  async function handleForegroundNotificationPressAction(
+    pressAction: NotificationPressAction,
+    notification: Notification,
   ) {
-    // Validate data - ideally this is done elsewhere
-    if (!data.trackerId || typeof data.trackerId !== 'string') {
-      console.log(
-        "Didn't get a tracker id with my notification or it wasn't a string",
-      );
+    console.log('User pressed action: ', pressAction);
+    const trackerId = getNotificationTrackerId(notification);
+    if (!trackerId) {
+      console.warn('Press action was missing a trackerId');
       return;
     }
     // Cases are located in Notification.ts
-    switch (action.id) {
+    switch (pressAction.id) {
       case 'snooze': {
         console.warn('Snooze is currently unhandled. What should it do?');
+        return;
       }
       case 'stop': {
-        console.log('Stopping tracker id', data.trackerId);
-        stopTrackerId(data.trackerId);
+        console.log('Stopping tracker id', trackerId);
+        stopTrackerId(trackerId);
+        return;
       }
+      default:
+        console.error('Received unhandled pressAction: ', pressAction.id);
     }
   }
   function clearAll() {

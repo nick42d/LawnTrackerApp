@@ -1,4 +1,9 @@
-import notifee, {Event, EventType} from '@notifee/react-native';
+import notifee, {
+  Event,
+  EventType,
+  Notification,
+  NotificationPressAction,
+} from '@notifee/react-native';
 import {TrackerStatusCheck} from './providers/statecontext/Trackers';
 import {Linking} from 'react-native';
 
@@ -58,49 +63,71 @@ export async function displayNotification(
     },
   });
 }
-
-export async function NotifeeBackgroundEventCallback({type, detail}: Event) {
-  console.log('Notifee background event handler called');
-  await NotifeeGenericEventCallback({type, detail});
+async function handleBackgroundNotificationPressAction(
+  pressAction: NotificationPressAction,
+) {
+  console.log('User pressed action: ', pressAction);
+  // TODO
+  return;
 }
-
+/**
+ * Use both from foreground and background
+ */
+export async function handleNotificationOpened(notification: Notification) {
+  console.log('User pressed notification');
+  const trackerId = getNotificationTrackerId(notification);
+  if (!trackerId) {
+    console.warn('Notification details missing for notification open');
+    return;
+  }
+  await openTrackerId(trackerId);
+}
 /// Handle a background event recieved by notifee
 /// Even creating a notification triggers an event
-async function NotifeeGenericEventCallback({type, detail}: Event) {
-  console.log('Notifee foreground event handler called');
+export async function onBackgroundNotificationEvent({type, detail}: Event) {
+  const {notification, pressAction} = detail;
+  console.log('Notification background event handler called');
   switch (type) {
     case EventType.ACTION_PRESS:
-      console.log('User pressed action: ', detail.pressAction);
-      if (detail.pressAction && detail.notification?.data) {
-        console.warn("Haven't handled this pressAction yet!");
-      } else {
-        console.warn("Expected a pressAction but it wasn't there.");
+      if (!notification || !pressAction) {
+        console.warn('Notification details missing for action press');
+        return;
       }
+      await handleBackgroundNotificationPressAction(pressAction);
       return;
     case EventType.DISMISSED:
       console.log('User dismissed notification');
       return;
     case EventType.PRESS:
-      if (detail.notification?.data) {
-        // Validate data - ideally this is done elsewhere
-        if (
-          !detail.notification.data.trackerId ||
-          typeof detail.notification.data.trackerId !== 'string'
-        ) {
-          console.log(
-            "Didn't get a tracker id with my notification or it wasn't a string",
-          );
-          return;
-        }
-        await Linking.openURL(
-          `lawntracker://tracker/view/${detail.notification.data.trackerId}`,
-        );
-      } else {
-        console.warn("Expected a pressAction but it wasn't there.");
+      if (!notification) {
+        console.warn('Notification details missing for notification open');
+        return;
       }
-      console.log('User pressed notification');
+      await handleNotificationOpened(notification);
       return;
     default:
       console.log('Unhandled event type: ', EventType[type]);
   }
+}
+
+/**
+ * Via deep linking open the passed tracker id.
+ * Works from background and foreground.
+ * @param trackerId
+ */
+async function openTrackerId(trackerId: string) {
+  await Linking.openURL(`lawntracker://tracker/view/${trackerId}`);
+}
+
+/**
+ * Very specific function to get the trackerId from a notification
+ * If it exists.
+ * TODO: Genericize
+ */
+export function getNotificationTrackerId(
+  notification: Notification,
+): string | undefined {
+  const maybeTrackerId = notification.data?.trackerId;
+  if (typeof maybeTrackerId === 'string') return maybeTrackerId;
+  return undefined;
 }
