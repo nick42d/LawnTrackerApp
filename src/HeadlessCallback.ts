@@ -4,8 +4,8 @@ import {
   refreshStoredStateWeather,
 } from './components/BackgroundFetcher';
 import {
-  writeLocations as onChangeLocations,
-  getStoredState as getStoredState,
+  writeLocations,
+  getStoredState,
   writeTrackers,
 } from './providers/statecontext/AsyncStorage';
 import {getStoredSettings} from './providers/settingscontext/AsyncStorage';
@@ -41,7 +41,7 @@ export async function HeadlessCallback(event: HeadlessEvent) {
     );
     // Use of the onChange functions is a hack and should be improved.
     await Promise.all([
-      onChangeLocations('Loaded', newState.locations),
+      writeLocations('Loaded', newState.locations),
       writeTrackers('Loaded', newState.trackers),
       notifyFromStoredState(newState, settings),
     ]);

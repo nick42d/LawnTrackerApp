@@ -1,5 +1,5 @@
-import React, {useEffect, useMemo, useReducer, useState} from 'react';
-import {AddTracker, Tracker, newTracker} from './statecontext/Trackers';
+import React, {useEffect, useMemo, useReducer} from 'react';
+import {AddTracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
 import {
@@ -10,7 +10,7 @@ import {
 import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
-import {WeatherUpdate, fetchLocationsWeather, fetchWeather} from '../api/Api';
+import {WeatherUpdate, fetchLocationsWeather} from '../api/Api';
 import notifee, {
   Event,
   EventType,
@@ -19,8 +19,6 @@ import notifee, {
 } from '@notifee/react-native';
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
-import {useNavigation} from '@react-navigation/native';
-import {Linking} from 'react-native';
 import {
   getNotificationTrackerId,
   handleNotificationOpened,

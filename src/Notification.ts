@@ -4,8 +4,16 @@ import notifee, {
   Notification,
   NotificationPressAction,
 } from '@notifee/react-native';
-import {TrackerStatusCheck} from './providers/statecontext/Trackers';
+import {
+  Tracker,
+  TrackerStatusCheck,
+  trackerStatus,
+} from './providers/statecontext/Trackers';
 import {Linking} from 'react-native';
+import {
+  getStoredState,
+  writeTrackers,
+} from './providers/statecontext/AsyncStorage';
 
 export const NOTIFICATION_ACTIONS = ['snooze', 'stop'] as const;
 export type NotificationAction = (typeof NOTIFICATION_ACTIONS)[number];
@@ -63,12 +71,50 @@ export async function displayNotification(
     },
   });
 }
+/**
+ * Handle backgroundnotification pressAction
+ * Semi-duplicate of handleForegroundNotificationPressAction
+ */
 async function handleBackgroundNotificationPressAction(
   pressAction: NotificationPressAction,
+  notification: Notification,
 ) {
   console.log('User pressed action: ', pressAction);
-  // TODO
-  return;
+  const trackerId = getNotificationTrackerId(notification);
+  if (!trackerId) {
+    console.warn('Press action was missing a trackerId');
+    return;
+  }
+  // Cases are located in Notification.ts
+  switch (pressAction.id) {
+    case 'snooze': {
+      console.warn('Snooze is currently unhandled. What should it do?');
+      return;
+    }
+    case 'stop': {
+      const state = await getStoredState();
+      if (!state) {
+        console.warn('No local state on device');
+        return;
+      }
+      const idx = state.trackers.findIndex(t => t.uuid === trackerId);
+      if (idx === -1) {
+        console.warn("Couldn't find tracker ", trackerId);
+        return;
+      }
+      const newTrackers = [...state.trackers];
+      const newTracker: Tracker = {
+        ...state.trackers[idx],
+        trackerStatus: 'Stopped',
+      };
+      newTrackers.splice(idx, 1, newTracker);
+      await writeTrackers('Loaded', newTrackers);
+      console.warn('This wont correctly update the app foreground');
+      return;
+    }
+    default:
+      console.error('Received unhandled pressAction: ', pressAction.id);
+  }
 }
 /**
  * Use both from foreground and background
@@ -93,7 +139,7 @@ export async function onBackgroundNotificationEvent({type, detail}: Event) {
         console.warn('Notification details missing for action press');
         return;
       }
-      await handleBackgroundNotificationPressAction(pressAction);
+      await handleBackgroundNotificationPressAction(pressAction, notification);
       return;
     case EventType.DISMISSED:
       console.log('User dismissed notification');

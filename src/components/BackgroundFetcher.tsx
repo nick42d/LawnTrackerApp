@@ -41,7 +41,7 @@ export function BackgroundFetcher(
     );
     // Important:  await asychronous tasks when using HeadlessJS.
     const storedstate = await getStoredState();
-    // Similar logic tp HeadlessCallback
+    // Similar logic to HeadlessCallback
     if (storedstate) {
       const fetchedWeatherArray = await fetchLocationsWeather(
         storedstate.locations,
