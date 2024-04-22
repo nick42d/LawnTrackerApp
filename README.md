@@ -2,6 +2,8 @@
 
 LawnTracker is an open source React Native (Android) app designed to keep track of lawn maintenance tasks and notify you when they are due. The app can deal with duration based, calendar based, and growing degree day based tasks.
 
+Weather data by [Open-Meteo.com](https://www.open-meteo.com)
+
 # Installation
 
 The app is intended to be made available on F-Droid and the Google Play Store.

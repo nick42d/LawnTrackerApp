@@ -67,7 +67,7 @@ function getAddTimedTrackerProps(
     {
       kind: 'textInput',
       label: 'Duration(days)',
-      value: 'test',
+      value: state.duration_days,
       validation: AddTimedTrackerDurationDaysSchema,
       onChange: v => setState({...state, duration_days: v}),
     },

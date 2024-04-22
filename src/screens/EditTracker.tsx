@@ -34,7 +34,6 @@ export default function EditTrackerScreen({
     const params = route.params;
     if (
       params !== undefined &&
-      params.kind === 'gdd' &&
       params.fromAddLocationId &&
       state &&
       state.kind === 'gdd'

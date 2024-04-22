@@ -7,7 +7,7 @@ import {SettingsContext} from '../providers/SettingsContext';
 import {StateContext} from '../providers/StateContext';
 import {TrackerProps} from '../components/TrackerProps';
 import {checkWeatherInvariants} from '../api/Types';
-import {format} from 'date-fns';
+import {addDays, differenceInCalendarDays, format} from 'date-fns';
 import {GddPlot} from '../components/GddPlot';
 import AppBarIconButton from '../components/AppBarIconButton';
 import {timeout} from '../Utils';
@@ -59,7 +59,8 @@ export default function ViewTrackerScreen({
     ? getGraphPlot(gddArray, theme.colors.primaryContainer)
     : undefined;
   return (
-    // NOTE:  GDD Trackers also show Plot and DataTable
+    // NOTE: GDD Trackers also show Plot and DataTable
+    // TODO: Timed and Calendar tracks should show progress also.
     <ScrollView>
       {item ? <TrackerProps tracker={item} /> : undefined}
       {item?.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
@@ -73,6 +74,46 @@ export default function ViewTrackerScreen({
             <ActivityIndicator size="large" />
           )}
         </View>
+      ) : undefined}
+      {item?.kind === 'calendar' ? (
+        <DataTable>
+          <DataTable.Header>
+            <DataTable.Title>Parameter</DataTable.Title>
+            <DataTable.Title>Current value</DataTable.Title>
+          </DataTable.Header>
+          <DataTable.Row>
+            <DataTable.Cell>Days to target</DataTable.Cell>
+            <DataTable.Cell>
+              {differenceInCalendarDays(item.target_date_unix_ms, new Date())}
+            </DataTable.Cell>
+          </DataTable.Row>
+        </DataTable>
+      ) : undefined}
+      {item?.kind === 'timed' ? (
+        <DataTable>
+          <DataTable.Header>
+            <DataTable.Title>Parameter</DataTable.Title>
+            <DataTable.Title>Current value</DataTable.Title>
+          </DataTable.Header>
+          <DataTable.Row>
+            <DataTable.Cell>Days to target</DataTable.Cell>
+            <DataTable.Cell>
+              {differenceInCalendarDays(
+                addDays(item.start_date_unix_ms, item.duration_days),
+                new Date(),
+              )}
+            </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>Target date</DataTable.Cell>
+            <DataTable.Cell>
+              {addDays(
+                item.start_date_unix_ms,
+                item.duration_days,
+              ).toLocaleDateString()}
+            </DataTable.Cell>
+          </DataTable.Row>
+        </DataTable>
       ) : undefined}
     </ScrollView>
   );
