@@ -71,13 +71,13 @@ export function reducer(
     case 'AddTracker':
       return {...state, trackers: [...state.trackers, action.tracker]};
     case 'EditTracker': {
-      const newState = {...state};
       const idx = state.trackers.findIndex(t => t.uuid === action.trackerId);
-      if (idx === -1) return newState;
+      if (idx === -1) return state;
+      const newTrackers = [...state.trackers];
       const oldTracker = state.trackers[idx];
       const newTracker = editTracker(oldTracker, action.editTracker);
-      newState.trackers.splice(idx, 1, newTracker);
-      return newState;
+      newTrackers.splice(idx, 1, newTracker);
+      return {...state, trackers: newTrackers};
     }
     // Note - not all trackers can be reset, but more than just GDD trackers.
     case 'ResetTrackerId': {

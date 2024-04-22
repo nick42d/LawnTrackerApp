@@ -190,6 +190,7 @@ export function StateContextProvider({
     dispatch({kind: 'DeleteLocationId', id});
   }
   function changeTracker(editTracker: AddTracker, trackerId: string) {
+    console.log('call changetracker');
     dispatch({kind: 'EditTracker', editTracker, trackerId});
   }
   function addTracker(addTracker: AddTracker) {
