@@ -6,7 +6,7 @@ export const MAX_FORECAST_DAYS = 7;
 // Days of estimate to produce past Target
 export const EXTRA_ESTIMATE_DAYS = 3;
 // For performance reasons, limit the maximum number of estimate days
-export const MAX_ESTIMATE_DAYS = 50;
+export const MAX_GRAPH_ESTIMATE_DAYS = 30;
 /**
  * Openmeteo API parameters for current day
  */

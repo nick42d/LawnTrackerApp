@@ -1,4 +1,4 @@
-import {EXTRA_ESTIMATE_DAYS, MAX_ESTIMATE_DAYS} from '../../Consts';
+import {EXTRA_ESTIMATE_DAYS, MAX_GRAPH_ESTIMATE_DAYS} from '../../Consts';
 import {calcGdd} from '../../Knowledge';
 import {GddTracker} from '../../providers/statecontext/Trackers';
 import {WeatherAppDay} from '../../providers/statecontext/Locations';
@@ -96,7 +96,7 @@ export function getTrackerGddArray(
       Math.max(item.target_gdd - totalNonEstimateGdd, 0) / averageGdd +
         EXTRA_ESTIMATE_DAYS,
     ),
-    MAX_ESTIMATE_DAYS,
+    MAX_GRAPH_ESTIMATE_DAYS,
   );
   // Weather array may be empty
   const maybeLastNonEstimateDayUnixMs =
@@ -161,7 +161,20 @@ export function getGddEstimate(
   targetGdd: number,
 ): GddEstimate | undefined {
   const estimatedDayItem = gddArray.find(x => x.gddAcc >= targetGdd);
-  if (estimatedDayItem === undefined) return undefined;
+  if (estimatedDayItem === undefined) {
+    const lastDayItem = gddArray.at(-1);
+    // If the correct projection doesn't exist in the GddAcc itself
+    // We can try calculate it.
+    if (lastDayItem?.weatherType === 'Estimated')
+      return {
+        estimateType: 'Estimated',
+        estimateDateUnixMs: addDays(
+          lastDayItem.dateUnixMs,
+          Math.ceil((targetGdd - lastDayItem.gddAcc) / lastDayItem.gdd),
+        ).valueOf(),
+      };
+    return undefined;
+  }
   return {
     estimateDateUnixMs: estimatedDayItem.dateUnixMs,
     estimateType: estimatedDayItem.weatherType,

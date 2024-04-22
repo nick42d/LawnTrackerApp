@@ -27,6 +27,7 @@ import LoadingScreen from '../screens/Loading';
 import ViewLocationScreen from '../screens/ViewLocation';
 import EditTrackerScreen from '../screens/EditTracker';
 import AddTrackerScreen from '../screens/AddTracker';
+import {StateContext} from '../providers/StateContext';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -73,7 +74,7 @@ export type HomeLocationsTabScreenProps<
 
 export function LoadableApp() {
   const {status: settingsStatus} = useContext(SettingsContext);
-  const {status: appStatus} = useContext(SettingsContext);
+  const {status: appStatus} = useContext(StateContext);
 
   // TODO: Handle initialising also.
   return settingsStatus !== 'Loaded' || appStatus !== 'Loaded' ? (
