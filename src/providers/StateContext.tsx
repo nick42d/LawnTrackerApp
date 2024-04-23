@@ -23,6 +23,7 @@ import {
   getNotificationTrackerId,
   handleNotificationOpened,
 } from '../Notification';
+import {AppState, AppStateStatus} from 'react-native';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -48,25 +49,23 @@ export function StateContextProvider({
   useEffect(() => {
     console.log('App state context loaded, checking device for app state');
     dispatch({kind: 'SetLoading'});
-    getStoredState()
-      .then(s => {
-        if (s === undefined) {
-          console.info("App state wasn't on device, using defaults");
-          return state.locations;
-        } else {
-          dispatch({kind: 'ReplaceTrackers', trackers: s.trackers});
-          dispatch({kind: 'ReplaceLocations', locations: s.locations});
-          console.log('Loaded app state from device');
-          return s.locations;
-        }
-      })
-      .then(l => {
-        dispatch({kind: 'SetLoaded'});
-        refreshWeatherLocations(l);
-      });
+    // Note - loading Stored State sets status to Loaded so all good.
+    loadStoredState();
     // Initialise notifee foreground event handler.
     // Background event handler is in index.js.
-    notifee.onForegroundEvent(onForegroundNotificationEvent);
+    const unsubscribeFromNotificationEvents = notifee.onForegroundEvent(
+      onForegroundNotificationEvent,
+    );
+    // Add event listener to detect foreground / background transition.
+    const appStateSubscription = AppState.addEventListener(
+      'change',
+      nextAppState => handleAppStateChange(nextAppState),
+    );
+    // Clean up event subscriptions.
+    return () => {
+      unsubscribeFromNotificationEvents();
+      appStateSubscription.remove();
+    };
   }, []);
   useEffect(() => {
     let active = true;
@@ -96,6 +95,40 @@ export function StateContextProvider({
       console.log('Closing locations change effect');
     };
   }, [state.status, state.locations]);
+  /**
+   * Handle a state change from the app - e.g change from BG to FG.
+   * @param newState
+   */
+  async function handleAppStateChange(newState: AppStateStatus) {
+    console.log('App state changed, new state: ', newState);
+    if (newState === 'active') {
+      await loadStoredState();
+    }
+  }
+  /**
+   * Reload the stored state from storage.
+   * Note that this then immediately refreshes state.
+   * Note - due to effects - we'll immediately write to storage again.
+   */
+  async function loadStoredState() {
+    getStoredState()
+      .then(s => {
+        if (s === undefined) {
+          console.info("App state wasn't on device, using defaults");
+          return state.locations;
+        } else {
+          dispatch({kind: 'ReplaceTrackers', trackers: s.trackers});
+          dispatch({kind: 'ReplaceLocations', locations: s.locations});
+          console.log('Loaded app state from device');
+          return s.locations;
+        }
+      })
+      .then(l => {
+        dispatch({kind: 'SetLoaded'});
+        refreshWeatherLocations(l);
+      });
+  }
+
   /**
    * Handle foreground notification event
    * As this is inside context it can directly update App state
