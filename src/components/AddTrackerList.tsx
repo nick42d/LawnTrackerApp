@@ -25,7 +25,7 @@ export default function AddTrackerList(props: {list: AddTrackerListProps[]}) {
     <View>
       <List.Section>
         {props.list.map(l => (
-          <AddTrackerListItem item={l} />
+          <AddTrackerListItem key={l.key} item={l} />
         ))}
       </List.Section>
       <Portal>

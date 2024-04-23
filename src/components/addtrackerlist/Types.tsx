@@ -4,6 +4,7 @@ import {Location} from '../../providers/statecontext/Locations';
 
 export type AddTrackerListCalendarItemProps = {
   kind: 'calendar';
+  key: string;
   label: string;
   disabled?: boolean;
   value: Date | undefined;
@@ -12,6 +13,7 @@ export type AddTrackerListCalendarItemProps = {
 };
 export type AddTrackerListLocationsItemProps = {
   kind: 'locations';
+  key: string;
   label: string;
   icon?: string;
   disabled?: boolean;
@@ -25,6 +27,7 @@ export type AddTrackerListLocationsItemProps = {
 export type AddTrackerListTextInputItemProps = {
   // Safe typing could be added to this in future using validation (similar to SettingsList)
   kind: 'textInput';
+  key: string;
   label: string;
   icon?: string;
   disabled?: boolean;
@@ -36,6 +39,7 @@ export type AddTrackerListTextInputItemProps = {
 export type AddTrackerListSelectionItemProps = {
   // Safe typing could be added to this in future using validation (similar to SettingsList)
   kind: 'selection';
+  key: string;
   label: string;
   icon?: string;
   value: string;

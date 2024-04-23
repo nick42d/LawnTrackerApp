@@ -45,6 +45,7 @@ function getAddTimedTrackerProps(
   return [
     {
       kind: 'textInput',
+      key: 'name',
       label: 'Name',
       value: state.name,
       validation: TrackerNameSchema,
@@ -52,6 +53,7 @@ function getAddTimedTrackerProps(
     },
     {
       kind: 'textInput',
+      key: 'desc',
       label: 'Description',
       value: state.description,
       validation: TrackerDescSchema,
@@ -59,6 +61,7 @@ function getAddTimedTrackerProps(
     },
     {
       kind: 'calendar',
+      key: 'start',
       label: 'Start date',
       value: state.start_date_unix_ms,
       validation: AddTimedTrackerStartDateSchema,
@@ -66,6 +69,7 @@ function getAddTimedTrackerProps(
     },
     {
       kind: 'textInput',
+      key: 'dur',
       label: 'Duration(days)',
       value: state.duration_days,
       validation: AddTimedTrackerDurationDaysSchema,
@@ -80,6 +84,7 @@ function getAddCalendarTrackerProps(
   return [
     {
       kind: 'textInput',
+      key: 'name',
       label: 'Name',
       value: state.name,
       validation: TrackerNameSchema,
@@ -87,6 +92,7 @@ function getAddCalendarTrackerProps(
     },
     {
       kind: 'textInput',
+      key: 'desc',
       label: 'Description',
       value: state.description,
       validation: TrackerDescSchema,
@@ -94,6 +100,7 @@ function getAddCalendarTrackerProps(
     },
     {
       kind: 'calendar',
+      key: 'date',
       label: 'Date',
       value: state.target_date_unix_ms,
       validation: AddCalendarTrackerStartDateSchema,
@@ -112,6 +119,7 @@ function getAddGddTrackerProps(
   return [
     {
       kind: 'textInput',
+      key: 'name',
       label: 'Name',
       value: state.name,
       validation: TrackerNameSchema,
@@ -119,6 +127,7 @@ function getAddGddTrackerProps(
     },
     {
       kind: 'textInput',
+      key: 'desc',
       label: 'Description',
       value: state.description,
       validation: TrackerDescSchema,
@@ -126,6 +135,7 @@ function getAddGddTrackerProps(
     },
     {
       kind: 'calendar',
+      key: 'start',
       label: 'Start date',
       value: state.start_date_unix_ms,
       validation: AddGddTrackerStartDateSchema,
@@ -133,6 +143,7 @@ function getAddGddTrackerProps(
     },
     {
       kind: 'locations',
+      key: 'loc',
       label: 'Select locations',
       selectedLocationId: state.locationId,
       locations,
@@ -143,6 +154,7 @@ function getAddGddTrackerProps(
     },
     {
       kind: 'textInput',
+      key: 'target',
       label: 'Target',
       inputMode: 'numeric',
       value: state.target_gdd,
@@ -151,6 +163,7 @@ function getAddGddTrackerProps(
     },
     {
       kind: 'selection',
+      key: 'baset',
       label: 'Base temp',
       icon: 'target',
       value: state.base_temp,
