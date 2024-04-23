@@ -1,4 +1,4 @@
-import {addDays, startOfDay} from 'date-fns';
+import {addDays, differenceInCalendarDays, startOfDay} from 'date-fns';
 import {calcGddTotal} from '../../knowledge/Gdd';
 import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
@@ -90,6 +90,7 @@ export const BaseTrackerSchema = v.object(
     description: TrackerDescSchema,
     uuid: v.string([v.uuid()]),
     trackerStatus: TrackerStatusSchema,
+    lastSnoozedUnixMs: v.optional(v.number()),
     notificationStatus: NotificationStatusSchema,
   },
   v.never(),
@@ -215,7 +216,7 @@ export type TrackerKind = Tracker['kind'];
  */
 export type TrackerStatusCheck =
   | {
-      kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd';
+      kind: 'Stopped' | 'Running' | 'ErrorCalculatingGdd' | 'Snoozed';
       trackerKind: TrackerKind;
       trackerName: string;
       trackerId: string;
@@ -451,6 +452,16 @@ export function stopTracker(tracker: Tracker): Tracker {
   return {...tracker, trackerStatus: 'Stopped'};
 }
 
+/**
+ *
+ * Snoozes tracker at current datetime
+ * @param tracker
+ * @returns
+ */
+export function snoozeTracker(tracker: Tracker): Tracker {
+  return {...tracker, lastSnoozedUnixMs: Date.now()};
+}
+
 /// Resumes tracker and resets it if resettable.
 export function resumeTracker(tracker: Tracker): Tracker {
   return {...resetTracker(tracker), trackerStatus: 'Running'};
@@ -469,6 +480,17 @@ export function trackerStatus(
       trackerId: tracker.uuid,
       kind: 'Stopped',
     };
+  if (
+    tracker.lastSnoozedUnixMs &&
+    differenceInCalendarDays(tracker.lastSnoozedUnixMs, curDateUnixMs) <= 0
+  ) {
+    return {
+      trackerKind: tracker.kind,
+      trackerName: tracker.name,
+      trackerId: tracker.uuid,
+      kind: 'Snoozed',
+    };
+  }
   switch (tracker.kind) {
     case 'calendar': {
       const target = tracker.target_date_unix_ms;

@@ -79,6 +79,14 @@ export function TrackerProps({tracker}: TrackerProps) {
               : ''
           }
         />
+        <List.Item
+          title="Last snoozed"
+          description={
+            tracker.lastSnoozedUnixMs
+              ? new Date(tracker.lastSnoozedUnixMs).toLocaleString()
+              : ''
+          }
+        />
       </List.Section>
     </View>
   );

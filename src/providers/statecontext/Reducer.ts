@@ -3,6 +3,7 @@ import {
   editTracker,
   resetTracker,
   resumeTracker,
+  snoozeTracker,
   stopTracker,
 } from './Trackers';
 import {FunctionlessStateContext, StateAction} from './Types';
@@ -94,6 +95,15 @@ export function reducer(
       return {
         ...state,
         trackers: state.trackers.filter(item => item.uuid !== action.id),
+      };
+    }
+    case 'SnoozeTrackerId': {
+      console.log(`Snoozing tracker id ${action.id}`);
+      return {
+        ...state,
+        trackers: state.trackers.map(t =>
+          t.uuid === action.id ? snoozeTracker(t) : t,
+        ),
       };
     }
     case 'StopTrackerId': {

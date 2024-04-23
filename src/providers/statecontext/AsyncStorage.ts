@@ -60,7 +60,6 @@ export function writeTrackers(status: ContextStatus, trackers: Tracker[]) {
 
 export function writeLocations(status: ContextStatus, locations: Location[]) {
   console.log('App context status is: ' + status);
-  let active = true;
   if (status === 'Loaded') {
     console.log('Setting app state - locations');
     AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))

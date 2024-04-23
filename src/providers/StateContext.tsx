@@ -3,7 +3,7 @@ import {AddTracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
 import {
-  writeTrackers as OnChangeGddTrackers,
+  writeTrackers,
   writeLocations,
   getStoredState,
 } from './statecontext/AsyncStorage';
@@ -20,8 +20,11 @@ import notifee, {
 import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
 import {
+  backgroundSnoozeTrackerId,
+  backgroundStopTrackerId,
   getNotificationTrackerId,
   handleNotificationOpened,
+  onNotificationEvent,
 } from '../Notification';
 import {AppState, AppStateStatus} from 'react-native';
 
@@ -48,14 +51,10 @@ export function StateContextProvider({
   // On load, load up state and then refresh weather.
   useEffect(() => {
     console.log('App state context loaded, checking device for app state');
-    dispatch({kind: 'SetLoading'});
-    // Note - loading Stored State sets status to Loaded so all good.
     loadStoredState();
-    // Initialise notifee foreground event handler.
-    // Background event handler is in index.js.
-    const unsubscribeFromNotificationEvents = notifee.onForegroundEvent(
-      onForegroundNotificationEvent,
-    );
+    // Initialise notifee event handler.
+    const unsubscribeFromNotificationEvents =
+      notifee.onForegroundEvent(onNotificationEvent);
     // Add event listener to detect foreground / background transition.
     const appStateSubscription = AppState.addEventListener(
       'change',
@@ -73,7 +72,7 @@ export function StateContextProvider({
     // Debounce
     timeout(50).then(() => {
       if (active) {
-        OnChangeGddTrackers(state.status, state.trackers);
+        writeTrackers(state.status, state.trackers);
       }
     });
     return () => {
@@ -99,6 +98,8 @@ export function StateContextProvider({
    * Handle a state change from the app - e.g change from BG to FG.
    * @param newState
    */
+  // TODO: Consider not reloading locations when we do this.
+  // Background fetch will sort that out.
   async function handleAppStateChange(newState: AppStateStatus) {
     console.log('App state changed, new state: ', newState);
     if (newState === 'active') {
@@ -108,9 +109,9 @@ export function StateContextProvider({
   /**
    * Reload the stored state from storage.
    * Note that this then immediately refreshes state.
-   * Note - due to effects - we'll immediately write to storage again.
    */
   async function loadStoredState() {
+    dispatch({kind: 'SetLoading'});
     getStoredState()
       .then(s => {
         if (s === undefined) {
@@ -127,71 +128,6 @@ export function StateContextProvider({
         dispatch({kind: 'SetLoaded'});
         refreshWeatherLocations(l);
       });
-  }
-
-  /**
-   * Handle foreground notification event
-   * As this is inside context it can directly update App state
-   * Semi-duplicate of onBackgroundNotificationEvent
-   * @returns
-   */
-  async function onForegroundNotificationEvent({type, detail}: Event) {
-    const {notification, pressAction} = detail;
-    console.log('Notifee foreground event handler called');
-    switch (type) {
-      case EventType.ACTION_PRESS:
-        if (!notification || !pressAction) {
-          console.warn('Notification details missing for action press');
-          return;
-        }
-        await handleForegroundNotificationPressAction(
-          pressAction,
-          notification,
-        );
-        return;
-      case EventType.DISMISSED:
-        console.log('User dismissed notification');
-        return;
-      case EventType.PRESS:
-        if (!notification) {
-          console.warn('Notification details missing for notification open');
-          return;
-        }
-        await handleNotificationOpened(notification);
-        return;
-      default:
-        console.log('Unhandled event type: ', EventType[type]);
-    }
-  }
-  /**
-   * Handle foreground notification pressAction
-   * As this is inside context it can directly update App state
-   * Semi-duplicate of handleBackgroundNotificationPressAction
-   */
-  async function handleForegroundNotificationPressAction(
-    pressAction: NotificationPressAction,
-    notification: Notification,
-  ) {
-    console.log('User pressed action: ', pressAction);
-    const trackerId = getNotificationTrackerId(notification);
-    if (!trackerId) {
-      console.warn('Press action was missing a trackerId');
-      return;
-    }
-    // Cases are located in Notification.ts
-    switch (pressAction.id) {
-      case 'snooze': {
-        console.warn('Snooze is currently unhandled. What should it do?');
-        return;
-      }
-      case 'stop': {
-        console.log('Stopping tracker id', trackerId);
-        stopTrackerId(trackerId);
-        return;
-      }
-      default:
-        console.error('Received unhandled pressAction: ', pressAction.id);
-    }
   }
   function clearAll() {
     console.log('Running clearall function on state');

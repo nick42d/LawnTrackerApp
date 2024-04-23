@@ -43,6 +43,7 @@ export type StateAction =
   | StateActionDeleteTrackerId
   | StateActionResetTrackerId
   | StateActionStopTrackerId
+  | StateActionSnoozeTrackerId
   | StateActionResumeTrackerId;
 export type FunctionlessStateContext = {
   locations: Location[];
@@ -101,6 +102,10 @@ type StateActionDeleteTrackerId = {
 };
 type StateActionResetTrackerId = {
   kind: 'ResetTrackerId';
+  id: string;
+};
+type StateActionSnoozeTrackerId = {
+  kind: 'SnoozeTrackerId';
   id: string;
 };
 type StateActionStopTrackerId = {
