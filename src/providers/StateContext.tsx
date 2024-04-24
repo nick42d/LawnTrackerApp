@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useReducer} from 'react';
+import React, {useEffect, useMemo, useReducer, useRef} from 'react';
 import {AddTracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
 import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
@@ -27,6 +27,7 @@ import {
   onNotificationEvent,
 } from '../Notification';
 import {AppState, AppStateStatus} from 'react-native';
+import {differenceInMilliseconds} from 'date-fns';
 
 export const LOCATIONS_STORAGE_KEY = 'LOCATIONS_STATE';
 export const GDD_TRACKERS_STORAGE_KEY = 'GDD_TRACKERS_STATE';
@@ -37,21 +38,32 @@ export const StateContext = React.createContext<StateManager>(
 export function StateContextProvider({
   children,
 }: React.PropsWithChildren): React.JSX.Element {
-  // Only generate the mock state on first render.
-  // Expecting a change in React 19 to allow this to happen inside useReducer itself
-  const initialState = useMemo<FunctionlessStateContext>(
+  // Mutable state - keep track of this to debounce fast fg-bg-fg state change
+  const lastInBackground = useRef<Date>(new Date());
+  // Indicate to the write effects that writing should be paused.
+  // This can be set when mutating state that we don't want to trigger a write effect.
+  const blockWriteEffects = useRef(false);
+  // Indicate to the appState event listener that events should be ignored.
+  // This can be set when we know a rapid automatic appState change will happen (e.g on load)
+  const blockAppStateEvents = useRef(false);
+  // 3rd parameter is the initializer function - only run on first render.
+  // Expecting a change in React 19 to not require the 2nd type / arg parameter
+  const [state, dispatch] = useReducer<typeof reducer, null>(
+    reducer,
+    null,
     () => ({
       locations: mockLocations(),
       trackers: mockTrackers(),
       status: 'Initialised',
     }),
-    [],
   );
-  const [state, dispatch] = useReducer(reducer, initialState);
   // On load, load up state and then refresh weather.
   useEffect(() => {
-    console.log('App state context loaded, checking device for app state');
-    loadStoredState();
+    console.log('App state context loaded');
+    blockWriteEffects.current = true;
+    blockAppStateEvents.current = true;
+    dispatch({kind: 'SetLoading'});
+    loadStoredState().then(() => (blockAppStateEvents.current = false));
     // Initialise notifee event handler.
     const unsubscribeFromNotificationEvents =
       notifee.onForegroundEvent(onNotificationEvent);
@@ -67,52 +79,77 @@ export function StateContextProvider({
     };
   }, []);
   useEffect(() => {
+    console.log(
+      'Trackers change detected, write effect blocked: ',
+      blockWriteEffects.current,
+    );
     let active = true;
-    console.log('App state changed - trackers');
-    // Debounce
-    timeout(50).then(() => {
-      if (active) {
-        writeTrackers(state.status, state.trackers);
-      }
-    });
+    if (!blockWriteEffects.current) {
+      // Debounce
+      timeout(50).then(() => {
+        if (active) {
+          writeTrackers(state.trackers);
+        }
+      });
+    }
     return () => {
       active = false;
       console.log('Closing trackers change effect');
     };
-  }, [state.status, state.trackers]);
+  }, [state.trackers]);
   useEffect(() => {
+    console.log(
+      'Locations change detected, write effect blocked: ',
+      blockWriteEffects.current,
+    );
     let active = true;
-    console.log('App state changed - locations');
-    // Debounce
-    timeout(50).then(() => {
-      if (active) {
-        writeLocations(state.status, state.locations);
-      }
-    });
+    if (!blockWriteEffects.current) {
+      // Debounce
+      timeout(50).then(() => {
+        if (active) {
+          writeLocations(state.locations);
+        }
+      });
+    }
     return () => {
       active = false;
       console.log('Closing locations change effect');
     };
-  }, [state.status, state.locations]);
+  }, [state.locations]);
   /**
    * Handle a state change from the app - e.g change from BG to FG.
    * @param newState
    */
   // TODO: Consider not reloading locations when we do this.
   // Background fetch will sort that out.
+  // NOTE: This runs a couple times when first opening app - likely not required.
   async function handleAppStateChange(newState: AppStateStatus) {
-    console.log('App state changed, new state: ', newState);
-    if (newState === 'active') {
+    const now = new Date();
+    console.log(
+      'App state changed, new state: ',
+      newState,
+      now.toISOString(),
+      'handler blocked: ',
+      blockAppStateEvents.current,
+    );
+    if (
+      newState === 'active' &&
+      !blockAppStateEvents.current &&
+      // Debounce state change
+      differenceInMilliseconds(now, lastInBackground.current) >= 50
+    ) {
+      console.log('Reloading state');
       await loadStoredState();
     }
+    if (newState !== 'active') lastInBackground.current = new Date();
   }
   /**
    * Reload the stored state from storage.
    * Note that this then immediately refreshes state.
    */
   async function loadStoredState() {
-    dispatch({kind: 'SetLoading'});
-    getStoredState()
+    blockWriteEffects.current = true;
+    await getStoredState()
       .then(s => {
         if (s === undefined) {
           console.info("App state wasn't on device, using defaults");
@@ -126,6 +163,7 @@ export function StateContextProvider({
       })
       .then(l => {
         dispatch({kind: 'SetLoaded'});
+        blockWriteEffects.current = false;
         refreshWeatherLocations(l);
       });
   }
@@ -204,6 +242,9 @@ export function StateContextProvider({
   function resumeTrackerId(id: string) {
     dispatch({kind: 'ResumeTrackerId', id});
   }
+  function cancelSnoozeTrackerId(id: string) {
+    dispatch({kind: 'CancelSnoozeTrackerId', id});
+  }
   const locations = state.locations;
   const trackers = state.trackers;
   const status = state.status;
@@ -220,10 +261,11 @@ export function StateContextProvider({
         deleteLocationId,
         addTracker,
         changeTracker,
-        deleteTrackerName: deleteTrackerId,
-        resetTrackerName: resetTrackerId,
-        stopTrackerName: stopTrackerId,
-        resumeTrackerName: resumeTrackerId,
+        deleteTrackerId,
+        resetTrackerId,
+        stopTrackerId,
+        resumeTrackerId,
+        cancelSnoozeTrackerId,
       }}>
       <BackgroundFetcher refreshWeatherCallback={updateLocationsWeather}>
         {children}

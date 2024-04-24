@@ -88,7 +88,7 @@ export function LoadableApp() {
   const {status: appStatus} = useContext(StateContext);
 
   // TODO: Handle initialising also.
-  return settingsStatus !== 'Loaded' || appStatus !== 'Loaded' ? (
+  return settingsStatus === 'Loading' || appStatus === 'Loading' ? (
     <LoadingScreen />
   ) : (
     <AppRootStackNavigator />

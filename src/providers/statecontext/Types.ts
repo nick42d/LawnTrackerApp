@@ -12,10 +12,11 @@ export type StateManager = {
   deleteLocationId: (id: number) => void;
   addTracker: (tracker: AddTracker) => void;
   changeTracker: (editTracker: AddTracker, trackerId: string) => void;
-  deleteTrackerName: (trackerName: string) => void;
-  resetTrackerName: (trackerName: string) => void;
-  stopTrackerName: (trackerName: string) => void;
-  resumeTrackerName: (trackerName: string) => void;
+  deleteTrackerId: (trackerId: string) => void;
+  resetTrackerId: (trackerId: string) => void;
+  stopTrackerId: (trackerId: string) => void;
+  resumeTrackerId: (trackerId: string) => void;
+  cancelSnoozeTrackerId: (trackerId: string) => void;
   clearAll: () => void;
 };
 
@@ -29,6 +30,7 @@ export type StoredState = {
  */
 export type StateAction =
   | StateActionSetLoading
+  | StateActionSetTransitioning
   | StateActionSetLoaded
   | StateActionSetWeatherRefreshing
   | StateActionSetWeatherLocationRefreshing
@@ -44,6 +46,7 @@ export type StateAction =
   | StateActionResetTrackerId
   | StateActionStopTrackerId
   | StateActionSnoozeTrackerId
+  | StateActionCancelSnoozeTrackerId
   | StateActionResumeTrackerId;
 export type FunctionlessStateContext = {
   locations: Location[];
@@ -52,6 +55,9 @@ export type FunctionlessStateContext = {
 };
 type StateActionSetLoading = {
   kind: 'SetLoading';
+};
+type StateActionSetTransitioning = {
+  kind: 'SetTransitioning';
 };
 type StateActionSetLoaded = {
   kind: 'SetLoaded';
@@ -106,6 +112,10 @@ type StateActionResetTrackerId = {
 };
 type StateActionSnoozeTrackerId = {
   kind: 'SnoozeTrackerId';
+  id: string;
+};
+type StateActionCancelSnoozeTrackerId = {
+  kind: 'CancelSnoozeTrackerId';
   id: string;
 };
 type StateActionStopTrackerId = {

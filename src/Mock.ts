@@ -51,10 +51,12 @@ export function defaultStateManager(): StateManager {
       LogErrorCallbackNotSet('deleteLocationID');
     },
     addTracker: _ => LogErrorCallbackNotSet('addTracker'),
-    deleteTrackerName: _ => LogErrorCallbackNotSet('deleteTrackerName'),
-    resetTrackerName: _ => LogErrorCallbackNotSet('resetTrackerName'),
-    stopTrackerName: _ => LogErrorCallbackNotSet('stopTrackerName'),
-    resumeTrackerName: _ => LogErrorCallbackNotSet('resumeTrackerName'),
+    changeTracker: _ => LogErrorCallbackNotSet('changeTracker'),
+    deleteTrackerId: _ => LogErrorCallbackNotSet('deleteTrackerId'),
+    resetTrackerId: _ => LogErrorCallbackNotSet('resetTrackerId'),
+    stopTrackerId: _ => LogErrorCallbackNotSet('stopTrackerId'),
+    resumeTrackerId: _ => LogErrorCallbackNotSet('resumeTrackerId'),
+    cancelSnoozeTrackerId: _ => LogErrorCallbackNotSet('cancelSnoozeTrackerId'),
   };
 }
 
@@ -91,9 +93,18 @@ export function mockTrackers(): Tracker[] {
       -1,
       250,
       0,
-      addDays(new Date(), -7),
+      addDays(new Date(), -7).valueOf(),
     ),
-    newTimedTracker('EcoWet', 'Front Lawn', addDays(new Date(), -2), 7),
-    newCalendarTracker('Acelepryn', 'Both Lawns', addDays(new Date(), 30)),
+    newTimedTracker(
+      'EcoWet',
+      'Front Lawn',
+      addDays(new Date(), -2).valueOf(),
+      7,
+    ),
+    newCalendarTracker(
+      'Acelepryn',
+      'Both Lawns',
+      addDays(new Date(), 30).valueOf(),
+    ),
   ];
 }

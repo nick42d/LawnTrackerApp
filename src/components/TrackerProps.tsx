@@ -65,28 +65,6 @@ export function TrackerProps({tracker}: TrackerProps) {
           ) : undefined
         }
         <List.Item title="Tracker status" description={tracker.trackerStatus} />
-        <List.Item
-          title="Notification status"
-          description={tracker.notificationStatus.lastNotificationStatus}
-        />
-        <List.Item
-          title="Notifications last checked"
-          description={
-            tracker.notificationStatus.lastCheckedUnixMs
-              ? new Date(
-                  tracker.notificationStatus.lastCheckedUnixMs,
-                ).toLocaleString()
-              : ''
-          }
-        />
-        <List.Item
-          title="Last snoozed"
-          description={
-            tracker.lastSnoozedUnixMs
-              ? new Date(tracker.lastSnoozedUnixMs).toLocaleString()
-              : ''
-          }
-        />
       </List.Section>
     </View>
   );

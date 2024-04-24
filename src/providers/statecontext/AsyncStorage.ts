@@ -46,26 +46,16 @@ export async function getStoredState(): Promise<StoredState | undefined> {
   });
 }
 
-export function writeTrackers(status: ContextStatus, trackers: Tracker[]) {
-  console.log('App context status is: ' + status);
-  if (status === 'Loaded') {
-    console.log('Setting app state - trackers');
-    AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(trackers))
-      .then(() => console.log('Trackers set'))
-      .catch(() => console.log('Error setting trackers'));
-  } else {
-    console.log('Not syncing app state as not Loaded - trackers');
-  }
+export function writeTrackers(trackers: Tracker[]) {
+  console.log('Writing app state - trackers');
+  AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(trackers))
+    .then(() => console.log('Wrote trackers'))
+    .catch(() => console.log('Error writing trackers'));
 }
 
-export function writeLocations(status: ContextStatus, locations: Location[]) {
-  console.log('App context status is: ' + status);
-  if (status === 'Loaded') {
-    console.log('Setting app state - locations');
-    AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
-      .then(() => console.log('Locations set'))
-      .catch(() => console.log('Error setting locations'));
-  } else {
-    console.log('Not syncing app state as not Loaded - locations');
-  }
+export function writeLocations(locations: Location[]) {
+  console.log('Writing app state - locations');
+  AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
+    .then(() => console.log('Wrote locations'))
+    .catch(() => console.log('Error writing locations'));
 }

@@ -153,8 +153,7 @@ export async function backgroundSnoozeTrackerId(trackerId: string) {
     lastSnoozedUnixMs: Date.now(),
   };
   newTrackers.splice(idx, 1, newTracker);
-  // Hacky use of writeTrackers status argument
-  await writeTrackers('Loaded', newTrackers);
+  await writeTrackers(newTrackers);
 }
 /**
  * Mark a tracker in Stored State as stopped.
@@ -178,8 +177,7 @@ export async function backgroundStopTrackerId(trackerId: string) {
     trackerStatus: 'Stopped',
   };
   newTrackers.splice(idx, 1, newTracker);
-  // Hacky use of writeTrackers status argument
-  await writeTrackers('Loaded', newTrackers);
+  await writeTrackers(newTrackers);
 }
 /**
  * Use both from foreground and background

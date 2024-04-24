@@ -1,5 +1,6 @@
 import {addWeatherArrayToLocations} from '../../api/Api';
 import {
+  cancelSnoozeTracker,
   editTracker,
   resetTracker,
   resumeTracker,
@@ -18,6 +19,8 @@ export function reducer(
       return {...state, status: 'Loaded'};
     case 'SetLoading':
       return {...state, status: 'Loading'};
+    case 'SetTransitioning':
+      return {...state, status: 'Transitioning'};
     case 'SetWeatherLocationRefreshing': {
       return {
         ...state,
@@ -103,6 +106,14 @@ export function reducer(
         ...state,
         trackers: state.trackers.map(t =>
           t.uuid === action.id ? snoozeTracker(t) : t,
+        ),
+      };
+    }
+    case 'CancelSnoozeTrackerId': {
+      return {
+        ...state,
+        trackers: state.trackers.map(t =>
+          t.uuid === action.id ? cancelSnoozeTracker(t) : t,
         ),
       };
     }

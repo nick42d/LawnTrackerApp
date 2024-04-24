@@ -1,2 +1,5 @@
-
-export type ContextStatus = 'Initialised' | 'Loading' | 'Loaded';
+export type ContextStatus =
+  | 'Initialised'
+  | 'Loading'
+  | 'Loaded'
+  | 'Transitioning';

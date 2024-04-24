@@ -67,7 +67,9 @@ export const AddTimedTrackerStartDateSchema = v.transform(
   d => (d ? Number(d) : Date.now()),
 );
 export const AddTimedTrackerDurationDaysSchema = v.transform(
-  v.string([v.minLength(1)]),
+  v.string('Duration must be a number', [
+    v.minLength(1, 'Duration is mandatory'),
+  ]),
   v => Number(v),
   PositiveIntegerSchema,
 );
@@ -460,6 +462,15 @@ export function stopTracker(tracker: Tracker): Tracker {
  */
 export function snoozeTracker(tracker: Tracker): Tracker {
   return {...tracker, lastSnoozedUnixMs: Date.now()};
+}
+/**
+ *
+ * Cancels snooze for tracker
+ * @param tracker
+ * @returns
+ */
+export function cancelSnoozeTracker(tracker: Tracker): Tracker {
+  return {...tracker, lastSnoozedUnixMs: undefined};
 }
 
 /// Resumes tracker and resets it if resettable.

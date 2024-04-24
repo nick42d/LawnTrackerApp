@@ -30,10 +30,11 @@ export default function HomeScreen({
   const {
     trackers,
     refreshWeather,
-    deleteTrackerName,
-    resetTrackerName,
-    stopTrackerName,
-    resumeTrackerName,
+    deleteTrackerId,
+    resetTrackerId,
+    stopTrackerId,
+    resumeTrackerId,
+    cancelSnoozeTrackerId,
   } = React.useContext(StateContext);
 
   const onRefresh = React.useCallback(() => {
@@ -48,7 +49,7 @@ export default function HomeScreen({
   function onDelete(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
-      deleteTrackerName(name);
+      deleteTrackerId(name);
       setShowDialog(false);
     });
     setDialogTitle('Confirm delete tracker');
@@ -58,7 +59,7 @@ export default function HomeScreen({
   function onReset(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
-      resetTrackerName(name);
+      resetTrackerId(name);
       setShowDialog(false);
     });
     setDialogTitle('Confirm reset tracker');
@@ -70,7 +71,7 @@ export default function HomeScreen({
   function onStop(name: string) {
     // Required to use a higher order function due to type signature of useState.
     setDialogCallback(() => () => {
-      stopTrackerName(name);
+      stopTrackerId(name);
       setShowDialog(false);
     });
     setDialogTitle('Confirm stop tracker');
@@ -91,8 +92,9 @@ export default function HomeScreen({
             onDelete={() => onDelete(item.uuid)}
             onReset={() => onReset(item.uuid)}
             onStop={() => onStop(item.uuid)}
-            // This case doesn't need validation, no ill effects can occur.
-            onResume={() => resumeTrackerName(item.uuid)}
+            // These cases don't need validation, no ill effects can occur.
+            onResume={() => resumeTrackerId(item.uuid)}
+            onCancelSnooze={() => cancelSnoozeTrackerId(item.uuid)}
           />
         )}
       />
