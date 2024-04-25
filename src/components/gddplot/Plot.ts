@@ -129,7 +129,7 @@ export function getGraphPlot(
     x => x.weatherType === 'Estimated',
   );
   const items: GraphPlotItem[] = trackerGddArray.map((x, idx) => {
-    const dateString = format(new Date(x.dateUnixMs * 1000), 'EEEEEE dd/MM');
+    const dateString = format(new Date(x.dateUnixMs * 1000), 'E d/MM');
     const value = x.gddAcc;
     const basePlotItem = {
       value,

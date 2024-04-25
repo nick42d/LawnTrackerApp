@@ -14,7 +14,7 @@ export default function GddDataTable(props: {gddArray: DailyGddAcc[]}) {
       {props.gddArray.map(i => (
         <DataTable.Row key={i.dateUnixMs}>
           <DataTable.Cell>
-            {format(new Date(i.dateUnixMs), 'EEEEEE dd/MM')}
+            {format(new Date(i.dateUnixMs), 'E dd/MM')}
           </DataTable.Cell>
           <DataTable.Cell>{i.gdd.toFixed(1)}</DataTable.Cell>
           <DataTable.Cell>{i.gddAcc.toFixed(1)}</DataTable.Cell>
