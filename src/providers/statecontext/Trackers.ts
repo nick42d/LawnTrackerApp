@@ -236,8 +236,8 @@ export type TrackerStatusCheck =
       trackerKind: TrackerKind;
       trackerName: string;
       trackerId: string;
-      target: number;
-      actual: number;
+      stringTarget: string;
+      stringActual: string;
     };
 
 type DefaultAddTrackerInputProps = {
@@ -515,20 +515,20 @@ export function trackerStatus(
       const target = tracker.target_date_unix_ms;
       return target <= curDateUnixMs
         ? {
-            actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'TargetReached',
-            target,
+            stringTarget: new Date(target).toLocaleDateString(),
+            stringActual: new Date(curDateUnixMs).toLocaleDateString(),
           }
         : {
-            actual: curDateUnixMs,
+            stringActual: new Date(curDateUnixMs).toLocaleDateString(),
+            stringTarget: new Date(target).toLocaleDateString(),
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'Running',
-            target,
           };
     }
     case 'gdd': {
@@ -543,20 +543,20 @@ export function trackerStatus(
       const target = tracker.target_gdd;
       return target <= actual_gdd
         ? {
-            actual: actual_gdd,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'TargetReached',
-            target,
+            stringActual: actual_gdd.toFixed(0),
+            stringTarget: target.toFixed(0),
           }
         : {
-            actual: actual_gdd,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'Running',
-            target,
+            stringActual: actual_gdd.toFixed(0),
+            stringTarget: target.toFixed(0),
           };
     }
     case 'timed': {
@@ -566,20 +566,20 @@ export function trackerStatus(
       ).valueOf();
       return target <= curDateUnixMs
         ? {
-            actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'TargetReached',
-            target,
+            stringTarget: new Date(target).toLocaleDateString(),
+            stringActual: new Date(curDateUnixMs).toLocaleDateString(),
           }
         : {
-            actual: curDateUnixMs,
             trackerKind: tracker.kind,
             trackerName: tracker.name,
             trackerId: tracker.uuid,
             kind: 'Running',
-            target,
+            stringTarget: new Date(target).toLocaleDateString(),
+            stringActual: new Date(curDateUnixMs).toLocaleDateString(),
           };
     }
   }

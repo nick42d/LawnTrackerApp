@@ -27,7 +27,7 @@ export function displayNotificationAction(n: NotificationAction): string {
 export async function displayTrackerNotification(status: TrackerStatusCheck) {
   const msg = `Tracker '${status.trackerName}' target exceeded`;
   if (status.kind === 'TargetReached') {
-    const detail = `Target: ${status.target}, Current: ${status.actual}`;
+    const detail = `Target: ${status.stringTarget}, Current: ${status.stringActual}`;
     const data = {trackerId: status.trackerId};
     await displayNotification(msg, detail, ['snooze', 'stop'], data);
   }
