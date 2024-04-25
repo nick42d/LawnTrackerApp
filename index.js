@@ -19,7 +19,6 @@ export default function Main() {
 }
 
 // MapLibreGl setup
-MapLibreGL.requestAndroidLocationPermissions();
 MapLibreGL.setAccessToken(null);
 registerTranslation('en-GB', enGB);
 

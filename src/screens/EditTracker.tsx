@@ -68,7 +68,11 @@ export default function EditTrackerScreen({
         showLocationsDialog,
         setState,
         setShowLocationsDialog,
-        () => navigation.navigate('AddLocation', {fromAddGddTracker: true}),
+        () =>
+          navigation.navigate('AddLocation', {
+            fromScreen: 'EditTracker',
+            trackerId: route.params.trackerId,
+          }),
       )
     : undefined;
   return (

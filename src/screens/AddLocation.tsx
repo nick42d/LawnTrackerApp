@@ -58,14 +58,17 @@ export default function AddLocationScreen({
                   });
                 } else throw e;
               });
-            if (
-              route.params?.fromAddGddTracker &&
-              currentLocation !== undefined
-            ) {
-              navigation.navigate('AddTracker', {
-                kind: 'gdd',
-                fromAddLocationId: currentLocation?.id,
-              });
+            if (route.params && currentLocation !== undefined) {
+              if (route.params.fromScreen === 'AddTracker')
+                navigation.navigate('AddTracker', {
+                  kind: 'gdd',
+                  fromAddLocationId: currentLocation?.id,
+                });
+              if (route.params.fromScreen === 'EditTracker')
+                navigation.navigate('EditTracker', {
+                  trackerId: route.params.trackerId,
+                  fromAddLocationId: currentLocation?.id,
+                });
             } else {
               navigation.goBack();
             }
@@ -129,13 +132,6 @@ export default function AddLocationScreen({
         pitchEnabled={false}
         rotateEnabled={false}
         styleURL="https://demotiles.maplibre.org/style.json">
-        <MapLibreGL.UserLocation
-          onUpdate={loc =>
-            console.log(
-              `Received location change, set location to ${JSON.stringify(loc)}`,
-            )
-          }
-        />
         <MapLibreGL.Camera
           zoomLevel={currentLocation ? 2 : 1}
           centerCoordinate={latLongArray()}

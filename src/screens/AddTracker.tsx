@@ -67,7 +67,7 @@ export default function AddTrackerScreen({
     showLocationsDialog,
     setState,
     setShowLocationsDialog,
-    () => navigation.navigate('AddLocation', {fromAddGddTracker: true}),
+    () => navigation.navigate('AddLocation', {fromScreen: 'AddTracker'}),
   );
   return (
     <ScrollView>

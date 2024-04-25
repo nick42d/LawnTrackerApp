@@ -29,7 +29,11 @@ import EditTrackerScreen from '../screens/EditTracker';
 import AddTrackerScreen from '../screens/AddTracker';
 import {StateContext} from '../providers/StateContext';
 
-// Handle deep linking - for easy navigation from notifications
+/**
+ * Handle deep linking - for easy navigation from notifications
+ * Usage example:
+ * await Linking.openURL(`lawntracker://tracker/view/${trackerId}`);
+ */
 const linking = {
   prefixes: ['lawntracker://'],
   config: {
@@ -44,7 +48,10 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
   Drawer: NavigatorScreenParams<AppDrawerParamList>;
-  AddLocation: {fromAddGddTracker: boolean} | undefined;
+  AddLocation:
+    | {fromScreen: 'AddTracker'}
+    | {fromScreen: 'EditTracker'; trackerId: string}
+    | undefined;
   AddTracker:
     | {kind: 'gdd'; fromAddLocationId?: number}
     | {kind: 'calendar' | 'timed'};
