@@ -1,39 +1,15 @@
 import {ContextStatus} from '../Types';
 import * as v from 'valibot';
 
+export const SETTINGS_SCHEMA_VERSION = '0.1';
+
 export type SettingsState = {
   settings: Settings;
   status: ContextStatus;
   setSettings: (settings: Settings) => void;
 };
 
-export type Settings = {
-  algorithm: GddAlgorithm;
-  warning_threshold_perc: number;
-  warning_threshold_days: number;
-  unit_of_measure: UnitOfMeasure;
-  auto_dark_mode: boolean;
-  dark_mode_enabled: boolean;
-  default_base_temp: GddBaseTemp;
-};
-// NOTE: This MUST be updated if Settings is updated
-export function validateSettings(
-  maybeSettings: unknown,
-): maybeSettings is Settings {
-  const SettingsSchema = v.object(
-    {
-      algorithm: v.picklist(GDD_ALGORITHMS),
-      warning_threshold_perc: v.number(),
-      warning_threshold_days: v.number(),
-      unit_of_measure: v.picklist(UNITS_OF_MEASURE),
-      auto_dark_mode: v.boolean(),
-      dark_mode_enabled: v.boolean(),
-      default_base_temp: v.picklist(GDD_BASE_TEMPS),
-    },
-    v.never(),
-  );
-  return v.is(SettingsSchema, maybeSettings);
-}
+export type Settings = v.Output<typeof SettingsSchema>;
 
 export const GDD_ALGORITHMS = ['Variant A', 'Variant B'] as const;
 /**
@@ -69,3 +45,17 @@ export function unitOfMeasureAbbreviate(u: UnitOfMeasure): string {
     }
   }
 }
+// Valibot validated type
+export const SettingsSchema = v.object(
+  {
+    apiVersion: v.literal(SETTINGS_SCHEMA_VERSION),
+    algorithm: v.picklist(GDD_ALGORITHMS),
+    warning_threshold_perc: v.number(),
+    warning_threshold_days: v.number(),
+    unit_of_measure: v.picklist(UNITS_OF_MEASURE),
+    auto_dark_mode: v.boolean(),
+    dark_mode_enabled: v.boolean(),
+    default_base_temp: v.picklist(GDD_BASE_TEMPS),
+  },
+  v.never(),
+);

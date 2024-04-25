@@ -1,8 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GDD_TRACKERS_STORAGE_KEY, LOCATIONS_STORAGE_KEY} from '../StateContext';
 import {ContextStatus} from '../Types';
-import {Location, LocationSchema} from './Locations';
-import {Tracker, TrackerSchema} from './Trackers';
+import {
+  LOCATIONS_SCHEMA_VERSION,
+  Location,
+  LocationSchema,
+  Locations,
+  LocationsSchema,
+} from './Locations';
+import {
+  TRACKERS_SCHEMA_VERSION,
+  Tracker,
+  TrackerSchema,
+  Trackers,
+  TrackersSchema,
+} from './Trackers';
 import {StoredState} from './Types';
 import * as v from 'valibot';
 
@@ -21,12 +33,12 @@ export async function getStoredState(): Promise<StoredState | undefined> {
     ) {
       console.log('Loading app state from device');
       try {
-        const locations: Location[] = v.parse(
-          v.array(LocationSchema),
+        const {locations}: Locations = v.parse(
+          LocationsSchema,
           JSON.parse(containsLoc[1]),
         );
-        const trackers: Tracker[] = v.parse(
-          v.array(TrackerSchema),
+        const {trackers}: Trackers = v.parse(
+          TrackersSchema,
           JSON.parse(containsTrackers[1]),
         );
         return {
@@ -47,15 +59,23 @@ export async function getStoredState(): Promise<StoredState | undefined> {
 }
 
 export function writeTrackers(trackers: Tracker[]) {
+  const output: Trackers = {
+    apiVersion: TRACKERS_SCHEMA_VERSION,
+    trackers,
+  };
   console.log('Writing app state - trackers');
-  AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(trackers))
+  AsyncStorage.setItem(GDD_TRACKERS_STORAGE_KEY, JSON.stringify(output))
     .then(() => console.log('Wrote trackers'))
     .catch(() => console.log('Error writing trackers'));
 }
 
 export function writeLocations(locations: Location[]) {
+  const output: Locations = {
+    apiVersion: LOCATIONS_SCHEMA_VERSION,
+    locations,
+  };
   console.log('Writing app state - locations');
-  AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(locations))
+  AsyncStorage.setItem(LOCATIONS_STORAGE_KEY, JSON.stringify(output))
     .then(() => console.log('Wrote locations'))
     .catch(() => console.log('Error writing locations'));
 }

@@ -41,8 +41,8 @@ export async function HeadlessCallback(event: HeadlessEvent) {
     );
     // Use of the onChange functions is a hack and should be improved.
     await Promise.all([
-      writeLocations('Loaded', newState.locations),
-      writeTrackers('Loaded', newState.trackers),
+      writeLocations(newState.locations),
+      writeTrackers(newState.trackers),
       notifyFromStoredState(newState, settings),
     ]);
   }

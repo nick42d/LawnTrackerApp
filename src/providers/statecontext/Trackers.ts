@@ -4,9 +4,9 @@ import {GddAlgorithm, GddBaseTemp} from '../settingscontext/Types';
 import {Location} from './Locations';
 import {v4 as uuidv4} from 'uuid';
 import * as v from 'valibot';
-import {DistributiveOmit} from '../../Utils';
 import {MAX_HISTORY_DAYS} from '../../Consts';
 
+export const TRACKERS_SCHEMA_VERSION = '0.1';
 export const TRACKER_STATUSES = ['Stopped', 'Running'] as const;
 export const MAX_DESC_LENGTH = 40;
 export const MAX_NAME_LENGTH = 20;
@@ -192,6 +192,13 @@ export const TrackerSchema = v.variant('kind', [
   TimedTrackerSchema,
   GddTrackerSchema,
 ]);
+export const TrackersSchema = v.object(
+  {
+    apiVersion: v.literal(TRACKERS_SCHEMA_VERSION),
+    trackers: v.array(TrackerSchema),
+  },
+  v.never(),
+);
 export const AddTrackerSchema = v.variant('kind', [
   AddCalendarTrackerSchema,
   AddTimedTrackerSchema,
@@ -209,6 +216,7 @@ export type AddCalendarTrackerInput = v.Input<typeof AddCalendarTrackerSchema>;
 export type AddTimedTrackerInput = v.Input<typeof AddTimedTrackerSchema>;
 export type AddTracker = v.Output<typeof AddTrackerSchema>;
 export type Tracker = v.Output<typeof TrackerSchema>;
+export type Trackers = v.Output<typeof TrackersSchema>;
 export type TrackerKind = Tracker['kind'];
 
 // Should be in a different module

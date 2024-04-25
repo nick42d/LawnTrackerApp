@@ -1,6 +1,7 @@
 import {UNITS_OF_MEASURE, UnitOfMeasure} from '../settingscontext/Types';
 import * as v from 'valibot';
 
+export const LOCATIONS_SCHEMA_VERSION = '0.1';
 // These types are valibot validated
 // due to deserializing from AsyncStorage
 export const WeatherAppConditionSchema = v.object(
@@ -49,11 +50,19 @@ export const LocationSchema = v.object(
   },
   v.never(),
 );
+export const LocationsSchema = v.object(
+  {
+    apiVersion: v.literal(LOCATIONS_SCHEMA_VERSION),
+    locations: v.array(LocationSchema),
+  },
+  v.never(),
+);
 export type WeatherAppDay = v.Output<typeof WeatherAppDaySchema>;
 export type WeatherStatus = v.Output<typeof WeatherStatusSchema>;
 export type Weather = v.Output<typeof WeatherSchema>;
 export type WeatherAppCondition = v.Output<typeof WeatherAppConditionSchema>;
 export type Location = v.Output<typeof LocationSchema>;
+export type Locations = v.Output<typeof LocationsSchema>;
 /**
  * Helper type for adding a new location - it won't have weather yet.
  */

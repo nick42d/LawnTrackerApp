@@ -6,7 +6,10 @@ import {
   newGddTracker,
   newTimedTracker,
 } from './providers/statecontext/Trackers';
-import {Settings} from './providers/settingscontext/Types';
+import {
+  SETTINGS_SCHEMA_VERSION,
+  Settings,
+} from './providers/settingscontext/Types';
 import {StateManager} from './providers/statecontext/Types';
 import {Location, newWeatherStatus} from './providers/statecontext/Locations';
 import {API_UNIT_OF_MEASURE} from './Consts';
@@ -19,6 +22,7 @@ const SYDNEY_LONG = 151.2093;
 
 export function defaultSettings(): Settings {
   return {
+    apiVersion: SETTINGS_SCHEMA_VERSION,
     algorithm: 'Variant A',
     warning_threshold_perc: 0.8,
     warning_threshold_days: 7,
