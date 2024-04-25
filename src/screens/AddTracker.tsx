@@ -23,7 +23,7 @@ export default function AddTrackerScreen({
   const [state, setState] = useState<AddTrackerInput>(() =>
     defaultAddTrackerInput({
       kind: route.params.kind,
-      locationId: locations[0].apiId,
+      locationId: locations.at(0)?.apiId ?? -1,
       baseTemp: settings.default_base_temp,
     }),
   );

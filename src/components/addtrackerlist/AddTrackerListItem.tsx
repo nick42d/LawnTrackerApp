@@ -130,24 +130,30 @@ function AddTrackerListLocationsItem(props: {
     ? prettyPrintLocation(selectedLocation)
     : '';
   return (
-    <TouchableHighlight onPress={() => props.item.setShowLocationsDialog(true)}>
-      <TextInput
-        label="Select Location"
-        value={selectedLocationPrettyName}
-        disabled={props.item.disabled}
-        error={!selectedLocation}
-        right={
-          props.item.icon ? (
-            <TextInput.Icon
-              icon={props.item.icon}
-              // If this isn't done, clicking the icon will do nothing.
-              // Potential a standard <Icon> would work better.
-              onPress={() => props.item.setShowLocationsDialog(true)}
-            />
-          ) : undefined
-        }
-        editable={false}
-      />
-    </TouchableHighlight>
+    <View>
+      <TouchableHighlight
+        onPress={() => props.item.setShowLocationsDialog(true)}>
+        <TextInput
+          label="Select Location"
+          value={selectedLocationPrettyName}
+          disabled={props.item.disabled}
+          error={!selectedLocation}
+          right={
+            props.item.icon ? (
+              <TextInput.Icon
+                icon={props.item.icon}
+                // If this isn't done, clicking the icon will do nothing.
+                // Potential a standard <Icon> would work better.
+                onPress={() => props.item.setShowLocationsDialog(true)}
+              />
+            ) : undefined
+          }
+          editable={false}
+        />
+      </TouchableHighlight>
+      <HelperText visible={!selectedLocation} type={'error'}>
+        Location is mandatory
+      </HelperText>
+    </View>
   );
 }
