@@ -4,11 +4,20 @@ LawnTracker is an open source React Native (Android) app designed to keep track 
 
 Weather data by [Open-Meteo.com](https://www.open-meteo.com)
 
-# Installation
+# Features
+- Keep track of tasks that are weather dependent (based on growing degree days) and non-weather dependent.
+- Estimate when growing degree targets will be met based on weather forecast (or linear projection when forecast isn't available)
+- Notifications when tasks are due
+- No login required - the app all runs locally from your phone
+- Light/dark mode
+
+# Screenshots
+<img src="https://github.com/nick42d/LawnTrackerApp/assets/133559267/e6affabe-eddf-41b0-92e7-23e95d1af909" width=30% height=30%/>
+<img src="https://github.com/nick42d/LawnTrackerApp/assets/133559267/de74dc6b-c261-4676-9527-b686a69aa8c0" width=30% height=30%/>
+
+# Installation / Setup
 
 The app is intended to be made available on F-Droid and the Google Play Store.
-
-# Setup
 
 No setup is required. To add a new tracker, press the plus button on the home screen and enter the tracker details.
 
