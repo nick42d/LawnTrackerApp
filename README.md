@@ -6,7 +6,7 @@ Weather data by [Open-Meteo.com](https://www.open-meteo.com)
 
 # Features
 - Keep track of tasks that are weather dependent (based on growing degree days) and non-weather dependent.
-- Estimate when growing degree targets will be met based on weather forecast (or linear projection when forecast isn't available)
+- Estimate when growing degree day targets will be met based on weather forecast (or linear projection when forecast isn't available)
 - Notifications when tasks are due
 - No login required - the app all runs locally from your phone
 - Light/dark mode
