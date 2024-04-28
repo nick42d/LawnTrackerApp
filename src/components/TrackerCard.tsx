@@ -97,8 +97,7 @@ export function TrackerCard({
       </Card.Content>
       <Card.Actions>
         {props.actions.map((a, i) => (
-          <Button key={i} onPress={a.callback}>
-            <Icon source={a.icon} size={CARD_TEXT_ICON_SIZE} />
+          <Button icon={a.icon} key={i} onPress={a.callback}>
             {a.name}
           </Button>
         ))}

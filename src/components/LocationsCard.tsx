@@ -100,8 +100,7 @@ export function LocationsCard({
         </Text>
       </Card.Content>
       <Card.Actions>
-        <Button onPress={onDelete}>
-          <Icon source="delete" size={20} />
+        <Button icon="delete" onPress={onDelete}>
           Delete
         </Button>
       </Card.Actions>

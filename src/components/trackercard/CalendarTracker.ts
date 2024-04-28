@@ -27,7 +27,7 @@ export function ToCalendarTrackerCardProps(
   if (calendarTracker.trackerStatus === 'Stopped') {
     actions.push({icon: 'play', name: 'Resume', callback: onResume});
   } else {
-    actions.push({icon: 'stop', name: '', callback: onStop});
+    actions.push({icon: 'stop', name: 'Stop', callback: onStop});
   }
   return {
     heading: calendarTracker.name,
