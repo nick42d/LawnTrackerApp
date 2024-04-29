@@ -46,7 +46,11 @@ export default function ViewLocationScreen({
         />
       </List.Section>
       <MapLibreGL.MapView
-        style={{width: '100%', height: 300}}
+        style={{
+          alignSelf: 'center',
+          width: '95%',
+          height: 300,
+        }}
         logoEnabled={true}
         zoomEnabled={false}
         scrollEnabled={false}
