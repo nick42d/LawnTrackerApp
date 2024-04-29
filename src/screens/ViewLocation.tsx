@@ -9,6 +9,8 @@ import {
 import {ScrollView, View} from 'react-native';
 import {AppScreenProps} from '../navigation/Root';
 import {timeout} from '../Utils';
+import MapLibreGL from '@maplibre/maplibre-react-native';
+import styles from '../Styles';
 
 export default function ViewLocationScreen({
   route,
@@ -43,6 +45,28 @@ export default function ViewLocationScreen({
           }
         />
       </List.Section>
+      <MapLibreGL.MapView
+        style={{width: '100%', height: 300}}
+        logoEnabled={true}
+        zoomEnabled={false}
+        scrollEnabled={false}
+        pitchEnabled={false}
+        rotateEnabled={false}
+        styleURL="https://demotiles.maplibre.org/style.json">
+        <MapLibreGL.Camera
+          zoomLevel={2}
+          centerCoordinate={[item.longitude, item.latitude]}
+        />
+        <MapLibreGL.PointAnnotation
+          id="pt-ann"
+          key="pt-ann"
+          coordinate={[item.longitude, item.latitude]}
+          selected={false}
+          anchor={{x: 0.5, y: 1}}
+          title="Location">
+          <View></View>
+        </MapLibreGL.PointAnnotation>
+      </MapLibreGL.MapView>
       {item.weather ? (
         waited ? (
           <DataTable>
