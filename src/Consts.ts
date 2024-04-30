@@ -32,6 +32,6 @@ export const API_LOCATIONS_LANGUAGE = 'en';
 export const API_UNIT_OF_MEASURE = 'Metric';
 // How often to run react-native-background-fetch
 // In minutes
-export const BACKGROUND_REFRESH_INTERVAL = 12 * 60;
+// export const BACKGROUND_REFRESH_INTERVAL = 12 * 60;
 // Currently harcoded
 export const DATE_PICKER_LOCALE = 'en-GB';

@@ -21,7 +21,7 @@ import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {Location} from '../providers/statecontext/Locations';
 import AddLocationScreen from '../screens/AddLocation';
-import {useContext, useEffect} from 'react';
+import {useCallback, useContext, useEffect} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import LoadingScreen from '../screens/Loading';
 import ViewLocationScreen from '../screens/ViewLocation';
@@ -29,6 +29,8 @@ import EditTrackerScreen from '../screens/EditTracker';
 import AddTrackerScreen from '../screens/AddTracker';
 import {StateContext} from '../providers/StateContext';
 import {initBackgroundFetch} from '../worker/BackgroundTask';
+import BackgroundFetch from 'react-native-background-fetch';
+import {timeout} from '../Utils';
 
 /**
  * Handle deep linking - for easy navigation from notifications
@@ -92,20 +94,33 @@ export type HomeLocationsTabScreenProps<
 >;
 
 export function AppNavigationRoot() {
-  const {status: settingsStatus} = useContext(SettingsContext);
+  const {status: settingsStatus, settings} = useContext(SettingsContext);
   const {status: appStatus, updateLocationsWeather} = useContext(StateContext);
   const paperTheme = useTheme<Theme>();
-
   /**  Initiate background fetch and assign event handler.
-   * Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
+   * If the interval is update, restart it with the new interval.
    * NOTE: the foreground/background event handler is here, but the headless event handler is in HeadlessCallback module and registered in index.
    * NOTE: This can update app state (from both foreground and background)
    */
   useEffect(() => {
-    initBackgroundFetch(updateLocationsWeather).then(_ =>
-      console.log('Background fetch initiated'),
-    );
-  }, []);
+    let active = true;
+    (async () => {
+      await timeout(200);
+      if (!active) return;
+      await initBackgroundFetch(
+        updateLocationsWeather,
+        settings.backgroundTaskIntervalHrs,
+      );
+      console.log('Background fetch initiated');
+    })();
+    return () => {
+      active = false;
+      (async () => {
+        await BackgroundFetch.stop();
+        console.log('Background fetch stopped');
+      })();
+    };
+  }, [settings.backgroundTaskIntervalHrs]);
 
   if (settingsStatus === 'Loading' || appStatus === 'Loading')
     return <LoadingScreen />;

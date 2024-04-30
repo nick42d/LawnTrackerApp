@@ -3,7 +3,6 @@
 // Issue notifications
 import BackgroundFetch from 'react-native-background-fetch';
 import {displayTrackerNotification} from './Notification';
-import {BACKGROUND_REFRESH_INTERVAL} from '../Consts';
 import {getStoredState} from '../providers/statecontext/AsyncStorage';
 import {StoredState} from '../providers/statecontext/Types';
 import {trackerStatus} from '../providers/statecontext/Trackers';
@@ -24,10 +23,12 @@ import {defaultSettings} from '../providers/settingscontext/Types';
  */
 export async function initBackgroundFetch(
   refreshWeatherCallback: (update: WeatherUpdate[]) => void,
+  intervalHrs: number,
 ) {
   let status = await BackgroundFetch.configure(
     {
-      minimumFetchInterval: BACKGROUND_REFRESH_INTERVAL,
+      // Note: in minutes
+      minimumFetchInterval: intervalHrs * 60,
       // Begin Android-only options
       enableHeadless: true,
       stopOnTerminate: false,
@@ -37,7 +38,12 @@ export async function initBackgroundFetch(
     (taskId: string) => onEvent(taskId, refreshWeatherCallback),
     onTimeout,
   );
-  console.log('[BackgroundFetch] configure status: ', status);
+  console.log(
+    '[BackgroundFetch] configure status: ',
+    status,
+    'iterval: ',
+    intervalHrs,
+  );
 }
 
 // BackgroundFetch event handler.
