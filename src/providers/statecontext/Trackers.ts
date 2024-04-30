@@ -501,7 +501,7 @@ export function trackerStatus(
     };
   if (
     tracker.lastSnoozedUnixMs &&
-    differenceInCalendarDays(tracker.lastSnoozedUnixMs, curDateUnixMs) <= 0
+    differenceInCalendarDays(curDateUnixMs, tracker.lastSnoozedUnixMs) <= 0
   ) {
     return {
       trackerKind: tracker.kind,

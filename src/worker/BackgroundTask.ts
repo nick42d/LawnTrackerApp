@@ -69,6 +69,8 @@ async function onEvent(
     getStoredSettings(),
     getStoredBackgroundTaskManager(),
   ]);
+  // NOTE: If notifications become due whilst app is open, you won't get a notification for that day.
+  // Consider instead passing 'active' to this function.
   const [newBackgroundTaskManager, notificationDueNow] =
     checkIfNotificationsDue(
       settings ?? defaultSettings(),

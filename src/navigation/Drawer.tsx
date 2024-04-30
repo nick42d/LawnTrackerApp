@@ -10,6 +10,7 @@ import SettingsScreen from '../screens/Settings';
 import {getHeaderTitle} from '@react-navigation/elements';
 import HelpScreen from '../screens/Help';
 import {AppDrawerScreenProps, AppScreenProps} from './Root';
+import StatusScreen from '../screens/Status';
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -25,6 +26,7 @@ export function AppDrawerNavigator() {
         options={{title: 'LawnTracker'}}
       />
       <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
+      <DrawerNavigator.Screen name="Status" component={StatusScreen} />
       <DrawerNavigator.Screen name="Help" component={HelpScreen} />
     </DrawerNavigator.Navigator>
   );
@@ -64,6 +66,11 @@ export function AppDrawerContent({navigation}: any): React.JSX.Element {
         icon="cog"
         label="Settings"
         onPress={() => navigation.navigate('Settings')}
+      />
+      <Drawer.Item
+        icon="pulse"
+        label="Status"
+        onPress={() => navigation.navigate('Status')}
       />
       <Drawer.Item
         icon="help-circle-outline"

@@ -67,6 +67,7 @@ export type AppDrawerParamList = {
   HomeLocationsTabs: NavigatorScreenParams<HomeLocationsTabParamList>;
   Settings: undefined;
   Help: undefined;
+  Status: undefined;
 };
 
 export type HomeLocationsTabParamList = {

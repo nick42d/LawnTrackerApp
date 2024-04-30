@@ -108,29 +108,6 @@ export default function SettingsScreen() {
       onChange: v => setAutoDarkMode(v),
     },
     {
-      key: '4',
-      kind: 'press',
-      title: 'Clear all',
-      description: 'Clear all trackers and locations.',
-      warningDialog: {
-        title: 'Confirm clear all',
-        message:
-          'Are you sure you want to clear all? All trackers and locations will be cleared.',
-      },
-      onPress: clearAll,
-    },
-    {
-      key: '4.5',
-      kind: 'press',
-      title: 'Reset settings',
-      description: 'Reset to default settings',
-      warningDialog: {
-        title: 'Confirm reset',
-        message: 'Are you sure you want to reset?',
-      },
-      onPress: resetSettings,
-    },
-    {
       key: '4.6',
       kind: 'subheader',
       subheaderTitle: 'Notification Settings',
@@ -190,6 +167,34 @@ export default function SettingsScreen() {
         onChange: v => setDefaultBaseTemp(v),
         stringConverter: gddBaseTempToString,
       }),
+    },
+    {
+      key: '7.5',
+      kind: 'subheader',
+      subheaderTitle: 'Reset App Settings',
+    },
+    {
+      key: '8',
+      kind: 'press',
+      title: 'Clear all',
+      description: 'Clear all trackers and locations.',
+      warningDialog: {
+        title: 'Confirm clear all',
+        message:
+          'Are you sure you want to clear all? All trackers and locations will be cleared.',
+      },
+      onPress: clearAll,
+    },
+    {
+      key: '9',
+      kind: 'press',
+      title: 'Reset settings',
+      description: 'Reset to default settings',
+      warningDialog: {
+        title: 'Confirm reset',
+        message: 'Are you sure you want to reset?',
+      },
+      onPress: resetSettings,
     },
   ];
   return <SettingsList list={SettingsListState} />;
