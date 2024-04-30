@@ -9,10 +9,10 @@ import App from './src/App';
 import {name as appName} from './app.json';
 import {enGB, registerTranslation} from 'react-native-paper-dates';
 import MapLibreGL from '@maplibre/maplibre-react-native';
-import {onNotificationEvent} from './src/Notification';
+import {onNotificationEvent} from './src/worker/Notification';
 import BackgroundFetch from 'react-native-background-fetch';
 import notifee from '@notifee/react-native';
-import {HeadlessCallback as headlessCallback} from './src/HeadlessCallback';
+import {HeadlessCallback as headlessCallback} from './src/worker/HeadlessCallback';
 
 export default function Main() {
   return <App />;

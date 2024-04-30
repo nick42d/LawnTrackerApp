@@ -2,11 +2,13 @@ import {ContextStatus} from '../Types';
 import {AddTracker, Tracker} from './Trackers';
 import {Location} from './Locations';
 import {Weather} from './Locations';
+import {WeatherUpdate} from '../../api/Api';
 
 export type StateManager = {
   locations: Location[];
   trackers: Tracker[];
   status: ContextStatus;
+  updateLocationsWeather: (update: WeatherUpdate[]) => void;
   refreshWeather: () => Promise<void>;
   addLocation: (loc: Location) => Promise<void>;
   deleteLocationId: (id: number) => void;

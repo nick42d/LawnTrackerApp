@@ -17,7 +17,6 @@ import notifee, {
   Notification,
   NotificationPressAction,
 } from '@notifee/react-native';
-import {BackgroundFetcher} from '../components/BackgroundFetcher';
 import {timeout} from '../Utils';
 import {
   backgroundSnoozeTrackerId,
@@ -25,7 +24,7 @@ import {
   getNotificationTrackerId,
   handleNotificationOpened,
   onNotificationEvent,
-} from '../Notification';
+} from '../worker/Notification';
 import {AppState, AppStateStatus} from 'react-native';
 import {differenceInMilliseconds} from 'date-fns';
 
@@ -257,6 +256,7 @@ export function StateContextProvider({
         clearAll,
         // TODO: May need to be more clever about this.
         refreshWeather: () => refreshWeatherLocations(locations),
+        updateLocationsWeather,
         addLocation,
         deleteLocationId,
         addTracker,
@@ -267,9 +267,7 @@ export function StateContextProvider({
         resumeTrackerId,
         cancelSnoozeTrackerId,
       }}>
-      <BackgroundFetcher refreshWeatherCallback={updateLocationsWeather}>
-        {children}
-      </BackgroundFetcher>
+      {children}
     </StateContext.Provider>
   );
 }

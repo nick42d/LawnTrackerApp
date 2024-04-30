@@ -21,13 +21,14 @@ import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {Location} from '../providers/statecontext/Locations';
 import AddLocationScreen from '../screens/AddLocation';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import LoadingScreen from '../screens/Loading';
 import ViewLocationScreen from '../screens/ViewLocation';
 import EditTrackerScreen from '../screens/EditTracker';
 import AddTrackerScreen from '../screens/AddTracker';
 import {StateContext} from '../providers/StateContext';
+import {initBackgroundFetch} from '../worker/BackgroundTask';
 
 /**
  * Handle deep linking - for easy navigation from notifications
@@ -90,20 +91,24 @@ export type HomeLocationsTabScreenProps<
   AppDrawerScreenProps<keyof AppDrawerParamList>
 >;
 
-export function LoadableApp() {
+export function AppNavigationRoot() {
   const {status: settingsStatus} = useContext(SettingsContext);
-  const {status: appStatus} = useContext(StateContext);
-
-  // TODO: Handle initialising also.
-  return settingsStatus === 'Loading' || appStatus === 'Loading' ? (
-    <LoadingScreen />
-  ) : (
-    <AppRootStackNavigator />
-  );
-}
-
-function AppRootStackNavigator() {
+  const {status: appStatus, updateLocationsWeather} = useContext(StateContext);
   const paperTheme = useTheme<Theme>();
+
+  /**  Initiate background fetch and assign event handler.
+   * Generally would call this on app load, so consider what impact there would be running it multiple times on succession.
+   * NOTE: the foreground/background event handler is here, but the headless event handler is in HeadlessCallback module and registered in index.
+   * NOTE: This can update app state (from both foreground and background)
+   */
+  useEffect(() => {
+    initBackgroundFetch(updateLocationsWeather).then(_ =>
+      console.log('Background fetch initiated'),
+    );
+  }, []);
+
+  if (settingsStatus === 'Loading' || appStatus === 'Loading')
+    return <LoadingScreen />;
 
   return (
     <NavigationContainer

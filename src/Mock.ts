@@ -14,6 +14,7 @@ import {StateManager} from './providers/statecontext/Types';
 import {Location, newWeatherStatus} from './providers/statecontext/Locations';
 import {API_UNIT_OF_MEASURE} from './Consts';
 import {addDays} from 'date-fns';
+import {WeatherUpdate} from './api/Api';
 
 const PERTH_LAT = -32.0494;
 const PERTH_LONG = 115.9122;
@@ -42,6 +43,9 @@ export function defaultStateManager(): StateManager {
     locations: [],
     trackers: [],
     status: 'Initialised',
+    updateLocationsWeather: () => {
+      LogErrorCallbackNotSet('updateLocationsWeather');
+    },
     refreshWeather: async () => {
       LogErrorCallbackNotSet('refreshWeather');
     },

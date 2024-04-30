@@ -1,12 +1,9 @@
-/**
- * @format
- */
-import {LoadableApp} from './navigation/Root';
+import {AppNavigationRoot} from './navigation/Root';
 import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
-import {AppRegistry, useColorScheme} from 'react-native';
+import {useColorScheme} from 'react-native';
 import {
   MD3DarkTheme,
   MD3LightTheme,
@@ -14,13 +11,12 @@ import {
   adaptNavigationTheme,
 } from 'react-native-paper';
 import merge from 'deepmerge';
-import {useContext, useEffect} from 'react';
 import {
   SettingsContext,
   SettingsContextProvider,
 } from './providers/SettingsContext';
 import React from 'react';
-import {StateContext, StateContextProvider} from './providers/StateContext';
+import {StateContextProvider} from './providers/StateContext';
 import notifee from '@notifee/react-native';
 
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
@@ -48,7 +44,7 @@ export default function App(): React.JSX.Element {
             <PaperProvider
               theme={appDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
               <StateContextProvider>
-                <LoadableApp />
+                <AppNavigationRoot />
               </StateContextProvider>
             </PaperProvider>
           );

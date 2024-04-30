@@ -1,15 +1,15 @@
-import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
-import {
-  notifyFromStoredState,
-  refreshStoredStateWeather,
-} from './components/BackgroundFetcher';
+import {getStoredSettings} from '../providers/settingscontext/AsyncStorage';
+import {fetchLocationsWeather} from '../api/Api';
 import {
   writeLocations,
   getStoredState,
   writeTrackers,
-} from './providers/statecontext/AsyncStorage';
-import {getStoredSettings} from './providers/settingscontext/AsyncStorage';
-import {fetchLocationsWeather} from './api/Api';
+} from '../providers/statecontext/AsyncStorage';
+import {
+  refreshStoredStateWeather,
+  notifyFromStoredState,
+} from './BackgroundTask';
+import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
 
 /**  Task to be run by headless background fetch.
  * NOTE: Not supported on iOS

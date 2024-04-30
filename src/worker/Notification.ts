@@ -4,12 +4,12 @@ import notifee, {
   Notification,
   NotificationPressAction,
 } from '@notifee/react-native';
-import {Tracker, TrackerStatusCheck} from './providers/statecontext/Trackers';
+import {Tracker, TrackerStatusCheck} from '../providers/statecontext/Trackers';
 import {Linking} from 'react-native';
 import {
   getStoredState,
   writeTrackers,
-} from './providers/statecontext/AsyncStorage';
+} from '../providers/statecontext/AsyncStorage';
 
 export const NOTIFICATION_ACTIONS = ['snooze', 'stop'] as const;
 export type NotificationAction = (typeof NOTIFICATION_ACTIONS)[number];
