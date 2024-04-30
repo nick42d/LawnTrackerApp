@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useReducer, useRef} from 'react';
 import {AddTracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
-import {defaultStateManager, mockTrackers, mockLocations} from '../Mock';
+import {defaultStateManager} from '../Defaults';
 import {
   writeTrackers,
   writeLocations,
@@ -51,8 +51,8 @@ export function StateContextProvider({
     reducer,
     null,
     () => ({
-      locations: mockLocations(),
-      trackers: mockTrackers(),
+      locations: [],
+      trackers: [],
       status: 'Initialised',
     }),
   );

@@ -15,7 +15,7 @@ import {
   toSomeSettingsListListProps,
 } from '../components/settingslist/Types';
 import SettingsList from '../components/SettingsList';
-import {defaultSettings} from '../Mock';
+import {defaultSettings} from '../Defaults';
 
 export default function SettingsScreen() {
   const {settings, setSettings} = useContext(SettingsContext);

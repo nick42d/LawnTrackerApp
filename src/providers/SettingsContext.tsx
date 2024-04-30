@@ -2,7 +2,7 @@ import {createContext, useEffect, useState} from 'react';
 import {
   LogErrorCallbackNotSet,
   defaultSettings as defaultSettings,
-} from '../Mock';
+} from '../Defaults';
 import {SettingsState} from './settingscontext/Types';
 import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
