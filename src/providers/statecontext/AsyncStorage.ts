@@ -58,7 +58,7 @@ export async function getStoredState(): Promise<StoredState | undefined> {
   });
 }
 
-export function writeTrackers(trackers: Tracker[]) {
+export async function writeTrackers(trackers: Tracker[]) {
   const output: Trackers = {
     apiVersion: TRACKERS_SCHEMA_VERSION,
     trackers,
@@ -69,7 +69,7 @@ export function writeTrackers(trackers: Tracker[]) {
     .catch(() => console.log('Error writing trackers'));
 }
 
-export function writeLocations(locations: Location[]) {
+export async function writeLocations(locations: Location[]) {
   const output: Locations = {
     apiVersion: LOCATIONS_SCHEMA_VERSION,
     locations,

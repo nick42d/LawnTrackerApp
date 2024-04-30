@@ -47,7 +47,7 @@ export function TrackerCard({
 
   // Snooze until day after snooze pressed.
   const snoozeUntilDate = item.lastSnoozedUnixMs
-    ? differenceInCalendarDays(item.lastSnoozedUnixMs, new Date()) <= 0
+    ? differenceInCalendarDays(new Date(), item.lastSnoozedUnixMs) === 0
       ? addDays(startOfDay(item.lastSnoozedUnixMs), 1)
       : undefined
     : undefined;

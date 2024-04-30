@@ -10,8 +10,16 @@ import {
   notifyFromStoredState,
 } from './BackgroundTask';
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
+import {
+  DEFAULT_BACKGROUND_TASK_MANAGER,
+  checkIfNotificationsDue,
+  getStoredBackgroundTaskManager,
+  writeBackgroundTaskManager,
+} from './Types';
+import {defaultSettings} from '../providers/settingscontext/Types';
 
 /**  Task to be run by headless background fetch.
+ * IMPORTANT: Await all Promises within this function.
  * NOTE: Not supported on iOS
  */
 export async function HeadlessCallback(event: HeadlessEvent) {
@@ -27,12 +35,19 @@ export async function HeadlessCallback(event: HeadlessEvent) {
   }
   console.log('[BackgroundFetch HeadlessTask] start: ', taskId);
 
-  const [state, settings] = await Promise.all([
+  const [state, settings, backgroundTaskManager] = await Promise.all([
     getStoredState(),
     getStoredSettings(),
+    getStoredBackgroundTaskManager(),
   ]);
+  const [newBackgroundTaskManager, notificationDueNow] =
+    checkIfNotificationsDue(
+      settings ?? defaultSettings(),
+      backgroundTaskManager ?? DEFAULT_BACKGROUND_TASK_MANAGER,
+    );
+  await writeBackgroundTaskManager(newBackgroundTaskManager);
   // Similar logic to BackgroundFetcher - but don't check if AppState is active.
-  if (state) {
+  if (state && notificationDueNow) {
     const fetchedWeatherArray = await fetchLocationsWeather(state.locations);
     const newState = refreshStoredStateWeather(
       state,

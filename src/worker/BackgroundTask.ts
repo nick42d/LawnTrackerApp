@@ -8,7 +8,6 @@ import {StoredState} from '../providers/statecontext/Types';
 import {trackerStatus} from '../providers/statecontext/Trackers';
 import {Settings} from '../providers/settingscontext/Types';
 import {AppState} from 'react-native';
-import {PropsWithChildren, useEffect} from 'react';
 import {
   WeatherUpdate,
   addWeatherArrayToLocations,
@@ -16,6 +15,12 @@ import {
 } from '../api/Api';
 import {getStoredSettings as getStoredSettings} from '../providers/settingscontext/AsyncStorage';
 import {defaultSettings} from '../providers/settingscontext/Types';
+import {
+  DEFAULT_BACKGROUND_TASK_MANAGER,
+  checkIfNotificationsDue,
+  getStoredBackgroundTaskManager,
+  writeBackgroundTaskManager,
+} from './Types';
 
 /**
  * Set up background fetch
@@ -46,7 +51,9 @@ export async function initBackgroundFetch(
   );
 }
 
-// BackgroundFetch event handler.
+/**
+ * BackgroundFetch event handler.
+ */
 async function onEvent(
   taskId: string,
   refreshWeatherCallback: (update: WeatherUpdate[]) => void,
@@ -57,24 +64,30 @@ async function onEvent(
     ' state: ',
     AppState.currentState,
   );
-  // Important:  await asychronous tasks when using HeadlessJS.
-  const storedstate = await getStoredState();
-  // Similar logic to HeadlessCallback
-  if (storedstate) {
-    const fetchedWeatherArray = await fetchLocationsWeather(
-      storedstate.locations,
+  const [state, settings, backgroundTaskManager] = await Promise.all([
+    getStoredState(),
+    getStoredSettings(),
+    getStoredBackgroundTaskManager(),
+  ]);
+  const [newBackgroundTaskManager, notificationDueNow] =
+    checkIfNotificationsDue(
+      settings ?? defaultSettings(),
+      backgroundTaskManager ?? DEFAULT_BACKGROUND_TASK_MANAGER,
     );
+  await writeBackgroundTaskManager(newBackgroundTaskManager);
+  // Similar logic to HeadlessCallback
+  if (state && notificationDueNow) {
+    const fetchedWeatherArray = await fetchLocationsWeather(state.locations);
     refreshWeatherCallback(fetchedWeatherArray);
     // Don't notify if app is in foreground
     if (AppState.currentState !== 'active') {
       // There is some duplication of effort here, as refreshWeatherCallback also performs this calculation.
       // We could instead do all the calculation here and pass the new StoredState back to statecontext.
       const newState = refreshStoredStateWeather(
-        storedstate,
+        state,
         fetchedWeatherArray,
         Date.now(),
       );
-      const settings = await getStoredSettings();
       await notifyFromStoredState(newState, settings);
     }
   }
