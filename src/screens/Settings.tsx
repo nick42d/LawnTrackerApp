@@ -38,6 +38,12 @@ export default function SettingsScreen() {
   function setWarningThresholdDays(value: number) {
     setSettings({...settings, warning_threshold_days: value});
   }
+  function setEarliestNotificationTime(value: number) {
+    setSettings({...settings, earliestNotificationTimeHrs: value});
+  }
+  function setBackgroundTaskInterval(value: number) {
+    setSettings({...settings, backgroundTaskIntervalHrs: value});
+  }
   function setDefaultBaseTemp(value: GddBaseTemp) {
     setSettings({...settings, default_base_temp: value});
   }
@@ -123,6 +129,37 @@ export default function SettingsScreen() {
         message: 'Are you sure you want to reset?',
       },
       onPress: resetSettings,
+    },
+    {
+      key: '4.6',
+      kind: 'subheader',
+      subheaderTitle: 'Notification Settings',
+    },
+    {
+      key: '4.7',
+      kind: 'slider',
+      title: 'Background task interval (hrs)',
+      description:
+        'How often to run the background task that checks if trackers are due. Lower times will mean notifications arrive closer to earliest notification time',
+      value: settings.backgroundTaskIntervalHrs,
+      onChange: v => setBackgroundTaskInterval(v),
+      minValue: 0.5,
+      maxValue: 24,
+      step: 0.5,
+      stringConverter: v => `${v.toFixed(1)}`,
+    },
+    {
+      key: '4.8',
+      kind: 'slider',
+      title: 'Earliest notification time (24h)',
+      description:
+        "Earliest time you'll receive a notification. Setting this to too late in the day increases risk you'll not receive a notification",
+      value: settings.earliestNotificationTimeHrs,
+      onChange: v => setEarliestNotificationTime(v),
+      minValue: 0,
+      maxValue: 23,
+      step: 1,
+      stringConverter: v => `${v.toFixed(0)}:00`,
     },
     {
       key: '5',

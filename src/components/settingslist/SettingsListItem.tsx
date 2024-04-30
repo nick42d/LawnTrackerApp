@@ -56,6 +56,7 @@ function SettingsListListItem(props: {
 }) {
   return props.item.listProps(i => (
     <List.Item
+      descriptionNumberOfLines={3}
       onPress={props.showDialog}
       title={props.item.title}
       description={props.item.description}
@@ -66,6 +67,7 @@ function SettingsListListItem(props: {
 function SettingsListToggleItem(props: {item: SettingsListToggleProps}) {
   return (
     <List.Item
+      descriptionNumberOfLines={3}
       title={props.item.title}
       description={props.item.description}
       right={() => (
@@ -85,6 +87,7 @@ function SettingsListSliderItem(props: {
 }) {
   return (
     <List.Item
+      descriptionNumberOfLines={3}
       onPress={props.showDialog}
       title={props.item.title}
       description={props.item.description}
@@ -98,6 +101,7 @@ function SettingsListPressItem(props: {
 }) {
   return (
     <List.Item
+      descriptionNumberOfLines={3}
       onPress={() => {
         if (props.item.warningDialog) {
           props.showDialog();

@@ -57,10 +57,7 @@ export const SettingsSchema = v.object(
     auto_dark_mode: v.boolean(),
     dark_mode_enabled: v.boolean(),
     default_base_temp: v.picklist(GDD_BASE_TEMPS),
-    earliestNotificationTime: v.object({
-      hours: v.number(),
-      minutes: v.number(),
-    }),
+    earliestNotificationTimeHrs: v.number(),
     backgroundTaskIntervalHrs: v.number(),
   },
   v.never(),
@@ -76,7 +73,7 @@ export function defaultSettings(): Settings {
     auto_dark_mode: true,
     dark_mode_enabled: false,
     default_base_temp: 10,
-    earliestNotificationTime: {hours: 6, minutes: 0},
+    earliestNotificationTimeHrs: 6,
     backgroundTaskIntervalHrs: 1,
   };
 }
