@@ -16,7 +16,7 @@ import {
   fetchLocationsWeather,
 } from '../api/Api';
 import {getStoredSettings as getStoredSettings} from '../providers/settingscontext/AsyncStorage';
-import {defaultSettings} from '../Defaults';
+import {defaultSettings} from '../providers/settingscontext/Types';
 
 /**
  * Set up background fetch

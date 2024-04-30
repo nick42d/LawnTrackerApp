@@ -1,8 +1,6 @@
 import {createContext, useEffect, useState} from 'react';
-import {
-  LogErrorCallbackNotSet,
-  defaultSettings as defaultSettings,
-} from '../Defaults';
+import {LogErrorCallbackNotSet} from '../Utils';
+import {defaultSettings as defaultSettings} from './settingscontext/Types';
 import {SettingsState} from './settingscontext/Types';
 import {ContextStatus} from './Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';

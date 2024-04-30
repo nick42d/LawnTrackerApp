@@ -1,3 +1,4 @@
+import {API_UNIT_OF_MEASURE} from '../../Consts';
 import {ContextStatus} from '../Types';
 import * as v from 'valibot';
 
@@ -56,6 +57,26 @@ export const SettingsSchema = v.object(
     auto_dark_mode: v.boolean(),
     dark_mode_enabled: v.boolean(),
     default_base_temp: v.picklist(GDD_BASE_TEMPS),
+    earliestNotificationTime: v.object({
+      hours: v.number(),
+      minutes: v.number(),
+    }),
+    backgroundTaskIntervalHrs: v.number(),
   },
   v.never(),
 );
+
+export function defaultSettings(): Settings {
+  return {
+    apiVersion: SETTINGS_SCHEMA_VERSION,
+    algorithm: 'Variant A',
+    warning_threshold_perc: 0.8,
+    warning_threshold_days: 7,
+    unit_of_measure: API_UNIT_OF_MEASURE,
+    auto_dark_mode: true,
+    dark_mode_enabled: false,
+    default_base_temp: 10,
+    earliestNotificationTime: {hours: 6, minutes: 0},
+    backgroundTaskIntervalHrs: 1,
+  };
+}

@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useReducer, useRef} from 'react';
 import {AddTracker, newTracker} from './statecontext/Trackers';
 import {FunctionlessStateContext, StateManager} from './statecontext/Types';
-import {defaultStateManager} from '../Defaults';
+import {defaultStateManager} from './statecontext/Types';
 import {
   writeTrackers,
   writeLocations,
@@ -11,20 +11,9 @@ import {reducer} from './statecontext/Reducer';
 import {Location} from './statecontext/Locations';
 import {StateContextError} from './statecontext/Error';
 import {WeatherUpdate, fetchLocationsWeather} from '../api/Api';
-import notifee, {
-  Event,
-  EventType,
-  Notification,
-  NotificationPressAction,
-} from '@notifee/react-native';
+import notifee from '@notifee/react-native';
 import {timeout} from '../Utils';
-import {
-  backgroundSnoozeTrackerId,
-  backgroundStopTrackerId,
-  getNotificationTrackerId,
-  handleNotificationOpened,
-  onNotificationEvent,
-} from '../worker/Notification';
+import {onNotificationEvent} from '../worker/Notification';
 import {AppState, AppStateStatus} from 'react-native';
 import {differenceInMilliseconds} from 'date-fns';
 

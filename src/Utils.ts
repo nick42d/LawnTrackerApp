@@ -21,3 +21,11 @@ export async function timeout(ms: number): Promise<void> {
 export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
   ? Omit<T, K>
   : never;
+/**
+ * Simply logs a message with callbackName to say it hasn't been set.
+ * @param callbackName
+ */
+
+export function LogErrorCallbackNotSet(callbackName: string) {
+  console.log(`Error - ${callbackName} not set`);
+}

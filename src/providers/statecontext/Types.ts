@@ -3,6 +3,7 @@ import {AddTracker, Tracker} from './Trackers';
 import {Location} from './Locations';
 import {Weather} from './Locations';
 import {WeatherUpdate} from '../../api/Api';
+import {LogErrorCallbackNotSet} from '../../Utils';
 
 export type StateManager = {
   locations: Location[];
@@ -21,6 +22,36 @@ export type StateManager = {
   cancelSnoozeTrackerId: (trackerId: string) => void;
   clearAll: () => void;
 };
+
+export function defaultStateManager(): StateManager {
+  return {
+    locations: [],
+    trackers: [],
+    status: 'Initialised',
+    updateLocationsWeather: () => {
+      LogErrorCallbackNotSet('updateLocationsWeather');
+    },
+    refreshWeather: async () => {
+      LogErrorCallbackNotSet('refreshWeather');
+    },
+    addLocation: async () => {
+      LogErrorCallbackNotSet('addLocation');
+    },
+    clearAll: () => {
+      LogErrorCallbackNotSet('clearAll');
+    },
+    deleteLocationId: _ => {
+      LogErrorCallbackNotSet('deleteLocationID');
+    },
+    addTracker: _ => LogErrorCallbackNotSet('addTracker'),
+    changeTracker: _ => LogErrorCallbackNotSet('changeTracker'),
+    deleteTrackerId: _ => LogErrorCallbackNotSet('deleteTrackerId'),
+    resetTrackerId: _ => LogErrorCallbackNotSet('resetTrackerId'),
+    stopTrackerId: _ => LogErrorCallbackNotSet('stopTrackerId'),
+    resumeTrackerId: _ => LogErrorCallbackNotSet('resumeTrackerId'),
+    cancelSnoozeTrackerId: _ => LogErrorCallbackNotSet('cancelSnoozeTrackerId'),
+  };
+}
 
 export type StoredState = {
   trackers: Tracker[];
