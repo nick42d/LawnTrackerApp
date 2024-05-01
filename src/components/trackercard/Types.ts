@@ -38,7 +38,7 @@ export function TrackerPropsToCardProps(
   onStop: () => void,
   onResume: () => void,
   navigation: HomeLocationsTabScreenProps<'Home'>['navigation'],
-): TrackerCardProps | undefined {
+): TrackerCardProps {
   switch (tracker.kind) {
     case 'gdd': {
       return ToGddTrackerCardProps(
@@ -72,10 +72,6 @@ export function TrackerPropsToCardProps(
         onStop,
         onResume,
       );
-    }
-    // TODO: Better error handling
-    default: {
-      return undefined;
     }
   }
 }

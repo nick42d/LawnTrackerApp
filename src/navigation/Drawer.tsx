@@ -68,14 +68,14 @@ export function AppDrawerContent({navigation}: any): React.JSX.Element {
         onPress={() => navigation.navigate('Settings')}
       />
       <Drawer.Item
-        icon="pulse"
-        label="Status"
-        onPress={() => navigation.navigate('Status')}
-      />
-      <Drawer.Item
         icon="help-circle-outline"
         label="Help"
         onPress={() => navigation.navigate('Help')}
+      />
+      <Drawer.Item
+        icon="pulse"
+        label="Status"
+        onPress={() => navigation.navigate('Status')}
       />
     </View>
   );

@@ -151,7 +151,7 @@ export function convertUnits(
   }));
   return {
     currentCondition: weather.currentCondition,
-    weatherArray: [], // TODO
+    weatherArray: newWeatherArray,
     temperatureUnit: newUnit,
   };
 }

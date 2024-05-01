@@ -8,7 +8,6 @@ import {format} from 'date-fns';
 import {addDays} from 'date-fns/addDays';
 import DatapointLabel from './DatapointLabel';
 
-// TODO: Remove unimplemented
 const PLOT_WEATHER_TYPES = ['Historical', 'Forecasted', 'Estimated'] as const;
 export type PlotWeatherType = (typeof PLOT_WEATHER_TYPES)[number];
 

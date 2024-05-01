@@ -84,7 +84,6 @@ export default function SettingsScreen() {
         'Unit of measure for Locations page. Note, will not affect Growing Degree Days (Metric only).',
       listProps: toSomeSettingsListListProps({
         value: settings.unit_of_measure,
-        // TODO: Safety
         onChange: v => setUnitOfMeasure(v),
         list: UNITS_OF_MEASURE,
         stringConverter: v => v,

@@ -59,8 +59,6 @@ export default function ViewTrackerScreen({
     ? getGraphPlot(gddArray, theme.colors.primaryContainer)
     : undefined;
   return (
-    // NOTE: GDD Trackers also show Plot and DataTable
-    // TODO: Timed and Calendar tracks should show progress also.
     <ScrollView>
       {item ? <TrackerProps tracker={item} /> : undefined}
       {item?.kind === 'gdd' && data !== undefined && gddArray !== undefined ? (
