@@ -32,3 +32,5 @@ export const API_LOCATIONS_LANGUAGE = 'en';
 export const API_UNIT_OF_MEASURE = 'Metric';
 // Currently harcoded
 export const DATE_PICKER_LOCALE = 'en-GB';
+// https://react-native-async-storage.github.io/async-storage/docs/limits
+export const MAX_TOTAL_ASYNC_STORAGE_BYTES = 6 * 1024 * 1024;

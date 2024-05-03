@@ -1,5 +1,5 @@
 import {useCallback, useContext, useEffect, useState} from 'react';
-import {View} from 'react-native';
+import {PermissionsAndroid, ScrollView, View} from 'react-native';
 import {
   BackgroundTaskManager,
   getStoredBackgroundTaskManager,
@@ -17,6 +17,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import {SettingsContext} from '../providers/SettingsContext';
 import {fetchLocations, fetchLocationsWeather} from '../api/Api';
 import {Settings} from '../providers/settingscontext/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {prettyPrintBytes} from '../Utils';
+import {MAX_TOTAL_ASYNC_STORAGE_BYTES} from '../Consts';
 
 export default function StatusScreen() {
   const {settings} = useContext(SettingsContext);
@@ -27,6 +30,10 @@ export default function StatusScreen() {
     'loading' | AuthorizationStatus
   >('loading');
   const [apiStatus, setApiStatus] = useState<MetricStatus | 'loading'>(
+    'loading',
+  );
+  const [totalKeys, setTotalKeys] = useState<number | 'loading'>('loading');
+  const [totalStorage, setTotalStorage] = useState<number | 'loading'>(
     'loading',
   );
   useFocusEffect(
@@ -40,12 +47,24 @@ export default function StatusScreen() {
       fetchLocations('Perth', 10)
         .then(_ => setApiStatus('green'))
         .catch(_ => setApiStatus('red'));
+      AsyncStorage.getAllKeys().then(keys => {
+        setTotalKeys(keys.length);
+        Promise.all(keys.map(k => AsyncStorage.getItem(k)))
+          .then(keysItems =>
+            keysItems
+              .map(s => new Blob([s ?? '']).size)
+              .reduce((b, acc) => b + acc, 0),
+          )
+          .then(totalBytes => setTotalStorage(totalBytes));
+      });
     }, []),
   );
   if (
     apiStatus === 'loading' ||
     backgroundTaskManager === 'loading' ||
-    notificationStatus === 'loading'
+    notificationStatus === 'loading' ||
+    totalKeys === 'loading' ||
+    totalStorage === 'loading'
   )
     return <ActivityIndicator size={'large'} />;
   const recentTimesCheckedUnixMs =
@@ -74,7 +93,7 @@ export default function StatusScreen() {
       : undefined;
   const now = new Date();
   return (
-    <View>
+    <ScrollView>
       <List.Section>
         <List.Subheader>Notification metrics</List.Subheader>
         <List.Item
@@ -162,7 +181,6 @@ export default function StatusScreen() {
         <List.Subheader>Weather API metrics</List.Subheader>
         <List.Item
           title="API status"
-          description="Check API receives weather correctly"
           right={() => (
             <View
               style={{
@@ -174,8 +192,37 @@ export default function StatusScreen() {
             />
           )}
         />
+        <List.Subheader>Storage Metrics</List.Subheader>
+        <List.Item
+          title="Total number of stored keys"
+          description={totalKeys}
+          right={() => (
+            <View
+              style={{
+                height: 20,
+                width: 20,
+                borderRadius: 10,
+                backgroundColor: metric_totalKeys(totalKeys),
+              }}
+            />
+          )}
+        />
+        <List.Item
+          title="Total storage used"
+          description={prettyPrintBytes(totalStorage)}
+          right={() => (
+            <View
+              style={{
+                height: 20,
+                width: 20,
+                borderRadius: 10,
+                backgroundColor: metric_totalStorage(totalStorage),
+              }}
+            />
+          )}
+        />
       </List.Section>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -192,6 +239,16 @@ function metric_lastChecked(
 function metric_lastDue(lastDue: number | undefined, now: Date): MetricStatus {
   if (lastDue === undefined) return 'orange';
   if (differenceInCalendarDays(now, lastDue) > 1) return 'red';
+  return 'green';
+}
+function metric_totalStorage(totalStorage: number): MetricStatus {
+  if (totalStorage >= MAX_TOTAL_ASYNC_STORAGE_BYTES * 0.95) return 'red';
+  // Arbitrary cut off at 80% if we are close to max Async Storage
+  if (totalStorage >= MAX_TOTAL_ASYNC_STORAGE_BYTES * 0.8) return 'orange';
+  return 'green';
+}
+function metric_totalKeys(totalKeys: number): MetricStatus {
+  // Currently for information only - always return green
   return 'green';
 }
 function metric_averageTimeBetween(
