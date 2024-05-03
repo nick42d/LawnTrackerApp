@@ -128,7 +128,7 @@ export default function StatusScreen() {
           title="Average time of day notifications due (24h)"
           description={
             averageNotificationDueTime
-              ? `${Math.trunc(averageNotificationDueTime)}:${((averageNotificationDueTime - Math.trunc(averageNotificationDueTime)) * 60).toFixed(0)}`
+              ? `${Math.trunc(averageNotificationDueTime)}:${((averageNotificationDueTime - Math.trunc(averageNotificationDueTime)) * 60).toFixed(0).padStart(2, '0')}`
               : ''
           }
           right={() => (
