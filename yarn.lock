@@ -2132,7 +2132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:^10.0.0-alpha.2":
+"@maplibre/maplibre-react-native@npm:10.0.0-alpha.2":
   version: 10.0.0-alpha.2
   resolution: "@maplibre/maplibre-react-native@npm:10.0.0-alpha.2"
   dependencies:
@@ -2153,6 +2153,30 @@ __metadata:
     "@expo/config-plugins":
       optional: true
   checksum: 02951e3473c1c8a73e92bc695fade6ffe4b8ce46e19d262d7edc626ed07c9cbab96befa3a35213c994f1c7fcdb1c06575cee6bab72ecf8364480dadb6901add2
+  languageName: node
+  linkType: hard
+
+"@maplibre/maplibre-react-native@patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch::locator=lawntracker%40workspace%3A.":
+  version: 10.0.0-alpha.2
+  resolution: "@maplibre/maplibre-react-native@patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch::version=10.0.0-alpha.2&hash=92103d&locator=lawntracker%40workspace%3A."
+  dependencies:
+    "@mapbox/geo-viewport": ">= 0.4.0"
+    "@turf/along": 6.5.0
+    "@turf/distance": 6.5.0
+    "@turf/helpers": 6.5.0
+    "@turf/length": 6.5.0
+    "@turf/nearest-point-on-line": 6.5.0
+    "@types/geojson": ^7946.0.10
+    "@types/react-native": 0.67.8
+    debounce: ^1.2.0
+  peerDependencies:
+    "@expo/config-plugins": ">=7"
+    react: ">=16.6.1"
+    react-native: ">=0.59.9"
+  peerDependenciesMeta:
+    "@expo/config-plugins":
+      optional: true
+  checksum: 19138d4d47c5b58b08d8becd2ccff261041d3b382c69230ff1d7372896eb6faed3bfbb929d3e16392f9a12235a87c584869f1ec771d223bed76216a3b4e5b47a
   languageName: node
   linkType: hard
 

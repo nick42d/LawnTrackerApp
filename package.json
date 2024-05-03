@@ -61,5 +61,8 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "resolutions": {
+    "@maplibre/maplibre-react-native@^10.0.0-alpha.2": "patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch"
+  }
 }
