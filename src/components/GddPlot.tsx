@@ -1,9 +1,8 @@
 import {LineChart} from 'react-native-gifted-charts';
 import {GddGraphPlot} from './gddplot/Plot';
 import {Text, useTheme} from 'react-native-paper';
-import {View} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import {PlotLegend} from './gddplot/PlotLegend';
-import {GRAPH_WIDTH} from '../Consts';
 
 const HISTORICAL_COLOR = 'green';
 const FORECASTED_COLOR = 'yellowgreen';
@@ -16,6 +15,7 @@ export function GddPlot(props: {
   targetGdd: number;
 }): React.JSX.Element {
   const theme = useTheme();
+  const {width} = useWindowDimensions();
 
   const forecast_start = props.data.forecastStartIndex as number;
   const estimate_start = props.data.estimateStartIndex as number;
@@ -56,7 +56,7 @@ export function GddPlot(props: {
       <LineChart
         data={props.data.items}
         lineSegments={segments}
-        width={Math.min(GRAPH_WIDTH, props.data.items.length * GRAPH_X_SPACING)}
+        width={Math.min(width - 20, props.data.items.length * GRAPH_X_SPACING)}
         showReferenceLine1
         referenceLine1Config={{
           thickness: 2,

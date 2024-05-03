@@ -1,5 +1,3 @@
-// Hardcoded - TODO: Device specific
-export const GRAPH_WIDTH = 300;
 // How far we are happy to search weather in API.
 export const MAX_HISTORY_DAYS = 30;
 export const MAX_FORECAST_DAYS = 7;
