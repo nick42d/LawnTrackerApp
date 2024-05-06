@@ -2132,9 +2132,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:10.0.0-alpha.2":
-  version: 10.0.0-alpha.2
-  resolution: "@maplibre/maplibre-react-native@npm:10.0.0-alpha.2"
+"@maplibre/maplibre-react-native@npm:^10.0.0-alpha.3":
+  version: 10.0.0-alpha.3
+  resolution: "@maplibre/maplibre-react-native@npm:10.0.0-alpha.3"
   dependencies:
     "@mapbox/geo-viewport": ">= 0.4.0"
     "@turf/along": 6.5.0
@@ -2144,7 +2144,7 @@ __metadata:
     "@turf/nearest-point-on-line": 6.5.0
     "@types/geojson": ^7946.0.10
     "@types/react-native": 0.67.8
-    debounce: ^1.2.0
+    debounce: ^2.0.0
   peerDependencies:
     "@expo/config-plugins": ">=7"
     react: ">=16.6.1"
@@ -2152,31 +2152,7 @@ __metadata:
   peerDependenciesMeta:
     "@expo/config-plugins":
       optional: true
-  checksum: 02951e3473c1c8a73e92bc695fade6ffe4b8ce46e19d262d7edc626ed07c9cbab96befa3a35213c994f1c7fcdb1c06575cee6bab72ecf8364480dadb6901add2
-  languageName: node
-  linkType: hard
-
-"@maplibre/maplibre-react-native@patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch::locator=lawntracker%40workspace%3A.":
-  version: 10.0.0-alpha.2
-  resolution: "@maplibre/maplibre-react-native@patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch::version=10.0.0-alpha.2&hash=92103d&locator=lawntracker%40workspace%3A."
-  dependencies:
-    "@mapbox/geo-viewport": ">= 0.4.0"
-    "@turf/along": 6.5.0
-    "@turf/distance": 6.5.0
-    "@turf/helpers": 6.5.0
-    "@turf/length": 6.5.0
-    "@turf/nearest-point-on-line": 6.5.0
-    "@types/geojson": ^7946.0.10
-    "@types/react-native": 0.67.8
-    debounce: ^1.2.0
-  peerDependencies:
-    "@expo/config-plugins": ">=7"
-    react: ">=16.6.1"
-    react-native: ">=0.59.9"
-  peerDependenciesMeta:
-    "@expo/config-plugins":
-      optional: true
-  checksum: 19138d4d47c5b58b08d8becd2ccff261041d3b382c69230ff1d7372896eb6faed3bfbb929d3e16392f9a12235a87c584869f1ec771d223bed76216a3b4e5b47a
+  checksum: 0015d1fb84874d40a44275d084f371d5245f570721fa1c2ae66adafe275686245097fea70b19fd2b1ae5cc0afea1e5adb76e86dbe9f73e8042d6dc9ebb0f9aed
   languageName: node
   linkType: hard
 
@@ -4502,10 +4478,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debounce@npm:^1.2.0":
-  version: 1.2.1
-  resolution: "debounce@npm:1.2.1"
-  checksum: 682a89506d9e54fb109526f4da255c5546102fbb8e3ae75eef3b04effaf5d4853756aee97475cd4650641869794e44f410eeb20ace2b18ea592287ab2038519e
+"debounce@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "debounce@npm:2.0.0"
+  checksum: 86a8c85528764a15a6492230ac5625a824a6681ee159450d7d4663eb4370da40449da0f8816bbf039dcd1166cc2db813bbd3a9e037fb8377eb905a487ec844be
   languageName: node
   linkType: hard
 
@@ -7195,7 +7171,7 @@ __metadata:
     "@babel/core": ^7.24.5
     "@babel/preset-env": ^7.24.5
     "@babel/runtime": ^7.24.5
-    "@maplibre/maplibre-react-native": ^10.0.0-alpha.2
+    "@maplibre/maplibre-react-native": ^10.0.0-alpha.3
     "@notifee/react-native": ^7.8.2
     "@react-native-async-storage/async-storage": ^1.23.1
     "@react-native-community/slider": ^4.5.2
