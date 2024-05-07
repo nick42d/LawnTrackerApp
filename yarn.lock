@@ -7194,7 +7194,7 @@ __metadata:
     jest: ^29.7.0
     prettier: ^3.2.5
     react: ^18.2.0
-    react-native: ^0.74.0
+    react-native: ^0.74.1
     react-native-background-fetch: ^4.2.5
     react-native-gesture-handler: ^2.16.1
     react-native-get-random-values: ^1.11.0
@@ -8873,7 +8873,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:^0.74.0":
+"react-native@npm:^0.74.1":
   version: 0.74.1
   resolution: "react-native@npm:0.74.1"
   dependencies:

@@ -22,7 +22,7 @@
     "date-fns": "^3.6.0",
     "deepmerge": "^4.3.1",
     "react": "^18.2.0",
-    "react-native": "^0.74.0",
+    "react-native": "^0.74.1",
     "react-native-background-fetch": "^4.2.5",
     "react-native-gesture-handler": "^2.16.1",
     "react-native-get-random-values": "^1.11.0",
@@ -61,8 +61,5 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.6.4",
-  "resolutions": {
-    "@maplibre/maplibre-react-native@^10.0.0-alpha.2": "patch:@maplibre/maplibre-react-native@npm%3A10.0.0-alpha.2#./.yarn/patches/@maplibre-maplibre-react-native-npm-10.0.0-alpha.2-e38894c613.patch"
-  }
+  "packageManager": "yarn@3.6.4"
 }
