@@ -51,11 +51,6 @@ function AppDrawerNavigationBar({
 export function AppDrawerContent({
   navigation,
 }: DrawerContentComponentProps): React.JSX.Element {
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
-  function onToggleSwitch() {
-    setIsSwitchOn(!isSwitchOn);
-  }
-
   return (
     <View>
       <Drawer.Section>
