@@ -21,7 +21,7 @@ import {AppDrawerNavigator} from './Drawer';
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {Location} from '../providers/statecontext/Locations';
 import AddLocationScreen from '../screens/AddLocation';
-import {useCallback, useContext, useEffect} from 'react';
+import {useContext, useEffect} from 'react';
 import {SettingsContext} from '../providers/SettingsContext';
 import LoadingScreen from '../screens/Loading';
 import ViewLocationScreen from '../screens/ViewLocation';

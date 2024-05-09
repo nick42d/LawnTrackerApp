@@ -1,4 +1,5 @@
 import {
+  DrawerContentComponentProps,
   DrawerHeaderProps,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
@@ -47,12 +48,9 @@ function AppDrawerNavigationBar({
   );
 }
 
-export function AppDrawerContent({navigation}: any): React.JSX.Element {
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
-  function onToggleSwitch() {
-    setIsSwitchOn(!isSwitchOn);
-  }
-
+export function AppDrawerContent({
+  navigation,
+}: DrawerContentComponentProps): React.JSX.Element {
   return (
     <View>
       <Drawer.Section>
