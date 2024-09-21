@@ -37,6 +37,7 @@ export async function initBackgroundFetch(
       // Begin Android-only options
       enableHeadless: true,
       stopOnTerminate: false,
+      forceAlarmManager: true,
       startOnBoot: true,
       // End Android-only options
     },
