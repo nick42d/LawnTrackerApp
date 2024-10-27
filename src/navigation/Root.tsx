@@ -31,6 +31,7 @@ import {StateContext} from '../providers/StateContext';
 import {initBackgroundFetch} from '../worker/BackgroundTask';
 import BackgroundFetch from 'react-native-background-fetch';
 import {timeout} from '../Utils';
+import ViewLogsScreen from '../screens/ViewLogs';
 
 /**
  * Handle deep linking - for easy navigation from notifications
@@ -61,6 +62,7 @@ export type RootStackParamList = {
   ViewTracker: {trackerId: string};
   ViewLocation: {location: Location};
   EditTracker: {trackerId: string; fromAddLocationId?: number};
+  ViewLogs: undefined;
 };
 
 export type AppDrawerParamList = {
@@ -165,6 +167,11 @@ export function AppNavigationRoot() {
           name="ViewLocation"
           component={ViewLocationScreen}
           options={{title: 'View Location'}}
+        />
+        <Stack.Screen
+          name="ViewLogs"
+          component={ViewLogsScreen}
+          options={{title: 'View Logs'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

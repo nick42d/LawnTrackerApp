@@ -20,8 +20,11 @@ import {Settings} from '../providers/settingscontext/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {prettyPrintBytes} from '../Utils';
 import {MAX_TOTAL_ASYNC_STORAGE_BYTES} from '../Consts';
+import {AppDrawerScreenProps} from '../navigation/Root';
 
-export default function StatusScreen() {
+export default function StatusScreen({
+  navigation,
+}: AppDrawerScreenProps<'Status'>) {
   const {settings} = useContext(SettingsContext);
   const [backgroundTaskManager, setBackgroundTaskManager] = useState<
     'loading' | BackgroundTaskManager
@@ -195,6 +198,7 @@ export default function StatusScreen() {
         <List.Subheader>Storage Metrics</List.Subheader>
         <List.Item
           title="Total number of stored keys"
+          onPress={() => navigation.navigate('ViewLogs')}
           description={totalKeys}
           right={() => (
             <View
