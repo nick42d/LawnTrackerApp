@@ -2,23 +2,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as v from 'valibot';
 import {StoredState} from '../providers/statecontext/Types';
 import {Settings} from '../providers/settingscontext/Types';
-import {differenceInCalendarDays, getHours} from 'date-fns';
+import {differenceInCalendarDays, getHours, toDate} from 'date-fns';
 
-const BACKGROUND_TASK_MANAGER_SCHEMA_VERSION = '0.1';
+const BACKGROUND_TASK_MANAGER_SCHEMA_VERSION = '0.2';
 const BACKGROUND_TASK_MANAGER_STORAGE_KEY = 'BGTASK';
 const MAX_RECENT_TIMES_CHECKED = 100;
 const MAX_RECENT_TIMES_NOTIFIED = 10;
 
 export const BackgroundTaskManagerSchema = v.object({
   recentTimesCheckedUnixMs: v.array(v.number()),
+  recentTimesCheckedString: v.array(v.string()),
   recentTimesNotificationDueUnixMs: v.array(v.number()),
+  recentTimesNotificationDueString: v.array(v.string()),
   recentErrors: v.array(v.string()),
   apiVersion: v.literal(BACKGROUND_TASK_MANAGER_SCHEMA_VERSION),
 });
 
 export const DEFAULT_BACKGROUND_TASK_MANAGER: BackgroundTaskManager = {
   recentTimesCheckedUnixMs: [],
+  recentTimesCheckedString: [],
   recentTimesNotificationDueUnixMs: [],
+  recentTimesNotificationDueString: [],
   recentErrors: [],
   apiVersion: BACKGROUND_TASK_MANAGER_SCHEMA_VERSION,
 };
@@ -51,6 +55,9 @@ export function checkIfNotificationsDue(
     ),
     now,
   ];
+  const recentTimesCheckedString = recentTimesCheckedUnixMs.map(date =>
+    toDate(date).toDateString(),
+  );
   const recentTimesNotificationDueUnixMs = notificationDueNow
     ? [
         ...backgroundTaskManager.recentTimesNotificationDueUnixMs.slice(
@@ -59,11 +66,16 @@ export function checkIfNotificationsDue(
         now,
       ]
     : backgroundTaskManager.recentTimesNotificationDueUnixMs;
+  const recentTimesNotificationDueString = recentTimesNotificationDueUnixMs.map(
+    date => toDate(date).toDateString(),
+  );
   return [
     {
       apiVersion: backgroundTaskManager.apiVersion,
       recentTimesCheckedUnixMs,
+      recentTimesCheckedString,
       recentTimesNotificationDueUnixMs,
+      recentTimesNotificationDueString,
       recentErrors: backgroundTaskManager.recentErrors,
     },
     notificationDueNow,
