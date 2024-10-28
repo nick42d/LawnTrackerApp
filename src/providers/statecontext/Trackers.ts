@@ -14,209 +14,188 @@ export const MAX_NAME_LENGTH = 20;
 // These types are valibot validated
 // due to deserializing from AsyncStorage
 // and form validation
-export const TrackerNameSchema = v.string([
+export const TrackerNameSchema = v.pipe(
+  v.string(),
   v.minLength(1, 'Name is mandatory'),
   v.maxLength(
     MAX_NAME_LENGTH,
     `Name must be less than ${MAX_NAME_LENGTH} characters`,
   ),
-]);
-export const TrackerDescSchema = v.string([
+);
+export const TrackerDescSchema = v.pipe(
+  v.string(),
   v.maxLength(
     MAX_DESC_LENGTH,
     `Description must be less than ${MAX_DESC_LENGTH} characters`,
   ),
-]);
+);
 /**
  * Disallow adding GDD tracker older than API history window
  */
-export const AddGddTrackerStartDateSchema = v.transform(
+export const AddGddTrackerStartDateSchema = v.pipe(
   v.optional(
-    v.date([v.minValue(addDays(startOfDay(new Date()), -MAX_HISTORY_DAYS))]),
+    v.pipe(
+      v.date(),
+      v.minValue(addDays(startOfDay(new Date()), -MAX_HISTORY_DAYS)),
+    ),
   ),
-  d => (d ? Number(d) : Date.now()),
+  v.transform(d => (d ? Number(d) : Date.now())),
 );
 /**
  * Disallow adding Calendar tracker older than today - no point!
  */
-export const AddCalendarTrackerStartDateSchema = v.transform(
+export const AddCalendarTrackerStartDateSchema = v.pipe(
   v.optional(
-    v.date([
+    v.pipe(
+      v.date(),
       v.minValue(
         startOfDay(new Date()),
         'Calendar tracker date must be in the future',
       ),
-    ]),
+    ),
   ),
-  d => (d ? Number(d) : Date.now()),
+  v.transform(d => (d ? Number(d) : Date.now())),
 );
-export const PositiveIntegerSchema = v.number('Not a number', [
+export const PositiveIntegerSchema = v.pipe(
+  v.number('Not a number'),
   v.safeInteger('Whole numbers only'),
   v.minValue(0, 'Number too low'),
-]);
-export const AddGddTrackerTargetSchema = v.transform(
-  v.string('Target must be a number', [v.minLength(1, 'Target is mandatory')]),
-  v => Number(v),
+);
+export const AddGddTrackerTargetSchema = v.pipe(
+  v.string('Target must be a number'),
+  v.minLength(1, 'Target is mandatory'),
+  v.transform(v => Number(v)),
   PositiveIntegerSchema,
 );
 /**
  * No date restrictions for timed tracker
  */
-export const AddTimedTrackerStartDateSchema = v.transform(
+export const AddTimedTrackerStartDateSchema = v.pipe(
   v.optional(v.date()),
-  d => (d ? Number(d) : Date.now()),
+  v.transform(d => (d ? Number(d) : Date.now())),
 );
-export const AddTimedTrackerDurationDaysSchema = v.transform(
-  v.string('Duration must be a number', [
-    v.minLength(1, 'Duration is mandatory'),
-  ]),
-  v => Number(v),
+export const AddTimedTrackerDurationDaysSchema = v.pipe(
+  v.string('Duration must be a number'),
+  v.minLength(1, 'Duration is mandatory'),
+  v.transform(v => Number(v)),
   PositiveIntegerSchema,
 );
-export const StringToNumberSchema = v.transform(v.string(), Number);
+export const StringToNumberSchema = v.pipe(v.string(), v.transform(Number));
 export const TrackerStatusSchema = v.picklist(TRACKER_STATUSES);
-export const NotificationStatusSchema = v.object(
-  {
-    lastCheckedUnixMs: v.optional(v.number()),
-    lastNotificationId: v.optional(v.number()),
-    lastNotificationStatus: v.optional(v.picklist(['Active', 'Cleared'])),
-  },
-  v.never(),
-);
+export const NotificationStatusSchema = v.strictObject({
+  lastCheckedUnixMs: v.optional(v.number()),
+  lastNotificationId: v.optional(v.number()),
+  lastNotificationStatus: v.optional(v.picklist(['Active', 'Cleared'])),
+});
 /**
  * Base storage validation schema
  */
-export const BaseTrackerSchema = v.object(
-  {
-    name: TrackerNameSchema,
-    description: TrackerDescSchema,
-    uuid: v.string([v.uuid()]),
-    trackerStatus: TrackerStatusSchema,
-    lastSnoozedUnixMs: v.optional(v.number()),
-    notificationStatus: NotificationStatusSchema,
-  },
-  v.never(),
-);
+export const BaseTrackerSchema = v.strictObject({
+  name: TrackerNameSchema,
+  description: TrackerDescSchema,
+  uuid: v.pipe(v.string(), v.uuid()),
+  trackerStatus: TrackerStatusSchema,
+  lastSnoozedUnixMs: v.optional(v.number()),
+  notificationStatus: NotificationStatusSchema,
+});
 /**
  * Base form validation schema
  */
-export const BaseAddTrackerSchema = v.object(
-  {
-    name: TrackerNameSchema,
-    description: TrackerDescSchema,
-  },
-  v.never(),
-);
+export const BaseAddTrackerSchema = v.strictObject({
+  name: TrackerNameSchema,
+  description: TrackerDescSchema,
+});
 /**
  * Form validation schema
  */
-export const AddGddTrackerSchema = v.merge([
-  BaseAddTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('gdd'),
-      target_gdd: AddGddTrackerTargetSchema,
-      base_temp: StringToNumberSchema,
-      start_date_unix_ms: AddGddTrackerStartDateSchema,
-      locationId: v.number(),
-    },
-    v.never(),
-  ),
-]);
+export const AddGddTrackerSchema = v.object({
+  ...BaseAddTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('gdd'),
+    target_gdd: AddGddTrackerTargetSchema,
+    base_temp: StringToNumberSchema,
+    start_date_unix_ms: AddGddTrackerStartDateSchema,
+    locationId: v.number(),
+  }).entries,
+});
 /**
  * Storage validation schema
  */
-export const GddTrackerSchema = v.merge([
-  BaseTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('gdd'),
-      target_gdd: v.number(),
-      base_temp: v.number(),
-      start_date_unix_ms: v.number(),
-      locationId: v.number(),
-    },
-    v.never(),
-  ),
-]);
+export const GddTrackerSchema = v.object({
+  ...BaseTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('gdd'),
+    target_gdd: v.number(),
+    base_temp: v.number(),
+    start_date_unix_ms: v.number(),
+    locationId: v.number(),
+  }).entries,
+});
 /**
  * Storage validation schema
  */
-export const CalendarTrackerSchema = v.merge([
-  BaseTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('calendar'),
-      target_date_unix_ms: v.number(),
-    },
-    v.never(),
-  ),
-]);
+export const CalendarTrackerSchema = v.object({
+  ...BaseTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('calendar'),
+    target_date_unix_ms: v.number(),
+  }).entries,
+});
 /**
  * Form validation schema
  */
-export const AddCalendarTrackerSchema = v.merge([
-  BaseAddTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('calendar'),
-      target_date_unix_ms: AddCalendarTrackerStartDateSchema,
-    },
-    v.never(),
-  ),
-]);
-export const TimedTrackerSchema = v.merge([
-  BaseTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('timed'),
-      start_date_unix_ms: v.number(),
-      duration_days: v.number(),
-    },
-    v.never(),
-  ),
-]);
-export const AddTimedTrackerSchema = v.merge([
-  BaseAddTrackerSchema,
-  v.object(
-    {
-      kind: v.literal('timed'),
-      start_date_unix_ms: AddTimedTrackerStartDateSchema,
-      duration_days: AddTimedTrackerDurationDaysSchema,
-    },
-    v.never(),
-  ),
-]);
+export const AddCalendarTrackerSchema = v.object({
+  ...BaseAddTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('calendar'),
+    target_date_unix_ms: AddCalendarTrackerStartDateSchema,
+  }).entries,
+});
+export const TimedTrackerSchema = v.object({
+  ...BaseTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('timed'),
+    start_date_unix_ms: v.number(),
+    duration_days: v.number(),
+  }).entries,
+});
+export const AddTimedTrackerSchema = v.object({
+  ...BaseAddTrackerSchema.entries,
+  ...v.strictObject({
+    kind: v.literal('timed'),
+    start_date_unix_ms: AddTimedTrackerStartDateSchema,
+    duration_days: AddTimedTrackerDurationDaysSchema,
+  }).entries,
+});
 export const TrackerSchema = v.variant('kind', [
   CalendarTrackerSchema,
   TimedTrackerSchema,
   GddTrackerSchema,
 ]);
-export const TrackersSchema = v.object(
-  {
-    apiVersion: v.literal(TRACKERS_SCHEMA_VERSION),
-    trackers: v.array(TrackerSchema),
-  },
-  v.never(),
-);
+export const TrackersSchema = v.strictObject({
+  apiVersion: v.literal(TRACKERS_SCHEMA_VERSION),
+  trackers: v.array(TrackerSchema),
+});
 export const AddTrackerSchema = v.variant('kind', [
   AddCalendarTrackerSchema,
   AddTimedTrackerSchema,
   AddGddTrackerSchema,
 ]);
 
-export type NotificationStatus = v.Output<typeof NotificationStatusSchema>;
-export type CalendarTracker = v.Output<typeof CalendarTrackerSchema>;
-export type TrackerStatus = v.Output<typeof TrackerStatusSchema>;
-export type TimedTracker = v.Output<typeof TimedTrackerSchema>;
-export type GddTracker = v.Output<typeof GddTrackerSchema>;
-export type AddTrackerInput = v.Input<typeof AddTrackerSchema>;
-export type AddGddTrackerInput = v.Input<typeof AddGddTrackerSchema>;
-export type AddCalendarTrackerInput = v.Input<typeof AddCalendarTrackerSchema>;
-export type AddTimedTrackerInput = v.Input<typeof AddTimedTrackerSchema>;
-export type AddTracker = v.Output<typeof AddTrackerSchema>;
-export type Tracker = v.Output<typeof TrackerSchema>;
-export type Trackers = v.Output<typeof TrackersSchema>;
+export type NotificationStatus = v.InferOutput<typeof NotificationStatusSchema>;
+export type CalendarTracker = v.InferOutput<typeof CalendarTrackerSchema>;
+export type TrackerStatus = v.InferOutput<typeof TrackerStatusSchema>;
+export type TimedTracker = v.InferOutput<typeof TimedTrackerSchema>;
+export type GddTracker = v.InferOutput<typeof GddTrackerSchema>;
+export type AddTrackerInput = v.InferInput<typeof AddTrackerSchema>;
+export type AddGddTrackerInput = v.InferInput<typeof AddGddTrackerSchema>;
+export type AddCalendarTrackerInput = v.InferInput<
+  typeof AddCalendarTrackerSchema
+>;
+export type AddTimedTrackerInput = v.InferInput<typeof AddTimedTrackerSchema>;
+export type AddTracker = v.InferOutput<typeof AddTrackerSchema>;
+export type Tracker = v.InferOutput<typeof TrackerSchema>;
+export type Trackers = v.InferOutput<typeof TrackersSchema>;
 export type TrackerKind = Tracker['kind'];
 
 // Should be in a different module

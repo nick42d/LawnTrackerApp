@@ -10,7 +10,7 @@ export type SettingsState = {
   setSettings: (settings: Settings) => void;
 };
 
-export type Settings = v.Output<typeof SettingsSchema>;
+export type Settings = v.InferOutput<typeof SettingsSchema>;
 
 export const GDD_ALGORITHMS = ['Variant A', 'Variant B'] as const;
 /**
@@ -47,8 +47,7 @@ export function unitOfMeasureAbbreviate(u: UnitOfMeasure): string {
   }
 }
 // Valibot validated type
-export const SettingsSchema = v.object(
-  {
+export const SettingsSchema = v.strictObject({
     apiVersion: v.literal(SETTINGS_SCHEMA_VERSION),
     algorithm: v.picklist(GDD_ALGORITHMS),
     warning_threshold_perc: v.number(),
@@ -59,9 +58,7 @@ export const SettingsSchema = v.object(
     default_base_temp: v.picklist(GDD_BASE_TEMPS),
     earliestNotificationTimeHrs: v.number(),
     backgroundTaskIntervalHrs: v.number(),
-  },
-  v.never(),
-);
+  });
 
 export function defaultSettings(): Settings {
   return {

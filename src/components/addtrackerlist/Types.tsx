@@ -8,7 +8,7 @@ export type AddTrackerListCalendarItemProps = {
   label: string;
   disabled?: boolean;
   value: Date | undefined;
-  validation?: v.BaseSchema;
+  validation?: v.GenericSchema;
   onChange: (v: Date) => void;
 };
 export type AddTrackerListLocationsItemProps = {
@@ -33,7 +33,7 @@ export type AddTrackerListTextInputItemProps = {
   disabled?: boolean;
   value: string;
   inputMode?: InputModeOptions;
-  validation?: v.BaseSchema;
+  validation?: v.GenericSchema;
   onChange: (v: string) => void;
 };
 export type AddTrackerListSelectionItemProps = {

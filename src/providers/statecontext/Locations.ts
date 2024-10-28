@@ -4,40 +4,27 @@ import * as v from 'valibot';
 export const LOCATIONS_SCHEMA_VERSION = '0.1';
 // These types are valibot validated
 // due to deserializing from AsyncStorage
-export const WeatherAppConditionSchema = v.object(
-  {
+export const WeatherAppConditionSchema = v.strictObject({
     code: v.number(),
     temp: v.number(),
     isDay: v.boolean(),
-  },
-  v.never(),
-);
-export const WeatherStatusSchema = v.object(
-  {
+  });
+export const WeatherStatusSchema = v.strictObject({
     lastRefreshedUnixMs: v.optional(v.number()),
     status: v.picklist(['Initialised', 'Refreshing', 'Loaded', 'Error']),
-  },
-  v.never(),
-);
-export const WeatherAppDaySchema = v.object(
-  {
+  });
+export const WeatherAppDaySchema = v.strictObject({
     dateUnixMs: v.number(),
     weatherType: v.picklist(['Historical', 'Forecasted']),
     maxTemp: v.number(),
     minTemp: v.number(),
-  },
-  v.never(),
-);
-export const WeatherSchema = v.object(
-  {
+  });
+export const WeatherSchema = v.strictObject({
     currentCondition: WeatherAppConditionSchema,
     weatherArray: v.array(WeatherAppDaySchema),
     temperatureUnit: v.picklist(UNITS_OF_MEASURE),
-  },
-  v.never(),
-);
-export const LocationSchema = v.object(
-  {
+  });
+export const LocationSchema = v.strictObject({
     name: v.string(),
     apiId: v.number(),
     latitude: v.number(),
@@ -47,22 +34,17 @@ export const LocationSchema = v.object(
     admin1: v.optional(v.string()),
     weather: v.optional(WeatherSchema),
     weatherStatus: WeatherStatusSchema,
-  },
-  v.never(),
-);
-export const LocationsSchema = v.object(
-  {
+  });
+export const LocationsSchema = v.strictObject({
     apiVersion: v.literal(LOCATIONS_SCHEMA_VERSION),
     locations: v.array(LocationSchema),
-  },
-  v.never(),
-);
-export type WeatherAppDay = v.Output<typeof WeatherAppDaySchema>;
-export type WeatherStatus = v.Output<typeof WeatherStatusSchema>;
-export type Weather = v.Output<typeof WeatherSchema>;
-export type WeatherAppCondition = v.Output<typeof WeatherAppConditionSchema>;
-export type Location = v.Output<typeof LocationSchema>;
-export type Locations = v.Output<typeof LocationsSchema>;
+  });
+export type WeatherAppDay = v.InferOutput<typeof WeatherAppDaySchema>;
+export type WeatherStatus = v.InferOutput<typeof WeatherStatusSchema>;
+export type Weather = v.InferOutput<typeof WeatherSchema>;
+export type WeatherAppCondition = v.InferOutput<typeof WeatherAppConditionSchema>;
+export type Location = v.InferOutput<typeof LocationSchema>;
+export type Locations = v.InferOutput<typeof LocationsSchema>;
 /**
  * Helper type for adding a new location - it won't have weather yet.
  */

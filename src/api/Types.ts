@@ -32,7 +32,7 @@ export const WeatherApiLocationSchema = v.object({
 });
 export const WeatherApiLocationsSchema = v.object({
   // If no results are received we coerce this to empty array.
-  results: v.optional(v.array(WeatherApiLocationSchema), []),
+  results: v.optional(v.array(WeatherApiLocationSchema)),
 });
 // Subject to const parameters set for api in ../Consts.ts
 export const WeatherApiForecastSchema = v.object({
@@ -55,7 +55,10 @@ export const WeatherApiForecastSchema = v.object({
     interval: v.number(),
     temperature_2m: v.number(),
     // Transform binary to boolean on validation
-    is_day: v.transform(v.picklist([0, 1]), input => input === 1),
+    is_day: v.pipe(
+      v.picklist([0, 1]),
+      v.transform(input => input === 1),
+    ),
     weather_code: v.number(),
   }),
   daily_units: v.object({
@@ -69,9 +72,11 @@ export const WeatherApiForecastSchema = v.object({
     temperature_2m_min: v.array(v.number()),
   }),
 });
-export type WeatherApiForecast = v.Output<typeof WeatherApiForecastSchema>;
-export type WeatherApiLocation = v.Output<typeof WeatherApiLocationSchema>;
-export type WeatherApiLocations = v.Output<typeof WeatherApiLocationsSchema>;
+export type WeatherApiForecast = v.InferOutput<typeof WeatherApiForecastSchema>;
+export type WeatherApiLocation = v.InferOutput<typeof WeatherApiLocationSchema>;
+export type WeatherApiLocations = v.InferOutput<
+  typeof WeatherApiLocationsSchema
+>;
 export type ApiTemperatureUnit = (typeof API_TEMPERATURE_UNITS)[number];
 export function appUnitOfMeasureToApiTemperatureUnit(
   unit: UnitOfMeasure,

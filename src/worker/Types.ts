@@ -27,7 +27,7 @@ export const DEFAULT_BACKGROUND_TASK_MANAGER: BackgroundTaskManager = {
   apiVersion: BACKGROUND_TASK_MANAGER_SCHEMA_VERSION,
 };
 
-export type BackgroundTaskManager = v.Output<
+export type BackgroundTaskManager = v.InferOutput<
   typeof BackgroundTaskManagerSchema
 >;
 
