@@ -3,25 +3,30 @@ import {useEffect, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {List, Text} from 'react-native-paper';
 
+type KeyVal = {
+  readonly key: string;
+  val: string;
+};
+
 export default function ViewLogsScreen() {
-  const [keys, setKeys] = useState<readonly string[]>([]);
+  const [keys, setKeys] = useState<KeyVal[]>([]);
   const [text, setText] = useState<string | null>();
   useEffect(() => {
-    AsyncStorage.getAllKeys().then(found_keys => setKeys(found_keys));
-    AsyncStorage.getAllKeys().then(keys =>
-      keys.map(key =>
-        AsyncStorage.getItem(key).then(item =>
-          setText(old_item => (old_item != undefined ? old_item + item : item)),
-        ),
-      ),
-    );
+    AsyncStorage.getAllKeys().then(found_keys => 
+      found_keys.map(k => {
+        AsyncStorage.getItem(k).then(item =>
+          setKeys((old) => old.push({key: k, val: item}))
+        )
+      })
   }, []);
   return (
     <ScrollView>
       <List.Section>
         <List.Subheader>Notification metrics</List.Subheader>
         {keys.map(key => (
-          <List.Item key={key} title={key} description="Hello" />
+          <List.Accordion key={key} title={key}>
+            <Text>Hello</Text>
+          </List.Accordion>
         ))}
       </List.Section>
       <Text>{text}</Text>
