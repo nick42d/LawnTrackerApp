@@ -2,6 +2,7 @@ import {useCallback, useContext, useEffect, useState} from 'react';
 import {PermissionsAndroid, ScrollView, View} from 'react-native';
 import {
   BackgroundTaskManager,
+  DEFAULT_BACKGROUND_TASK_MANAGER,
   getStoredBackgroundTaskManager,
 } from '../worker/Types';
 import {ActivityIndicator, List} from 'react-native-paper';
@@ -43,6 +44,7 @@ export default function StatusScreen({
     useCallback(() => {
       getStoredBackgroundTaskManager().then(m => {
         if (m) setBackgroundTaskManager(m);
+        else setBackgroundTaskManager(DEFAULT_BACKGROUND_TASK_MANAGER);
       });
       notifee
         .getNotificationSettings()
