@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as v from 'valibot';
 import {StoredState} from '../providers/statecontext/Types';
 import {Settings} from '../providers/settingscontext/Types';
-import {differenceInCalendarDays, getHours, toDate} from 'date-fns';
+import {differenceInCalendarDays, format, getHours, toDate} from 'date-fns';
 
 const BACKGROUND_TASK_MANAGER_SCHEMA_VERSION = '0.2';
 const BACKGROUND_TASK_MANAGER_STORAGE_KEY = 'BGTASK';
@@ -56,7 +56,7 @@ export function checkIfNotificationsDue(
     now,
   ];
   const recentTimesCheckedString = recentTimesCheckedUnixMs.map(date =>
-    toDate(date).toDateString(),
+    format(toDate(date), 'EEEEEE dd/mm/yy kk:mm'),
   );
   const recentTimesNotificationDueUnixMs = notificationDueNow
     ? [
@@ -67,7 +67,7 @@ export function checkIfNotificationsDue(
       ]
     : backgroundTaskManager.recentTimesNotificationDueUnixMs;
   const recentTimesNotificationDueString = recentTimesNotificationDueUnixMs.map(
-    date => toDate(date).toDateString(),
+    date => format(toDate(date), 'EEEEEE dd/mm/yy kk:mm'),
   );
   return [
     {
