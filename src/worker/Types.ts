@@ -56,7 +56,7 @@ export function checkIfNotificationsDue(
     now,
   ];
   const recentTimesCheckedString = recentTimesCheckedUnixMs.map(date =>
-    format(toDate(date), 'EEEEEE dd/mm/yy kk:mm'),
+    format(toDate(date), 'EEEEEE dd/MM/yy kk:mm'),
   );
   const recentTimesNotificationDueUnixMs = notificationDueNow
     ? [
@@ -67,7 +67,7 @@ export function checkIfNotificationsDue(
       ]
     : backgroundTaskManager.recentTimesNotificationDueUnixMs;
   const recentTimesNotificationDueString = recentTimesNotificationDueUnixMs.map(
-    date => format(toDate(date), 'EEEEEE dd/mm/yy kk:mm'),
+    date => format(toDate(date), 'EEEEEE dd/MM/yy kk:mm'),
   );
   return [
     {
