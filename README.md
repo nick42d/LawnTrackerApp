@@ -14,8 +14,8 @@ Weather data by [Open-Meteo.com](https://www.open-meteo.com)
 # Screenshots
 <img src="https://github.com/nick42d/LawnTrackerApp/assets/133559267/e6affabe-eddf-41b0-92e7-23e95d1af909" width=30% height=30%/>
 <img src="https://github.com/nick42d/LawnTrackerApp/assets/133559267/de74dc6b-c261-4676-9527-b686a69aa8c0" width=30% height=30%/>
-<img width="1280" height="2856" alt="Screenshot_1792327142_dual" src="https://github.com/user-attachments/assets/bfaf266a-70c6-4051-9e85-47636e2843ca" />
-<img width="1280" height="2856" alt="screenshot" src="https://github.com/user-attachments/assets/57e418cc-e5f1-4e6c-bda5-a90e48c884e8" />
+<img width=30% height=30% alt="Screenshot_1792327142_dual" src="https://github.com/user-attachments/assets/bfaf266a-70c6-4051-9e85-47636e2843ca" />
+<img width=30% height=30% alt="screenshot" src="https://github.com/user-attachments/assets/57e418cc-e5f1-4e6c-bda5-a90e48c884e8" />
 
 # Installation / Setup
 
