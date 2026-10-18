@@ -1,6 +1,6 @@
 # About
 
-LawnTracker is an open source React Native (Android) app designed to keep track of lawn maintenance tasks and notify you when they are due. The app can deal with duration based, calendar based, and growing degree day based tasks.
+LawnTracker is an open source Android app designed to keep track of lawn maintenance tasks and notify you when they are due. The app can deal with duration based, calendar based, and growing degree day based tasks.
 
 Weather data by [Open-Meteo.com](https://www.open-meteo.com)
 
@@ -25,39 +25,64 @@ No setup is required. To add a new tracker, press the plus button on the home sc
 
 ## Design notes
 
-- Whilst React Native is cross-platform, I haven't tested the app on iOS as I don't own an Apple device or XCode.
+- This is a jetpack compose, kotlin app.
 - The app has been designed to be serverless.
-  Instead of running on the server, the app periodically spins up background tasks using the react-native-background-task library to see if tasks are overdue, then generates notifications using the notifee library.
-- Due to iOS restrictions - if the app was ported to iOS, notifications won't be possible once the app is terminated under the current serverless architecture.
+  Instead of running on the server, the app periodically spins up background tasks library to see if tasks are overdue, then generates notifications.
 
 ## How to build and run
 
-### Set up your React Native environment
+### Prerequisites & Required Tools
 
-Complete the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step.
+- **JDK**
+- **Android Studio** (or the **Android SDK Command-Line Tools**)
+- **Android SDK** with the following packages installed via SDK Manager:
+  - **Android SDK Platform**
+  - **Android SDK Build-Tools**
+  - **Android SDK Platform-Tools** (for `adb`)
+- An **Android Emulator** or physical Android device.
 
-### Start the Metro Server
+### Setup Steps
 
-To start Metro, run the following command from the _root_ of the project:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nick42d/LawnTrackerApp.git
+   cd LawnTrackerApp
+   ```
+2. **Configure the Android SDK location:**
+   - **If using Android Studio:** Open the project directory in Android Studio; it will automatically detect your SDK and generate `local.properties`.
+   - **If building from the command line:** Ensure the `ANDROID_HOME` environment variable is set, or create a `local.properties` file in the root of the project pointing to your Android SDK installation:
+     ```properties
+     sdk.dir=/path/to/your/android/sdk
+     ```
+### Build and Run
+
+#### Option 1: Using Android Studio
+1. Open the root project folder in **Android Studio**.
+2. Allow Gradle to sync and download all required dependencies.
+3. Start an Android Emulator or connect a physical device with USB debugging enabled.
+4. Select the `app` run configuration and click **Run** (`Shift + F10` on Linux/Windows, `Ctrl + R` on macOS).
+
+#### Option 2: Using the Command Line (Gradle Wrapper)
+
+Build the debug APK from the root of the project:
 
 ```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+./gradlew assembleDebug
 ```
+The compiled APK will be output to `app/build/outputs/apk/debug/app-debug.apk`.
 
-### Start the Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of the project. Run the following command:
+To build, install, and launch the app directly on a running emulator or connected device:
 
 ```bash
-# using npm
-npm run android
+# Install the debug build onto the connected device/emulator
+./gradlew installDebug
 
-# OR using Yarn
-yarn android
+# Launch the main activity
+adb shell am start -n com.lawntracker/.MainActivity
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Emulator_
+To run the unit test suite:
+
+```bash
+./gradlew testDebugUnitTest
+```
